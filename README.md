@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lógica - Quiz
 
-## Getting Started
+En el examen de la asignatura Lógica I de Filosofía de la UNED hay una parte de preguntas teóricas de tipo test. Hay una colección de preguntas y respuestas con sus explicaciones en [TEORÍA LÓGICA I.pdf](data/TEORÍA LÓGICA I.pdf). En este repositorio hay una transformación de esas preguntas en un test por línea de comandos y en una aplicación web
 
-First, run the development server:
+## Aplicación Web
+
+Se trata de una aplicación "vibe coded" usando [Next.js](https://nextjs.org) con  [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+Los resultados se almacenan en el `LocalStorage` del nagador y se recuperan al iniciar la aplicación.
+
+Para arrancarla:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Entonces abre en el navegador [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Si editas `app/page.tsx` la pàgina se auto refrescará.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Test por línea de comandos
 
-## Learn More
+Se trata de una aplicación Python.
+Se ejecuta con 
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+python src/logic_quiz.py
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Persiste las preguntas ya formuladas en `~/.logic_quiz_history.json`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Procesamiento de las preguntas
 
-## Deploy on Vercel
+`src/extract_questions_to_processed.py` es un script Python que lee `data/TEORÍA LÓGICA I - preguntas.txt`, texto extraido del PDF, y junta las líneas que debe juntar en `data/TEORÍA LÓGICA I - preguntas.processed.txt`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`src/extract_questions_to_json.py` es un script Python que lee de `data/TEORÍA LÓGICA I - preguntas.processed.txt` y genera `public/questions.json`.
