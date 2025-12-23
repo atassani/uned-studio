@@ -18,6 +18,45 @@ Entonces abre en el navegador [http://localhost:3000](http://localhost:3000).
 
 Si editas `app/page.tsx` la pàgina se auto refrescará.
 
+## Publicando la aplicación web
+
+
+Necesitas Next.js instalado. Primero instala dependencias:
+
+```bash
+npm install next react react-dom
+```
+
+### Configuración para export estático (Next.js 13+)
+
+Asegúrate de que tu archivo `next.config.js` contiene:
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+	output: 'export',
+	// ...otras opciones de configuración
+};
+module.exports = nextConfig;
+```
+
+### Para construir y publicar la aplicación web:
+
+```bash
+npm run build
+```
+
+Esto generará un directorio `out/` con todos los archivos estáticos que puedes subir al bucket S3. Excluye los siguientes archivos y directorios:
+
+```
+node_modules/
+src/
+data/
+.git/
+*.config.* (e.g., next.config.ts, postcss.config.mjs, etc.)
+package.json, package-lock.json, tsconfig.json, README.md, etc.
+```
+
 ## Test por línea de comandos
 
 Se trata de una aplicación Python.

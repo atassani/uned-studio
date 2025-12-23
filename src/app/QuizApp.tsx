@@ -1,6 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 
+interface QuestionType {
+  index: number;
+  section: string;
+  number: number;
+  question: string;
+  answer: string;
+  explanation: string;
+}
 const EMOJI_SUCCESS = "✅";
 const EMOJI_FAIL = "❌";
 const EMOJI_ASK = "❓";
@@ -15,7 +23,7 @@ function loadQuestions() {
   return [];
 }
 
-function groupBySection(questions) {
+function groupBySection(questions: any[]) {
   const map = new Map();
   for (const q of questions) {
     if (!map.has(q.section)) map.set(q.section, []);
@@ -25,25 +33,25 @@ function groupBySection(questions) {
 }
 
 export default function QuizApp() {
-  const [questions, setQuestions] = useState([]);
-  const [status, setStatus] = useState({}); // { [index]: 'correct'|'fail'|'pending' }
-  const [current, setCurrent] = useState(null); // index of current question
-  const [showStatus, setShowStatus] = useState(true);
-  const [showResult, setShowResult] = useState(null); // { correct, explanation }
+  const [questions, setQuestions] = useState<QuestionType[]>([]);
+  const [status, setStatus] = useState<Record<number, "correct" | "fail" | "pending">>({});
+  const [current, setCurrent] = useState<number | null>(null);
+  const [showStatus, setShowStatus] = useState<boolean>(true);
+  const [showResult, setShowResult] = useState<null | { correct: boolean; explanation: string }>(null);
 
   // Load questions and status from localStorage
   useEffect(() => {
     fetch("/questions.json")
       .then((r) => r.json())
       .then((data) => {
-        setQuestions(data.map((q, i) => ({ ...q, index: i })));
+        setQuestions(data.map((q: Omit<QuestionType, "index">, i: number) => ({ ...q, index: i })));
         // Try to load status from localStorage
         const savedStatus = localStorage.getItem("quizStatus");
         if (savedStatus) {
           setStatus(JSON.parse(savedStatus));
         } else {
           setStatus(
-            data.reduce((acc, q, i) => {
+            data.reduce((acc: Record<number, "correct" | "fail" | "pending">, _q: any, i: number) => {
               acc[i] = "pending";
               return acc;
             }, {})
@@ -64,18 +72,18 @@ export default function QuizApp() {
 
   // Reset quiz state
   function resetQuiz() {
-    const newStatus = questions.reduce((acc, q, i) => {
+    const newStatus = questions.reduce((acc: Record<number, "correct" | "fail" | "pending">, _q, i) => {
       acc[i] = "pending";
       return acc;
     }, {});
-    setStatus(newStatus);
+    setStatus(newStatus as Record<number, "correct" | "fail" | "pending">);
     localStorage.setItem("quizStatus", JSON.stringify(newStatus));
     setCurrent(null);
     setShowStatus(true);
     setShowResult(null);
   }
 
-  function handleAnswer(ans) {
+  function handleAnswer(ans: string) {
     if (current == null) return;
     const q = questions[current];
     // Normalize answer: 'V' <-> 'Verdadero', 'F' <-> 'Falso'
@@ -86,7 +94,7 @@ export default function QuizApp() {
       (user === "F" && expected === "FALSO") ||
       (user === "VERDADERO" && expected === "V") ||
       (user === "FALSO" && expected === "F");
-    const newStatus = { ...status, [current]: correct ? "correct" : "fail" };
+    const newStatus: Record<number, "correct" | "fail" | "pending"> = { ...status, [current]: correct ? "correct" : "fail" };
     setStatus(newStatus);
     localStorage.setItem("quizStatus", JSON.stringify(newStatus));
     setShowResult({ correct, explanation: q.explanation });
@@ -106,7 +114,7 @@ export default function QuizApp() {
     setShowResult(null);
   }
 
-  function handleContinue(action) {
+  function handleContinue(action: string) {
     if (action === "E") {
       setShowStatus(true);
       setShowResult(null);
@@ -125,7 +133,7 @@ export default function QuizApp() {
           <div key={section}>
             <div className="font-bold text-lg mb-2">{EMOJI_SECTION} {section}</div>
             <div className="grid grid-cols-5 gap-2">
-              {qs.map((q) => {
+              {qs.map((q: QuestionType) => {
                 let emoji = EMOJI_ASK;
                 if (status[q.index] === "correct") emoji = EMOJI_SUCCESS;
                 else if (status[q.index] === "fail") emoji = EMOJI_FAIL;
@@ -182,7 +190,7 @@ export default function QuizApp() {
         <div className="text-2xl">
           {showResult.correct ? EMOJI_SUCCESS + " ¡Correcto!" : EMOJI_FAIL + " Incorrecto."}
         </div>
-        <div className="text-base font-semibold mt-2"><span className={showResult.correct ? "text-green-600" : "text-red-600"}>{questions[current]?.answer}</span></div>
+        <div className="text-base font-semibold mt-2"><span className={showResult.correct ? "text-green-600" : "text-red-600"}>{current !== null ? questions[current]?.answer : ""}</span></div>
         <div className="text-base">{showResult.explanation}</div>
         <div className="flex gap-4 mt-4">
           <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleContinue("C")}>Continuar</button>
