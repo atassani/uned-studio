@@ -704,6 +704,6 @@
     "number": 56,
     "question": "Si una fórmula no es válida, su negación sí lo es.",
     "answer": "Falso",
-    "explanation": "Si no es válida (tautología), puede ser porque es una contradicción o porque es una contingencia. Si es una contradicción, su negación es una tautología (fórmula válida), pero si es una contingencia, su negación es otra contingencia. ∧ ¬ → v"
+    "explanation": "Si no es válida (tautología), puede ser porque es una contradicción o porque es una contingencia. Si es una contradicción, su negación es una tautología (fórmula válida), pero si es una contingencia, su negación es otra contingencia."
   }
 ]
