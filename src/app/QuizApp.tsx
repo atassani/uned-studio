@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import DOMPurify from "isomorphic-dompurify";
 
 interface QuestionType {
   index: number;
@@ -25,6 +26,16 @@ function groupBySection(questions: QuestionType[]): Map<string, QuestionType[]> 
   return map;
 }
 
+function formatRichText(text?: string): { __html: string } {
+  if (!text) return { __html: "" };
+  const withLineBreaks = text.replace(/\n/g, "<br>");
+  const sanitized = DOMPurify.sanitize(withLineBreaks, {
+    ADD_TAGS: ["table", "thead", "tbody", "tfoot", "tr", "td", "th", "br"],
+    ADD_ATTR: ["colspan", "rowspan", "style"],
+  });
+  return { __html: sanitized };
+}
+
 export default function QuizApp() {
   const canResumeRef = useRef(false);
   const [allQuestions, setAllQuestions] = useState<QuestionType[]>([]); // All loaded questions
@@ -38,6 +49,8 @@ export default function QuizApp() {
   const [selectionMode, setSelectionMode] = useState<null | "all" | "sections" | "questions">(null);
   const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
   const [selectedQuestions, setSelectedQuestions] = useState<Set<number>>(new Set());
+  const questionScrollRef = useRef<HTMLDivElement | null>(null);
+  const [questionScrollMeta, setQuestionScrollMeta] = useState<{ thumbTop: number; thumbHeight: number; show: boolean }>({ thumbTop: 0, thumbHeight: 0, show: false });
   const resumeQuestionRef = useRef<number | null>(null);
 
   // Load questions and status from localStorage
@@ -63,6 +76,33 @@ export default function QuizApp() {
       localStorage.setItem("quizStatus", JSON.stringify(status));
     }
   }, [status, questions.length]);
+
+  // Keep a visible scroll indicator for the question selection view
+  useEffect(() => {
+    if (selectionMode !== "questions") return;
+
+    function updateScrollIndicator() {
+      const el = questionScrollRef.current;
+      if (!el) return;
+      const { scrollTop, scrollHeight, clientHeight } = el;
+      const maxScrollTop = Math.max(scrollHeight - clientHeight, 0);
+      const show = maxScrollTop > 0;
+      const trackHeight = clientHeight;
+      const thumbHeight = show ? Math.max((clientHeight / scrollHeight) * trackHeight, 20) : trackHeight;
+      const thumbTop = show && maxScrollTop > 0 ? (scrollTop / maxScrollTop) * (trackHeight - thumbHeight) : 0;
+      setQuestionScrollMeta({ thumbTop, thumbHeight, show });
+    }
+
+    const el = questionScrollRef.current;
+    updateScrollIndicator();
+    if (!el) return;
+    el.addEventListener("scroll", updateScrollIndicator);
+    window.addEventListener("resize", updateScrollIndicator);
+    return () => {
+      el.removeEventListener("scroll", updateScrollIndicator);
+      window.removeEventListener("resize", updateScrollIndicator);
+    };
+  }, [selectionMode, allQuestions.length]);
 
   // Define all functions used in the component
   function pendingQuestions() {
@@ -230,29 +270,39 @@ export default function QuizApp() {
     return (
       <div className="space-y-8 flex flex-col items-center justify-center">
         <div className="text-2xl font-bold mb-4">Selecciona las preguntas</div>
-        <div className="max-h-96 overflow-y-auto w-full">
-          {[...grouped.entries()].map(([section, qs]) => (
-            <div key={section} className="mb-6">
-              <div className="font-bold text-lg mb-2">{EMOJI_SECTION} {section}</div>
-              <div className="grid grid-cols-5 gap-2">
-                {qs.map((q: QuestionType) => (
-                  <label key={q.index} className="flex flex-row items-center justify-center cursor-pointer select-none gap-2">
-                    <span className="text-2xl">{q.number}</span>
-                    <input
-                      type="checkbox"
-                      checked={selectedQuestions.has(q.index)}
-                      onChange={e => {
-                        const newSet = new Set(selectedQuestions);
-                        if (e.target.checked) newSet.add(q.index);
-                        else newSet.delete(q.index);
-                        setSelectedQuestions(newSet);
-                      }}
-                    />
-                  </label>
-                ))}
+        <div className="relative w-full">
+          <div ref={questionScrollRef} className="max-h-96 overflow-y-auto w-full pr-4">
+            {[...grouped.entries()].map(([section, qs]) => (
+              <div key={section} className="mb-6">
+                <div className="font-bold text-lg mb-2">{EMOJI_SECTION} {section}</div>
+                <div className="grid grid-cols-5 gap-2">
+                  {qs.map((q: QuestionType) => (
+                    <label key={q.index} className="flex flex-row items-center justify-center cursor-pointer select-none gap-2">
+                      <span className="text-2xl">{q.number}</span>
+                      <input
+                        type="checkbox"
+                        checked={selectedQuestions.has(q.index)}
+                        onChange={e => {
+                          const newSet = new Set(selectedQuestions);
+                          if (e.target.checked) newSet.add(q.index);
+                          else newSet.delete(q.index);
+                          setSelectedQuestions(newSet);
+                        }}
+                      />
+                    </label>
+                  ))}
+                </div>
               </div>
+            ))}
+          </div>
+          {questionScrollMeta.show && (
+            <div className="absolute top-0 right-1 h-full w-2 rounded-full bg-slate-200 pointer-events-none">
+              <div
+                className="w-full bg-slate-500 rounded-full"
+                style={{ height: `${questionScrollMeta.thumbHeight}px`, transform: `translateY(${questionScrollMeta.thumbTop}px)` }}
+              />
             </div>
-          ))}
+          )}
         </div>
         <div className="flex gap-4">
           <button
@@ -402,7 +452,10 @@ export default function QuizApp() {
           {EMOJI_PROGRESS} Total: {questions.length} | Correctas: {correctCount} | Falladas: {failCount} | Pendientes: {pendingCount}
         </div>
         <div className="font-bold text-lg">{EMOJI_SECTION} {q.section}</div>
-        <div className="text-xl font-semibold">{q.number}. {q.question}</div>
+        <div
+          className="text-xl font-semibold rich-content"
+          dangerouslySetInnerHTML={formatRichText(`${q.number}. ${q.question}`)}
+        ></div>
         <div className="flex gap-4 mt-4">
           <button className="px-6 py-2 bg-green-600 text-white rounded text-lg" onClick={() => handleAnswer("V")}>V</button>
           <button className="px-6 py-2 bg-red-600 text-white rounded text-lg" onClick={() => handleAnswer("F")}>F</button>
@@ -416,6 +469,42 @@ export default function QuizApp() {
   function renderResult() {
     // Show results as a grid when all questions are answered
     const allAnswered = questions.length > 0 && Object.values(status).filter(s => s === "pending").length === 0;
+
+    if (showResult) {
+      const correctCount = Object.values(status).filter((s) => s === "correct").length;
+      const failCount = Object.values(status).filter((s) => s === "fail").length;
+      const pendingCount = questions.length - (correctCount + failCount);
+      const q = current !== null ? questions[current] : null;
+      return (
+        <div className="space-y-4 mt-8">
+          <div className="mt-2 text-sm">
+            {EMOJI_PROGRESS} Total: {questions.length} | Correctas: {correctCount} | Falladas: {failCount} | Pendientes: {pendingCount}
+          </div>
+          {q && (
+            <>
+              <div className="font-bold text-lg">{EMOJI_SECTION} {q.section}</div>
+              <div
+                className="text-xl font-semibold rich-content"
+                dangerouslySetInnerHTML={formatRichText(`${q.number}. ${q.question}`)}
+              ></div>
+            </>
+          )}
+          <div className="text-2xl">
+            {showResult.correct ? EMOJI_SUCCESS + " ¡Correcto!" : EMOJI_FAIL + " Incorrecto."}
+          </div>
+          <div
+            className={`text-base font-semibold mt-2 rich-content ${showResult.correct ? "text-green-600" : "text-red-600"}`}
+            dangerouslySetInnerHTML={formatRichText(current !== null ? questions[current]?.answer : "")}
+          ></div>
+          <div className="text-base rich-content" dangerouslySetInnerHTML={formatRichText(showResult.explanation)}></div>
+          <div className="flex gap-4 mt-4">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleContinue("C")}>Continuar</button>
+            <button className="px-4 py-2 bg-gray-400 text-white rounded" onClick={() => handleContinue("E")}>Ver estado</button>
+          </div>
+        </div>
+      );
+    }
+
     if (allAnswered) {
       const grouped = groupBySection(questions);
       const correctCount = Object.values(status).filter((s) => s === "correct").length;
@@ -453,33 +542,8 @@ export default function QuizApp() {
         </div>
       );
     }
-    if (!showResult) return null;
-    const correctCount = Object.values(status).filter((s) => s === "correct").length;
-    const failCount = Object.values(status).filter((s) => s === "fail").length;
-    const pendingCount = questions.length - (correctCount + failCount);
-    const q = current !== null ? questions[current] : null;
-    return (
-      <div className="space-y-4 mt-8">
-        <div className="mt-2 text-sm">
-          {EMOJI_PROGRESS} Total: {questions.length} | Correctas: {correctCount} | Falladas: {failCount} | Pendientes: {pendingCount}
-        </div>
-        {q && (
-          <>
-            <div className="font-bold text-lg">{EMOJI_SECTION} {q.section}</div>
-            <div className="text-xl font-semibold">{q.number}. {q.question}</div>
-          </>
-        )}
-        <div className="text-2xl">
-          {showResult.correct ? EMOJI_SUCCESS + " ¡Correcto!" : EMOJI_FAIL + " Incorrecto."}
-        </div>
-        <div className="text-base font-semibold mt-2"><span className={showResult.correct ? "text-green-600" : "text-red-600"}>{current !== null ? questions[current]?.answer : ""}</span></div>
-        <div className="text-base">{showResult.explanation}</div>
-        <div className="flex gap-4 mt-4">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleContinue("C")}>Continuar</button>
-          <button className="px-4 py-2 bg-gray-400 text-white rounded" onClick={() => handleContinue("E")}>Ver estado</button>
-        </div>
-      </div>
-    );
+
+    return null;
   }
 
   // If all questions are answered, show only the results grid
@@ -493,13 +557,13 @@ export default function QuizApp() {
               : selectionMode === "questions"
                 ? renderQuestionSelection()
                 : renderSelectionMenu())
-          : showResult
-            ? renderResult()
-            : allAnswered
+          : (showResult
               ? renderResult()
-              : showStatus
-                ? renderStatusGrid()
-                : renderQuestion()}
+              : (allAnswered
+                  ? renderResult()
+                  : showStatus
+                    ? renderStatusGrid()
+                    : renderQuestion()))}
       </div>
     </div>
   );
