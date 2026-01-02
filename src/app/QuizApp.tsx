@@ -27,11 +27,17 @@ function groupBySection(questions: QuestionType[]): Map<string, QuestionType[]> 
 
 export default function QuizApp() {
   const canResumeRef = useRef(false);
-  const [questions, setQuestions] = useState<QuestionType[]>([]);
+  const [allQuestions, setAllQuestions] = useState<QuestionType[]>([]); // All loaded questions
+  const [questions, setQuestions] = useState<QuestionType[]>([]); // Filtered questions for this session
   const [status, setStatus] = useState<Record<number, "correct" | "fail" | "pending">>({});
+  // 'current' is the index in the filtered 'questions' array
   const [current, setCurrent] = useState<number | null>(null);
   const [showStatus, setShowStatus] = useState<boolean>(false);
   const [showResult, setShowResult] = useState<null | { correct: boolean; explanation: string }>(null);
+  const [showSelectionMenu, setShowSelectionMenu] = useState<boolean>(true);
+  const [selectionMode, setSelectionMode] = useState<null | "all" | "sections" | "questions">(null);
+  const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
+  const [selectedQuestions, setSelectedQuestions] = useState<Set<number>>(new Set());
   const resumeQuestionRef = useRef<number | null>(null);
 
   // Load questions and status from localStorage
@@ -40,27 +46,14 @@ export default function QuizApp() {
       .then((r) => r.json())
       .then((data) => {
         const questionsWithIndex = data.map((q: Omit<QuestionType, "index">, i: number) => ({ ...q, index: i }));
-        setQuestions(questionsWithIndex);
-        // Try to load status from localStorage
-        const savedStatus = localStorage.getItem("quizStatus");
-        if (savedStatus) {
-          setStatus(JSON.parse(savedStatus));
-          // If there is a saved status, show grid as before
-          setShowStatus(true);
-        } else {
-          setStatus(
-            data.reduce((acc: Record<number, "correct" | "fail" | "pending">, _q: Omit<QuestionType, "index">, i: number) => {
-              acc[i] = "pending";
-              return acc;
-            }, {})
-          );
-          // No saved status: show first question
-          if (questionsWithIndex.length > 0) {
-            const first = Math.floor(Math.random() * questionsWithIndex.length);
-            setCurrent(first);
-            setShowStatus(false);
-          }
-        }
+        setAllQuestions(questionsWithIndex);
+        setShowSelectionMenu(true);
+        setSelectionMode(null);
+        setQuestions([]);
+        setStatus({});
+        setCurrent(null);
+        setShowStatus(false);
+        setShowResult(null);
       });
   }, []);
 
@@ -73,20 +66,37 @@ export default function QuizApp() {
 
   // Define all functions used in the component
   function pendingQuestions() {
-    return questions.filter((q) => status[q.index] === "pending");
+    // Return array of [index, question] for pending questions in filtered array
+    return questions
+      .map((q, i) => [i, q] as [number, QuestionType])
+      .filter(([i, q]) => status[q.index] === "pending");
   }
 
   // Reset quiz state
   function resetQuiz() {
-    const newStatus = questions.reduce((acc: Record<number, "correct" | "fail" | "pending">, _q: QuestionType, i: number) => {
-      acc[i] = "pending";
+    // Show selection menu
+    setShowSelectionMenu(true);
+    setSelectionMode(null);
+    setQuestions([]);
+    setStatus({});
+    setCurrent(null);
+    setShowStatus(false);
+    setShowResult(null);
+    setSelectedSections(new Set());
+    setSelectedQuestions(new Set());
+  }
+
+  // Start quiz with all questions
+  function startQuizAll() {
+    setQuestions(allQuestions);
+    const newStatus = allQuestions.reduce((acc: Record<number, "correct" | "fail" | "pending">, q: QuestionType) => {
+      acc[q.index] = "pending";
       return acc;
     }, {});
-    setStatus(newStatus as Record<number, "correct" | "fail" | "pending">);
+    setStatus(newStatus);
     localStorage.setItem("quizStatus", JSON.stringify(newStatus));
-    // Start with a random question
-    if (questions.length > 0) {
-      const first = Math.floor(Math.random() * questions.length);
+    if (allQuestions.length > 0) {
+      const first = Math.floor(Math.random() * allQuestions.length);
       setCurrent(first);
       setShowStatus(false);
     } else {
@@ -94,6 +104,168 @@ export default function QuizApp() {
       setShowStatus(true);
     }
     setShowResult(null);
+    setShowSelectionMenu(false);
+    setSelectionMode(null);
+  }
+
+  // Start quiz with selected sections
+  function startQuizSections() {
+    const filtered = allQuestions.filter(q => selectedSections.has(q.section));
+    setQuestions(filtered);
+    const newStatus = filtered.reduce((acc: Record<number, "correct" | "fail" | "pending">, q: QuestionType) => {
+      acc[q.index] = "pending";
+      return acc;
+    }, {});
+    setStatus(newStatus);
+    localStorage.setItem("quizStatus", JSON.stringify(newStatus));
+    if (filtered.length > 0) {
+      const first = Math.floor(Math.random() * filtered.length);
+      setCurrent(first);
+      setShowStatus(false);
+    } else {
+      setCurrent(null);
+      setShowStatus(true);
+    }
+    setShowResult(null);
+    setShowSelectionMenu(false);
+    setSelectionMode(null);
+  }
+
+  // Start quiz with selected questions
+  function startQuizQuestions() {
+    const filtered = allQuestions.filter(q => selectedQuestions.has(q.index));
+    setQuestions(filtered);
+    const newStatus = filtered.reduce((acc: Record<number, "correct" | "fail" | "pending">, q: QuestionType) => {
+      acc[q.index] = "pending";
+      return acc;
+    }, {});
+    setStatus(newStatus);
+    localStorage.setItem("quizStatus", JSON.stringify(newStatus));
+    if (filtered.length > 0) {
+      const first = Math.floor(Math.random() * filtered.length);
+      setCurrent(first);
+      setShowStatus(false);
+    } else {
+      setCurrent(null);
+      setShowStatus(true);
+    }
+    setShowResult(null);
+    setShowSelectionMenu(false);
+    setSelectionMode(null);
+  }
+  // Selection menu UI
+  function renderSelectionMenu() {
+    return (
+      <div className="space-y-8 flex flex-col items-center justify-center">
+        <div className="text-2xl font-bold mb-4">¿Cómo quieres las preguntas de  Lógica I?</div>
+        <button className="px-6 py-3 bg-blue-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("all"); startQuizAll(); }}>Todas las preguntas</button>
+        <button className="px-6 py-3 bg-green-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("sections"); }}>Seleccionar secciones</button>
+        <button className="px-6 py-3 bg-purple-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("questions"); }}>Seleccionar preguntas</button>
+      </div>
+    );
+  }
+
+  // Section selection UI
+  function renderSectionSelection() {
+    // Get unique sections
+    const sections = Array.from(new Set(allQuestions.map(q => q.section)));
+    const allChecked = selectedSections.size === sections.length;
+    const noneChecked = selectedSections.size === 0;
+    const handleCheckAll = () => setSelectedSections(new Set(sections));
+    const handleUncheckAll = () => setSelectedSections(new Set());
+    return (
+      <div className="space-y-8 flex flex-col items-center justify-center">
+        <div className="text-2xl font-bold mb-4">Selecciona las secciones</div>
+        <div className="flex gap-4 mb-2">
+          <button
+            className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
+            onClick={handleCheckAll}
+            disabled={allChecked}
+          >
+            Marcar todas
+          </button>
+          <button
+            className="px-3 py-1 bg-gray-500 text-white rounded text-sm"
+            onClick={handleUncheckAll}
+            disabled={noneChecked}
+          >
+            Desmarcar todas
+          </button>
+        </div>
+        <div className="flex flex-col gap-2 mb-4">
+          {sections.map(section => (
+            <label key={section} className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selectedSections.has(section)}
+                onChange={e => {
+                  const newSet = new Set(selectedSections);
+                  if (e.target.checked) newSet.add(section);
+                  else newSet.delete(section);
+                  setSelectedSections(newSet);
+                }}
+              />
+              <span>{section}</span>
+            </label>
+          ))}
+        </div>
+        <div className="flex gap-4">
+          <button
+            className="px-6 py-3 bg-green-600 text-white rounded text-lg"
+            disabled={selectedSections.size === 0}
+            onClick={startQuizSections}
+          >
+            Empezar
+          </button>
+          <button className="px-6 py-3 bg-gray-400 text-white rounded text-lg" onClick={resetQuiz}>Cancelar</button>
+        </div>
+      </div>
+    );
+  }
+
+  // Question selection UI
+  function renderQuestionSelection() {
+    // Group questions by section
+    const grouped = groupBySection(allQuestions);
+    return (
+      <div className="space-y-8 flex flex-col items-center justify-center">
+        <div className="text-2xl font-bold mb-4">Selecciona las preguntas</div>
+        <div className="max-h-96 overflow-y-auto w-full">
+          {[...grouped.entries()].map(([section, qs]) => (
+            <div key={section} className="mb-6">
+              <div className="font-bold text-lg mb-2">{EMOJI_SECTION} {section}</div>
+              <div className="grid grid-cols-5 gap-2">
+                {qs.map((q: QuestionType) => (
+                  <label key={q.index} className="flex flex-row items-center justify-center cursor-pointer select-none gap-2">
+                    <span className="text-2xl">{q.number}</span>
+                    <input
+                      type="checkbox"
+                      checked={selectedQuestions.has(q.index)}
+                      onChange={e => {
+                        const newSet = new Set(selectedQuestions);
+                        if (e.target.checked) newSet.add(q.index);
+                        else newSet.delete(q.index);
+                        setSelectedQuestions(newSet);
+                      }}
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex gap-4">
+          <button
+            className="px-6 py-3 bg-purple-600 text-white rounded text-lg"
+            disabled={selectedQuestions.size === 0}
+            onClick={startQuizQuestions}
+          >
+            Empezar
+          </button>
+          <button className="px-6 py-3 bg-gray-400 text-white rounded text-lg" onClick={resetQuiz}>Cancelar</button>
+        </div>
+      </div>
+    );
   }
 
   function handleAnswer(ans: string) {
@@ -107,7 +279,7 @@ export default function QuizApp() {
       (user === "F" && expected === "FALSO") ||
       (user === "VERDADERO" && expected === "V") ||
       (user === "FALSO" && expected === "F");
-    const newStatus: Record<number, "correct" | "fail" | "pending"> = { ...status, [current]: correct ? "correct" : "fail" };
+    const newStatus: Record<number, "correct" | "fail" | "pending"> = { ...status, [q.index]: correct ? "correct" : "fail" };
     setStatus(newStatus);
     localStorage.setItem("quizStatus", JSON.stringify(newStatus));
     setShowResult({ correct, explanation: q.explanation });
@@ -121,8 +293,8 @@ export default function QuizApp() {
       setShowResult(null);
       return;
     }
-    const q = pending[Math.floor(Math.random() * pending.length)];
-    setCurrent(q.index);
+    const [nextIdx] = pending[Math.floor(Math.random() * pending.length)];
+    setCurrent(nextIdx);
     setShowStatus(false);
     setShowResult(null);
   }
@@ -315,13 +487,19 @@ export default function QuizApp() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
       <div className="w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8">
-        {showResult
-          ? renderResult()
-          : allAnswered
-          ? renderResult()
-          : showStatus
-          ? renderStatusGrid()
-          : renderQuestion()}
+        {showSelectionMenu
+          ? (selectionMode === "sections"
+              ? renderSectionSelection()
+              : selectionMode === "questions"
+                ? renderQuestionSelection()
+                : renderSelectionMenu())
+          : showResult
+            ? renderResult()
+            : allAnswered
+              ? renderResult()
+              : showStatus
+                ? renderStatusGrid()
+                : renderQuestion()}
       </div>
     </div>
   );
