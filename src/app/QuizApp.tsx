@@ -1,6 +1,6 @@
 
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import DOMPurify from "isomorphic-dompurify";
 import Link from "next/link";
 import packageJson from '../../package.json';
@@ -108,16 +108,14 @@ export default function QuizApp() {
   }, [selectionMode, allQuestions.length]);
 
   // Define all functions used in the component
-  function pendingQuestions() {
-    // Return array of [index, question] for pending questions in filtered array
+  const pendingQuestions = useCallback(() => {
     return questions
       .map((q, i) => [i, q] as [number, QuestionType])
-      .filter(([i, q]) => status[q.index] === "pending");
-  }
+      .filter(([, q]) => status[q.index] === "pending");
+  }, [questions, status]);
 
   // Reset quiz state
-  function resetQuiz() {
-    // Show selection menu
+  const resetQuiz = useCallback(() => {
     setShowSelectionMenu(true);
     setSelectionMode(null);
     setQuestions([]);
@@ -127,10 +125,10 @@ export default function QuizApp() {
     setShowResult(null);
     setSelectedSections(new Set());
     setSelectedQuestions(new Set());
-  }
+  }, []);
 
   // Start quiz with all questions
-  function startQuizAll() {
+  const startQuizAll = useCallback(() => {
     setQuestions(allQuestions);
     const newStatus = allQuestions.reduce((acc: Record<number, "correct" | "fail" | "pending">, q: QuestionType) => {
       acc[q.index] = "pending";
@@ -149,10 +147,10 @@ export default function QuizApp() {
     setShowResult(null);
     setShowSelectionMenu(false);
     setSelectionMode(null);
-  }
+  }, [allQuestions]);
 
   // Start quiz with selected sections
-  function startQuizSections() {
+  const startQuizSections = useCallback(() => {
     const filtered = allQuestions.filter(q => selectedSections.has(q.section));
     setQuestions(filtered);
     const newStatus = filtered.reduce((acc: Record<number, "correct" | "fail" | "pending">, q: QuestionType) => {
@@ -172,10 +170,10 @@ export default function QuizApp() {
     setShowResult(null);
     setShowSelectionMenu(false);
     setSelectionMode(null);
-  }
+  }, [allQuestions, selectedSections]);
 
   // Start quiz with selected questions
-  function startQuizQuestions() {
+  const startQuizQuestions = useCallback(() => {
     const filtered = allQuestions.filter(q => selectedQuestions.has(q.index));
     setQuestions(filtered);
     const newStatus = filtered.reduce((acc: Record<number, "correct" | "fail" | "pending">, q: QuestionType) => {
@@ -195,15 +193,15 @@ export default function QuizApp() {
     setShowResult(null);
     setShowSelectionMenu(false);
     setSelectionMode(null);
-  }
+  }, [allQuestions, selectedQuestions]);
   // Selection menu UI
   function renderSelectionMenu() {
     return (
       <div className="space-y-8 flex flex-col items-center justify-center">
         <div className="text-2xl font-bold mb-4">¿Cómo quieres las preguntas de  Lógica I?</div>
-        <button className="px-6 py-3 bg-blue-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("all"); startQuizAll(); }}>Todas las preguntas</button>
-        <button className="px-6 py-3 bg-green-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("sections"); }}>Seleccionar secciones</button>
-        <button className="px-6 py-3 bg-purple-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("questions"); }}>Seleccionar preguntas</button>
+        <button className="px-6 py-3 bg-blue-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("all"); startQuizAll(); }} aria-label="Todas las preguntas">Todas las preguntas</button>
+        <button className="px-6 py-3 bg-green-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("sections"); }} aria-label="Seleccionar secciones">Seleccionar secciones</button>
+        <button className="px-6 py-3 bg-purple-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("questions"); }} aria-label="Seleccionar preguntas">Seleccionar preguntas</button>
       </div>
     );
   }
@@ -259,6 +257,7 @@ export default function QuizApp() {
             className="px-6 py-3 bg-green-600 text-white rounded text-lg"
             disabled={selectedSections.size === 0}
             onClick={startQuizSections}
+            aria-label="Empezar"
           >
             Empezar
           </button>
@@ -314,6 +313,7 @@ export default function QuizApp() {
             className="px-6 py-3 bg-purple-600 text-white rounded text-lg"
             disabled={selectedQuestions.size === 0}
             onClick={startQuizQuestions}
+            aria-label="Empezar"
           >
             Empezar
           </button>
@@ -323,10 +323,9 @@ export default function QuizApp() {
     );
   }
 
-  function handleAnswer(ans: string) {
+  const handleAnswer = useCallback((ans: string) => {
     if (current == null) return;
     const q = questions[current];
-    // Normalize answer: 'V' <-> 'Verdadero', 'F' <-> 'Falso'
     const expected = q.answer.trim().toUpperCase();
     const user = ans.trim().toUpperCase();
     const correct = (user === expected) ||
@@ -338,9 +337,9 @@ export default function QuizApp() {
     setStatus(newStatus);
     localStorage.setItem("quizStatus", JSON.stringify(newStatus));
     setShowResult({ correct, explanation: q.explanation });
-  }
+  }, [current, questions, status]);
 
-  function nextQuestion() {
+  const nextQuestion = useCallback(() => {
     const pending = pendingQuestions();
     if (pending.length === 0) {
       setShowStatus(false);
@@ -352,19 +351,16 @@ export default function QuizApp() {
     setCurrent(nextIdx);
     setShowStatus(false);
     setShowResult(null);
-  }
+  }, [pendingQuestions]);
 
-  function handleContinue(action: string) {
-    // If we're in the result view and user clicks Continuar, go to a random pending question
+  const handleContinue = useCallback((action: string) => {
     if (action === "C" && showResult) {
       resumeQuestionRef.current = null;
       canResumeRef.current = false;
       nextQuestion();
       return;
     }
-
     if (action === "E") {
-      // Only set resume if we're currently on a question view (not result)
       if (!showResult && current !== null) {
         resumeQuestionRef.current = current;
         canResumeRef.current = true;
@@ -375,7 +371,6 @@ export default function QuizApp() {
       setShowStatus(true);
       setShowResult(null);
     } else {
-      // Coming back from status grid: resume if allowed, otherwise random pending
       if (resumeQuestionRef.current !== null && canResumeRef.current) {
         setShowStatus(false);
         setCurrent(resumeQuestionRef.current);
@@ -387,17 +382,17 @@ export default function QuizApp() {
         nextQuestion();
       }
     }
-  }
+  }, [showResult, current, nextQuestion]);
 
   // Helper to go to status and enable resume (only from question view)
-  function goToStatusWithResume() {
+  const goToStatusWithResume = useCallback(() => {
     if (current !== null) {
       resumeQuestionRef.current = current;
       canResumeRef.current = true;
     }
     setShowStatus(true);
     setShowResult(null);
-  }
+  }, [current]);
 
   // Status grid rendering
   function renderStatusGrid() {
@@ -433,10 +428,10 @@ export default function QuizApp() {
           <span>{EMOJI_ASK} = Pendiente</span>
         </div>
         <div className="flex gap-4 mt-6">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleContinue("C")} disabled={pendingQuestions().length === 0}>
+          <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleContinue("C")} disabled={pendingQuestions().length === 0} aria-label="Continuar">
             {pendingQuestions().length === 0 ? EMOJI_DONE + " ¡Completado!" : "Continuar"}
           </button>
-          <button className="px-4 py-2 bg-orange-500 text-white rounded" onClick={resetQuiz}>
+          <button className="px-4 py-2 bg-orange-500 text-white rounded" onClick={resetQuiz} aria-label="Volver a empezar">
             🔄 Volver a empezar
           </button>
         </div>
@@ -552,6 +547,49 @@ export default function QuizApp() {
   }
 
   // If all questions are answered, show only the results grid
+  // Keyboard shortcuts handler (after all logic)
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      const active = document.activeElement as HTMLElement | null;
+      const isTextInput = active && (
+        active.tagName === 'TEXTAREA' ||
+        (active.tagName === 'INPUT' && !['checkbox', 'radio'].includes((active as HTMLInputElement).type)) ||
+        active.getAttribute('contenteditable') === 'true'
+      );
+      if (isTextInput) return;
+      if (showSelectionMenu && !selectionMode) {
+        if (e.key.toLowerCase() === 't') { setSelectionMode('all'); startQuizAll(); }
+        if (e.key.toLowerCase() === 's') { setSelectionMode('sections'); }
+        if (e.key.toLowerCase() === 'p') { setSelectionMode('questions'); }
+      }
+      if (showSelectionMenu && selectionMode === 'sections') {
+        if (e.key === 'Enter' || e.key === 'Return' || e.key === 'NumpadEnter') {
+          if (selectedSections.size > 0) startQuizSections();
+        }
+      }
+      if (showSelectionMenu && selectionMode === 'questions') {
+        if (e.key === 'Enter' || e.key === 'Return' || e.key === 'NumpadEnter') {
+          if (selectedQuestions.size > 0) startQuizQuestions();
+        }
+      }
+      if (!showSelectionMenu && !showStatus && !showResult && current !== null) {
+        if (e.key.toLowerCase() === 'v') handleAnswer('V');
+        if (e.key.toLowerCase() === 'f') handleAnswer('F');
+        if (e.key.toLowerCase() === 'e') goToStatusWithResume();
+      }
+      if (!showSelectionMenu && showResult) {
+        if (e.key.toLowerCase() === 'c') handleContinue('C');
+        if (e.key.toLowerCase() === 'e') handleContinue('E');
+      }
+      if (!showSelectionMenu && showStatus) {
+        if (e.key.toLowerCase() === 'c' && pendingQuestions().length > 0) handleContinue('C');
+        if (e.key.toLowerCase() === 'v') resetQuiz();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSelectionMenu, selectionMode, selectedSections, selectedQuestions, showStatus, showResult, current, questions, handleAnswer, goToStatusWithResume, handleContinue, resetQuiz, startQuizAll, startQuizSections, startQuizQuestions, pendingQuestions]);
+
   const allAnswered = questions.length > 0 && Object.values(status).filter(s => s === "pending").length === 0;
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
@@ -569,7 +607,7 @@ export default function QuizApp() {
                   : showStatus
                     ? renderStatusGrid()
                     : renderQuestion()))}
-        {/* Version link inside the main frame, bottom left */}
+        {/* Version link inside the main frame, bottom right */}
         <VersionLink />
       </div>
     </div>
@@ -581,7 +619,7 @@ function VersionLink() {
   return (
     <Link
       href="/version-history"
-      className="absolute left-4 bottom-4 text-xs text-gray-500 hover:underline z-20"
+      className="absolute right-4 bottom-4 text-xs text-gray-500 hover:underline z-20"
       style={{ fontSize: "0.75rem" }}
       aria-label="Historial de versiones"
     >
