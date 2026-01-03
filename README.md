@@ -57,6 +57,21 @@ data/
 package.json, package-lock.json, tsconfig.json, README.md, etc.
 ```
 
+## Configuración de variables de entorno (.env)
+
+El archivo `.env` debe contener la siguiente variable para definir la ruta base de la aplicación (útil para despliegues en subcarpetas):
+
+```
+NEXT_PUBLIC_BASE_PATH=/es/logica1
+```
+
+- Cambia el valor según la subcarpeta donde se sirva la app.
+- Esta variable se usa tanto en la configuración de Next.js (`next.config.ts`) como en el código de la aplicación para rutas de recursos (por ejemplo, favicon).
+- Si despliegas en la raíz, puedes dejarla vacía:
+  ```
+  NEXT_PUBLIC_BASE_PATH=
+  ```
+
 ## Test por línea de comandos
 
 Se trata de una aplicación Python.
