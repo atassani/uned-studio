@@ -23,9 +23,18 @@ test('can navigate / interact', async ({ page }) => {
 test('test', async ({ page }) => {
   await page.goto(homePath);
 
+  // Check version is on the front page
+  await expect(page.getByRole('link', { name: 'Historial de versiones' })).toBeVisible();
+
+  // Can go to the version history and back
   await page.getByRole('link', { name: 'Historial de versiones' }).click();
   await page.getByRole('link', { name: 'Volver al menú' }).click();
+
+  // In the Seleccionar secciones, select a section and start the quiz
   await page.getByRole('button', { name: 'Seleccionar secciones' }).click();
+  // Cannot find Historial de versiones in this page
+  await expect(page.getByRole('link', { name: 'Historial de versiones' })).toHaveCount(0);
+
   await page.getByRole('checkbox', { name: 'CUESTIONES DE LOS APUNTES' }).check();
   await page.getByRole('button', { name: 'Empezar' }).click();
   await page.getByText('📊 Total: 55 | Correctas: 0').click();

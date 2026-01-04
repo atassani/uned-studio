@@ -607,8 +607,8 @@ export default function QuizApp() {
                   : showStatus
                     ? renderStatusGrid()
                     : renderQuestion()))}
-        {/* Version link inside the main frame, bottom right */}
-        <VersionLink />
+        {/* Version link only on main menu (no selection in progress) */}
+        {showSelectionMenu && !selectionMode ? <VersionLink /> : null}
       </div>
     </div>
   );
