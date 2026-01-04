@@ -17,6 +17,11 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: Create .env for CI
+      run: |
+        cat <<'EOF' > .env
+        NEXT_PUBLIC_BASE_PATH=
+        EOF
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v4

@@ -1,12 +1,17 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+import path from 'path';
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || '').replace(/\/$/, '');
+const baseSuffix = basePath ? `${basePath}/` : '/';
+const localOrigin = 'http://localhost:3000';
+const baseUrl = `${localOrigin}${baseSuffix}`;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -25,12 +30,12 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: 'http://localhost:3000/es/logica1/',
+    baseURL: baseUrl,
     trace: 'on-first-retry',
   },
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:3000/es/logica1',
+    url: baseUrl.replace(/\/$/, ''),
     reuseExistingServer: !process.env.CI,
    },
   projects: [

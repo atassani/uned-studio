@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test';
 
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || '').replace(/\/$/, '');
+const homePath = basePath ? `${basePath}/` : '/';
+
 test('home page loads and shows heading', async ({ page }) => {
   await page.goto('/');
 
@@ -18,7 +21,7 @@ test('can navigate / interact', async ({ page }) => {
 });
 
 test('test', async ({ page }) => {
-  await page.goto('http://localhost:3000/es/logica1/');
+  await page.goto(homePath);
 
   await page.getByRole('link', { name: 'Historial de versiones' }).click();
   await page.getByRole('link', { name: 'Volver al menú' }).click();
