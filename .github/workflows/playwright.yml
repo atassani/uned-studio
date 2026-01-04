@@ -20,7 +20,7 @@ jobs:
     - name: Create .env for CI
       run: |
         cat <<'EOF' > .env
-        NEXT_PUBLIC_BASE_PATH=
+        NEXT_PUBLIC_BASE_PATH=/es/logica1
         EOF
     - name: Run Playwright tests
       run: npx playwright test
