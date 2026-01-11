@@ -3,7 +3,97 @@ import { test, expect } from '@playwright/test';
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || '').replace(/\/$/, '');
 const homePath = basePath ? `${basePath}/` : '/';
 
-test('version link works from menu but not available in other screens', async ({ page }) => {
+test('shows area selection screen first', async ({ page }) => {
+  await page.goto(homePath);
+  
+  // Should see area selection screen
+  await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
+  
+  // Should have area buttons
+  await expect(page.getByRole('button', { name: /Lógica I/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Introducción al Pensamiento Científico/ })).toBeVisible();
+});
+
+test('can select an area and proceed to question selection', async ({ page }) => {
+  await page.goto(homePath);
+  
+  // Click on Lógica I area
+  await page.getByRole('button', { name: /Lógica I/ }).click();
+  
+  // Should see question selection screen for Lógica I
+  await expect(page.getByText('¿Cómo quieres las preguntas de Lógica I?')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Todas las preguntas' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Seleccionar secciones' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Seleccionar preguntas' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Cambiar área' })).toBeVisible();
+});
+
+test('can go back to area selection from question selection', async ({ page }) => {
+  await page.goto(homePath);
+  
+  await page.getByRole('button', { name: /Lógica I/ }).click();
+  await page.getByRole('button', { name: 'Cambiar área' }).click();
+  
+  // Should be back at area selection
+  await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
+});
+
+test('True/False quiz works for Lógica I area', async ({ page }) => {
+  await page.goto(homePath);
+  
+  await page.getByRole('button', { name: /Lógica I/ }).click();
+  await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+  
+  // Should see True/False question interface
+  await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'F', exact: true })).toBeVisible();
+  
+  // Answer a question
+  await page.getByRole('button', { name: 'V', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Continuar' })).toBeVisible();
+});
+
+test('Multiple Choice quiz works for IPC area', async ({ page }) => {
+  await page.goto(homePath);
+  
+  await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
+  await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+  
+  // Should see Multiple Choice question interface with options
+  await expect(page.getByRole('button', { name: /^A\)/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^B\)/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^C\)/ })).toBeVisible();
+  
+  // Answer a question
+  await page.getByRole('button', { name: /^A\)/ }).click();
+  await expect(page.getByRole('button', { name: 'Continuar' })).toBeVisible();
+});
+
+test('keyboard shortcuts work for area selection', async ({ page }) => {
+  await page.goto(homePath);
+  
+  // Wait for areas to load
+  await expect(page.getByRole('button', { name: /Lógica I/ })).toBeVisible();
+  
+  // Press '1' to select first area
+  await page.keyboard.press('1');
+  
+  // Should be in question selection for first area
+  await expect(page.getByText(/¿Cómo quieres las preguntas de/)).toBeVisible();
+});
+
+test('keyboard shortcuts work for Multiple Choice questions', async ({ page }) => {
+  await page.goto(homePath);
+  
+  await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
+  await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+  
+  // Press 'a' to answer with option A
+  await page.keyboard.press('a');
+  await expect(page.getByRole('button', { name: 'Continuar' })).toBeVisible();
+});
+
+test('version link works from area selection but not from other screens', async ({ page }) => {
   await page.goto(homePath);
 
   await expect(page.getByRole('link', { name: 'Historial de versiones' })).toBeVisible();
@@ -11,13 +101,15 @@ test('version link works from menu but not available in other screens', async ({
   await page.getByRole('link', { name: 'Historial de versiones' }).click();
   await page.getByRole('link', { name: 'Volver al menú' }).click();
 
+  await page.getByRole('button', { name: /Lógica I/ }).click();
   await page.getByRole('button', { name: 'Seleccionar secciones' }).click();
   await expect(page.getByRole('link', { name: 'Historial de versiones' })).toHaveCount(0);
 });
 
-test('selects one section and starts quiz', async ({ page }) => {
+test('selects one section and starts quiz in Lógica I area', async ({ page }) => {
   await page.goto(homePath);
 
+  await page.getByRole('button', { name: /Lógica I/ }).click();
   await page.getByRole('button', { name: 'Seleccionar secciones' }).click();
   await page.getByRole('checkbox', { name: 'CUESTIONES DE LOS APUNTES' }).check();
   await page.getByRole('button', { name: 'Empezar' }).click();

@@ -12,6 +12,21 @@ interface QuestionType {
   question: string;
   answer: string;
   explanation: string;
+  options?: string[]; // For multiple choice questions
+}
+
+interface MultipleChoiceQuestion extends QuestionType {
+  options: string[];
+}
+
+interface AreaType {
+  area: string;
+  file: string;
+  type: "True False" | "Multiple Choice";
+}
+
+interface QuizStatusByArea {
+  [areaFile: string]: Record<number, "correct" | "fail" | "pending">;
 }
 const EMOJI_SUCCESS = "✅";
 const EMOJI_FAIL = "❌";
@@ -56,13 +71,38 @@ export default function QuizApp() {
   const [questionScrollMeta, setQuestionScrollMeta] = useState<{ thumbTop: number; thumbHeight: number; show: boolean }>({ thumbTop: 0, thumbHeight: 0, show: false });
   const resumeQuestionRef = useRef<number | null>(null);
 
-  // Load questions and status from localStorage
+  // New area-related state
+  const [areas, setAreas] = useState<AreaType[]>([]);
+  const [selectedArea, setSelectedArea] = useState<AreaType | null>(null);
+  const [showAreaSelection, setShowAreaSelection] = useState<boolean>(true);
+  const [currentQuizType, setCurrentQuizType] = useState<"True False" | "Multiple Choice" | null>(null);
+
+  // Load areas on component mount
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/questions.json`)
+    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/areas.json`)
+      .then((r) => {
+        if (!r.ok) {
+          throw new Error(`HTTP error! status: ${r.status}`);
+        }
+        return r.json();
+      })
+      .then((areasData: AreaType[]) => {
+        setAreas(areasData);
+      })
+      .catch((err) => console.error('Failed to load areas:', err));
+  }, []);
+
+  // Load questions for selected area
+  useEffect(() => {
+    if (!selectedArea) return;
+    
+    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${selectedArea.file}`)
       .then((r) => r.json())
       .then((data) => {
         const questionsWithIndex = data.map((q: Omit<QuestionType, "index">, i: number) => ({ ...q, index: i }));
         setAllQuestions(questionsWithIndex);
+        setCurrentQuizType(selectedArea.type);
+        setShowAreaSelection(false);
         setShowSelectionMenu(true);
         setSelectionMode(null);
         setQuestions([]);
@@ -70,15 +110,35 @@ export default function QuizApp() {
         setCurrent(null);
         setShowStatus(false);
         setShowResult(null);
-      });
-  }, []);
+        
+        // Check for existing quiz progress for this area
+        const savedStatus = localStorage.getItem(`quizStatus_${selectedArea.file}`);
+        if (savedStatus) {
+          const parsedStatus = JSON.parse(savedStatus);
+          setStatus(parsedStatus);
+          
+          // Find questions that match the saved status
+          const resumableQuestions = questionsWithIndex.filter((q: QuestionType) => parsedStatus[q.index] !== undefined);
+          if (resumableQuestions.length > 0) {
+            setQuestions(resumableQuestions);
+            const pending = resumableQuestions.filter((q: QuestionType) => parsedStatus[q.index] === 'pending');
+            if (pending.length > 0) {
+              const randomPending = Math.floor(Math.random() * pending.length);
+              resumeQuestionRef.current = resumableQuestions.findIndex((q: QuestionType) => q.index === pending[randomPending].index);
+              canResumeRef.current = true;
+            }
+          }
+        }
+      })
+      .catch((err) => console.error('Failed to load questions:', err));
+  }, [selectedArea]);
 
   // Persist status to localStorage whenever it changes
   useEffect(() => {
-    if (questions.length > 0) {
-      localStorage.setItem("quizStatus", JSON.stringify(status));
+    if (questions.length > 0 && selectedArea) {
+      localStorage.setItem(`quizStatus_${selectedArea.file}`, JSON.stringify(status));
     }
-  }, [status, questions.length]);
+  }, [status, questions.length, selectedArea]);
 
   // Keep a visible scroll indicator for the question selection view
   useEffect(() => {
@@ -194,14 +254,72 @@ export default function QuizApp() {
     setShowSelectionMenu(false);
     setSelectionMode(null);
   }, [allQuestions, selectedQuestions]);
+
+  // Load questions for selected area
+  const loadQuestionsForArea = useCallback(async (area: AreaType) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${area.file}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const questionsData = await response.json();
+      
+      // Add indices to questions for tracking
+      const questionsWithIndex = questionsData.map((q: QuestionType, idx: number) => ({ ...q, index: idx }));
+      setAllQuestions(questionsWithIndex);
+      
+      // Load saved status for this area
+      const savedStatus = localStorage.getItem(`quizStatus_${area.file}`);
+      if (savedStatus) {
+        setStatus(JSON.parse(savedStatus));
+      } else {
+        setStatus({});
+      }
+      
+    } catch (error) {
+      console.error('Error loading questions:', error);
+      setAllQuestions([]);
+      setStatus({});
+    }
+  }, []);
+
+  // Area selection UI
+  function renderAreaSelection() {
+    return (
+      <div className="space-y-8 flex flex-col items-center justify-center">
+        <div className="text-2xl font-bold mb-4">¿Qué quieres estudiar?</div>
+        <div className="flex flex-col gap-4 w-64">
+          {areas.map((area, index) => (
+            <button
+              key={area.file}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded text-lg text-left"
+              onClick={() => {
+                setSelectedArea(area);
+                setCurrentQuizType(area.type);
+                setShowAreaSelection(false);
+                setShowSelectionMenu(true);
+                loadQuestionsForArea(area);
+              }}
+              aria-label={`Estudiar ${area.area}`}
+            >
+              <span className="font-mono mr-2">({index + 1})</span>
+              {area.area}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   // Selection menu UI
   function renderSelectionMenu() {
     return (
       <div className="space-y-8 flex flex-col items-center justify-center">
-        <div className="text-2xl font-bold mb-4">¿Cómo quieres las preguntas de  Lógica I?</div>
+        <div className="text-2xl font-bold mb-4">¿Cómo quieres las preguntas de {selectedArea?.area}?</div>
         <button className="px-6 py-3 bg-blue-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("all"); startQuizAll(); }} aria-label="Todas las preguntas">Todas las preguntas</button>
         <button className="px-6 py-3 bg-green-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("sections"); }} aria-label="Seleccionar secciones">Seleccionar secciones</button>
         <button className="px-6 py-3 bg-purple-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("questions"); }} aria-label="Seleccionar preguntas">Seleccionar preguntas</button>
+        <button className="px-6 py-3 bg-gray-500 text-white rounded text-lg w-64" onClick={() => { setShowAreaSelection(true); setShowSelectionMenu(false); }} aria-label="Cambiar área">Cambiar área</button>
       </div>
     );
   }
@@ -324,20 +442,30 @@ export default function QuizApp() {
   }
 
   const handleAnswer = useCallback((ans: string) => {
-    if (current == null) return;
+    if (current == null || !selectedArea) return;
     const q = questions[current];
     const expected = q.answer.trim().toUpperCase();
     const user = ans.trim().toUpperCase();
-    const correct = (user === expected) ||
-      (user === "V" && expected === "VERDADERO") ||
-      (user === "F" && expected === "FALSO") ||
-      (user === "VERDADERO" && expected === "V") ||
-      (user === "FALSO" && expected === "F");
+    
+    let correct = false;
+    
+    if (currentQuizType === "True False") {
+      // True/False logic (existing)
+      correct = (user === expected) ||
+        (user === "V" && expected === "VERDADERO") ||
+        (user === "F" && expected === "FALSO") ||
+        (user === "VERDADERO" && expected === "V") ||
+        (user === "FALSO" && expected === "F");
+    } else if (currentQuizType === "Multiple Choice") {
+      // Multiple choice logic - answer should match the letter
+      correct = user === expected;
+    }
+    
     const newStatus: Record<number, "correct" | "fail" | "pending"> = { ...status, [q.index]: correct ? "correct" : "fail" };
     setStatus(newStatus);
-    localStorage.setItem("quizStatus", JSON.stringify(newStatus));
+    localStorage.setItem(`quizStatus_${selectedArea.file}`, JSON.stringify(newStatus));
     setShowResult({ correct, explanation: q.explanation });
-  }, [current, questions, status]);
+  }, [current, questions, status, selectedArea, currentQuizType]);
 
   const nextQuestion = useCallback(() => {
     const pending = pendingQuestions();
@@ -456,11 +584,34 @@ export default function QuizApp() {
           className="text-xl font-semibold rich-content"
           dangerouslySetInnerHTML={formatRichText(`${q.number}. ${q.question}`)}
         ></div>
-        <div className="flex gap-4 mt-4">
-          <button className="px-6 py-2 bg-green-600 text-white rounded text-lg" onClick={() => handleAnswer("V")}>V</button>
-          <button className="px-6 py-2 bg-red-600 text-white rounded text-lg" onClick={() => handleAnswer("F")}>F</button>
-          <button className="px-6 py-2 bg-gray-400 text-white rounded text-lg" onClick={goToStatusWithResume}>Ver estado</button>
-        </div>
+        
+        {/* Render buttons based on quiz type */}
+        {currentQuizType === "True False" ? (
+          <div className="flex gap-4 mt-4">
+            <button className="px-6 py-2 bg-green-600 text-white rounded text-lg" onClick={() => handleAnswer("V")}>V</button>
+            <button className="px-6 py-2 bg-red-600 text-white rounded text-lg" onClick={() => handleAnswer("F")}>F</button>
+            <button className="px-6 py-2 bg-gray-400 text-white rounded text-lg" onClick={goToStatusWithResume}>Ver estado</button>
+          </div>
+        ) : (
+          // Multiple Choice buttons
+          <div className="space-y-3 mt-4">
+            {(q as any).options?.map((option: string, index: number) => {
+              const letter = String.fromCharCode(97 + index); // 'a', 'b', 'c', etc.
+              return (
+                <button
+                  key={index}
+                  className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded text-left text-sm"
+                  onClick={() => handleAnswer(letter)}
+                >
+                  <span className="font-bold">{letter.toUpperCase()})</span> {option}
+                </button>
+              );
+            })}
+            <div className="flex gap-4 mt-4">
+              <button className="px-6 py-2 bg-gray-400 text-white rounded text-lg" onClick={goToStatusWithResume}>Ver estado</button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -557,6 +708,18 @@ export default function QuizApp() {
         active.getAttribute('contenteditable') === 'true'
       );
       if (isTextInput) return;
+      if (showAreaSelection) {
+        // Allow number keys 1,2,3 for quick area selection
+        const num = parseInt(e.key);
+        if (num >= 1 && num <= areas.length) {
+          const area = areas[num - 1];
+          setSelectedArea(area);
+          setCurrentQuizType(area.type);
+          setShowAreaSelection(false);
+          setShowSelectionMenu(true);
+          loadQuestionsForArea(area);
+        }
+      }
       if (showSelectionMenu && !selectionMode) {
         if (e.key.toLowerCase() === 't') { setSelectionMode('all'); startQuizAll(); }
         if (e.key.toLowerCase() === 's') { setSelectionMode('sections'); }
@@ -573,8 +736,15 @@ export default function QuizApp() {
         }
       }
       if (!showSelectionMenu && !showStatus && !showResult && current !== null) {
-        if (e.key.toLowerCase() === 'v') handleAnswer('V');
-        if (e.key.toLowerCase() === 'f') handleAnswer('F');
+        if (currentQuizType === "True False") {
+          if (e.key.toLowerCase() === 'v') handleAnswer('V');
+          if (e.key.toLowerCase() === 'f') handleAnswer('F');
+        } else if (currentQuizType === "Multiple Choice") {
+          const letter = e.key.toLowerCase();
+          if (['a', 'b', 'c', 'd', 'e', 'f'].includes(letter)) {
+            handleAnswer(letter);
+          }
+        }
         if (e.key.toLowerCase() === 'e') goToStatusWithResume();
       }
       if (!showSelectionMenu && showResult) {
@@ -588,27 +758,29 @@ export default function QuizApp() {
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSelectionMenu, selectionMode, selectedSections, selectedQuestions, showStatus, showResult, current, questions, handleAnswer, goToStatusWithResume, handleContinue, resetQuiz, startQuizAll, startQuizSections, startQuizQuestions, pendingQuestions]);
+  }, [showAreaSelection, areas, showSelectionMenu, selectionMode, selectedSections, selectedQuestions, showStatus, showResult, current, questions, currentQuizType, loadQuestionsForArea, handleAnswer, goToStatusWithResume, handleContinue, resetQuiz, startQuizAll, startQuizSections, startQuizQuestions, pendingQuestions]);
 
   const allAnswered = questions.length > 0 && Object.values(status).filter(s => s === "pending").length === 0;
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
       <div className="w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8 relative">
-        {showSelectionMenu
-          ? (selectionMode === "sections"
-              ? renderSectionSelection()
-              : selectionMode === "questions"
-                ? renderQuestionSelection()
-                : renderSelectionMenu())
-          : (showResult
-              ? renderResult()
-              : (allAnswered
+        {showAreaSelection
+          ? renderAreaSelection()
+          : (showSelectionMenu
+              ? (selectionMode === "sections"
+                  ? renderSectionSelection()
+                  : selectionMode === "questions"
+                    ? renderQuestionSelection()
+                    : renderSelectionMenu())
+              : (showResult
                   ? renderResult()
-                  : showStatus
-                    ? renderStatusGrid()
-                    : renderQuestion()))}
+                  : (allAnswered
+                      ? renderResult()
+                      : showStatus
+                        ? renderStatusGrid()
+                        : renderQuestion())))}
         {/* Version link only on main menu (no selection in progress) */}
-        {showSelectionMenu && !selectionMode ? <VersionLink /> : null}
+        {showAreaSelection ? <VersionLink /> : (showSelectionMenu && !selectionMode ? <VersionLink /> : null)}
       </div>
     </div>
   );

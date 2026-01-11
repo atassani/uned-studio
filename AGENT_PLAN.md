@@ -11,22 +11,22 @@
 ## Phase 2: Data Structure Setup
 - [x] Create areas.json index file in public/
 - [x] Rename public/questions.json to public/questions_logica1.json
-- [ ] Update any hardcoded references to questions.json (**IN PROGRESS**)
+- [x] Update any hardcoded references to questions.json
 - [x] Verify questions_ipc.json structure matches expected format
 
 ## Phase 3: Core Logic Implementation
-- [ ] Design localStorage structure for multiple quiz progress tracking
-- [ ] Create types/interfaces for areas and different question types
-- [ ] Implement area selection UI ("¿Qué quieres estudiar?")
-- [ ] Add question type detection and routing logic
-- [ ] Implement multiple choice question display with options a, b, c
-- [ ] Add button and keyboard input handling for multiple choice
+- [x] Design localStorage structure for multiple quiz progress tracking
+- [x] Create types/interfaces for areas and different question types
+- [x] Implement area selection UI ("¿Qué quieres estudiar?")
+- [x] Add question type detection and routing logic
+- [x] Implement multiple choice question display with options a, b, c
+- [x] Add button and keyboard input handling for multiple choice (**COMPLETED**)
 
 ## Phase 4: State Management Updates
-- [ ] Refactor localStorage to support multiple areas (quizStatusByArea)
-- [ ] Update quiz progress tracking to work per area
-- [ ] Ensure resume functionality works across different areas
-- [ ] Test switching between areas without losing progress
+- [x] Refactor localStorage to support multiple areas (quizStatusByArea)
+- [x] Update quiz progress tracking to work per area
+- [x] Ensure resume functionality works across different areas
+- [ ] Test switching between areas without losing progress (**IN PROGRESS**)
 
 ## Phase 5: UI/UX Implementation
 - [ ] Update feedback UI to work with both question types
