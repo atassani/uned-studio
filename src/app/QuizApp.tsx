@@ -88,6 +88,18 @@ export default function QuizApp() {
       })
       .then((areasData: AreaType[]) => {
         setAreas(areasData);
+        
+        // Migrate old localStorage data for backward compatibility
+        const oldQuizStatus = localStorage.getItem('quizStatus');
+        if (oldQuizStatus) {
+          // Migrate to Lógica I area (the default/original area)
+          const logicaArea = areasData.find(area => area.area === 'Lógica I');
+          if (logicaArea) {
+            const areaKey = logicaArea.file.replace('.json', '');
+            localStorage.setItem(`quizStatus_${areaKey}`, oldQuizStatus);
+            localStorage.removeItem('quizStatus'); // Remove old data
+          }
+        }
       })
       .catch((err) => console.error('Failed to load areas:', err));
   }, []);
@@ -112,7 +124,8 @@ export default function QuizApp() {
         setShowResult(null);
         
         // Check for existing quiz progress for this area
-        const savedStatus = localStorage.getItem(`quizStatus_${selectedArea.file}`);
+        const areaKey = selectedArea.file.replace('.json', '');
+        const savedStatus = localStorage.getItem(`quizStatus_${areaKey}`);
         if (savedStatus) {
           const parsedStatus = JSON.parse(savedStatus);
           setStatus(parsedStatus);
@@ -136,7 +149,8 @@ export default function QuizApp() {
   // Persist status to localStorage whenever it changes
   useEffect(() => {
     if (questions.length > 0 && selectedArea) {
-      localStorage.setItem(`quizStatus_${selectedArea.file}`, JSON.stringify(status));
+      const areaKey = selectedArea.file.replace('.json', '');
+      localStorage.setItem(`quizStatus_${areaKey}`, JSON.stringify(status));
     }
   }, [status, questions.length, selectedArea]);
 
@@ -269,7 +283,8 @@ export default function QuizApp() {
       setAllQuestions(questionsWithIndex);
       
       // Load saved status for this area
-      const savedStatus = localStorage.getItem(`quizStatus_${area.file}`);
+      const areaKey = area.file.replace('.json', '');
+      const savedStatus = localStorage.getItem(`quizStatus_${areaKey}`);
       if (savedStatus) {
         setStatus(JSON.parse(savedStatus));
       } else {
@@ -463,7 +478,8 @@ export default function QuizApp() {
     
     const newStatus: Record<number, "correct" | "fail" | "pending"> = { ...status, [q.index]: correct ? "correct" : "fail" };
     setStatus(newStatus);
-    localStorage.setItem(`quizStatus_${selectedArea.file}`, JSON.stringify(newStatus));
+    const areaKey = selectedArea.file.replace('.json', '');
+    localStorage.setItem(`quizStatus_${areaKey}`, JSON.stringify(newStatus));
     setShowResult({ correct, explanation: q.explanation });
   }, [current, questions, status, selectedArea, currentQuizType]);
 
@@ -530,6 +546,12 @@ export default function QuizApp() {
     const pendingCount = questions.length - (correctCount + failCount);
     return (
       <div className="space-y-8">
+        {/* Show area name at top */}
+        {selectedArea && (
+          <div className="text-lg font-bold text-blue-600 mb-2">
+            🎓 {selectedArea.area}
+          </div>
+        )}
         <div className="mt-2 text-sm">
           {EMOJI_PROGRESS} Total: {questions.length} | Correctas: {correctCount} | Falladas: {failCount} | Pendientes: {pendingCount}
         </div>        
@@ -576,14 +598,34 @@ export default function QuizApp() {
     const pendingCount = questions.length - (correctCount + failCount);
     return (
       <div className="space-y-6">
+        {/* Show area name at top */}
+        {selectedArea && (
+          <div className="text-lg font-bold text-blue-600 mb-2">
+            🎓 {selectedArea.area}
+          </div>
+        )}
         <div className="mt-2 text-sm">
           {EMOJI_PROGRESS} Total: {questions.length} | Correctas: {correctCount} | Falladas: {failCount} | Pendientes: {pendingCount}
         </div>
         <div className="font-bold text-lg">{EMOJI_SECTION} {q.section}</div>
         <div
-          className="text-xl font-semibold rich-content"
+          className="text-xl font-semibold rich-content question-text"
           dangerouslySetInnerHTML={formatRichText(`${q.number}. ${q.question}`)}
         ></div>
+        
+        {/* Show options for Multiple Choice as text */}
+        {currentQuizType === "Multiple Choice" && (q as any).options && (
+          <div className="mt-4 space-y-2">
+            {(q as any).options.map((option: string, index: number) => {
+              const letter = String.fromCharCode(65 + index); // 'A', 'B', 'C', etc.
+              return (
+                <div key={index} className="text-base">
+                  <span className="font-bold">{letter})</span> {option}
+                </div>
+              );
+            })}
+          </div>
+        )}
         
         {/* Render buttons based on quiz type */}
         {currentQuizType === "True False" ? (
@@ -593,23 +635,21 @@ export default function QuizApp() {
             <button className="px-6 py-2 bg-gray-400 text-white rounded text-lg" onClick={goToStatusWithResume}>Ver estado</button>
           </div>
         ) : (
-          // Multiple Choice buttons
-          <div className="space-y-3 mt-4">
+          // Multiple Choice A/B/C buttons
+          <div className="flex gap-4 mt-4">
             {(q as any).options?.map((option: string, index: number) => {
-              const letter = String.fromCharCode(97 + index); // 'a', 'b', 'c', etc.
+              const letter = String.fromCharCode(65 + index); // 'A', 'B', 'C', etc.
               return (
                 <button
                   key={index}
-                  className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded text-left text-sm"
-                  onClick={() => handleAnswer(letter)}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-lg"
+                  onClick={() => handleAnswer(letter.toLowerCase())}
                 >
-                  <span className="font-bold">{letter.toUpperCase()})</span> {option}
+                  {letter}
                 </button>
               );
             })}
-            <div className="flex gap-4 mt-4">
-              <button className="px-6 py-2 bg-gray-400 text-white rounded text-lg" onClick={goToStatusWithResume}>Ver estado</button>
-            </div>
+            <button className="px-6 py-2 bg-gray-400 text-white rounded text-lg" onClick={goToStatusWithResume}>Ver estado</button>
           </div>
         )}
       </div>

@@ -53,6 +53,76 @@ test('True/False quiz works for Lógica I area', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Continuar' })).toBeVisible();
 });
 
+test('Multiple Choice quiz shows question text with A/B/C buttons (consistent with True/False)', async ({ page }) => {
+  await page.goto(homePath);
+  
+  await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
+  await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+  
+  // Should see question text (not as buttons)
+  await expect(page.locator('.question-text')).toBeVisible();
+  
+  // Should see A/B/C buttons at the bottom (not full option text as buttons)
+  await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'B', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'C', exact: true })).toBeVisible();
+  
+  // Should NOT see buttons with full option text
+  await expect(page.getByRole('button', { name: /No es objetivo porque hay personas/ })).not.toBeVisible();
+});
+
+test('shows area name in question view', async ({ page }) => {
+  await page.goto(homePath);
+  
+  await page.getByRole('button', { name: /Lógica I/ }).click();
+  await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+  
+  // Should show area name at top
+  await expect(page.getByText('Lógica I')).toBeVisible();
+});
+
+test('shows area name in status view ("Ver Estado")', async ({ page }) => {
+  await page.goto(homePath);
+  
+  await page.getByRole('button', { name: /Lógica I/ }).click();
+  await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+  await page.getByRole('button', { name: 'Ver estado' }).click();
+  
+  // Should show area name at top of status view
+  await expect(page.getByText('Lógica I')).toBeVisible();
+});
+
+test('shows area name in question selection menu', async ({ page }) => {
+  await page.goto(homePath);
+  
+  await page.getByRole('button', { name: /Lógica I/ }).click();
+  
+  // Should show area name in the question selection menu
+  await expect(page.getByText('Lógica I')).toBeVisible();
+});
+
+test('migrates old quizStatus to area-specific storage without .json suffix', async ({ page }) => {
+  // Set up old localStorage data
+  await page.goto(homePath);
+  await page.evaluate(() => {
+    localStorage.setItem('quizStatus', '{"0": "correct", "1": "fail"}');
+  });
+  
+  // Reload page to trigger migration
+  await page.reload();
+  
+  // Wait for areas to load (which triggers migration)
+  await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Lógica I/ })).toBeVisible();
+  
+  // Check that data was migrated and old data removed
+  const newData = await page.evaluate(() => localStorage.getItem('quizStatus_questions_logica1'));
+  const oldData = await page.evaluate(() => localStorage.getItem('quizStatus'));
+  
+  expect(newData).toBe('{"0": "correct", "1": "fail"}');
+  expect(oldData).toBeNull();
+});
+
 test('Multiple Choice quiz works for IPC area', async ({ page }) => {
   await page.goto(homePath);
   
@@ -60,12 +130,12 @@ test('Multiple Choice quiz works for IPC area', async ({ page }) => {
   await page.getByRole('button', { name: 'Todas las preguntas' }).click();
   
   // Should see Multiple Choice question interface with options
-  await expect(page.getByRole('button', { name: /^A\)/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /^B\)/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /^C\)/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'B', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'C', exact: true })).toBeVisible();
   
   // Answer a question
-  await page.getByRole('button', { name: /^A\)/ }).click();
+  await page.getByRole('button', { name: 'A', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Continuar' })).toBeVisible();
 });
 

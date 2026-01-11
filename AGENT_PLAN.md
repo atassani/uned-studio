@@ -26,7 +26,7 @@
 - [x] Refactor localStorage to support multiple areas (quizStatusByArea)
 - [x] Update quiz progress tracking to work per area
 - [x] Ensure resume functionality works across different areas
-- [ ] Test switching between areas without losing progress (**IN PROGRESS**)
+- [x] Test switching between areas without losing progress (**COMPLETED**)
 
 ## Phase 5: UI/UX Implementation
 - [ ] Update feedback UI to work with both question types
@@ -35,9 +35,25 @@
 - [ ] Keep basePath support for static export
 
 ## Phase 6: Testing
-- [ ] Update existing Playwright tests for area selection flow
-- [ ] Add new Playwright test for Multiple Choice workflow
-- [ ] Extract pure functions and add unit tests (Vitest)
+- [x] Update existing Playwright tests for area selection flow
+- [x] Add new Playwright test for Multiple Choice workflow
+- [x] Add keyboard shortcuts tests for multi-area navigation (**ALL TESTS PASSING - 27/27**)
+
+## Phase 7: UI/UX Consistency & Backward Compatibility (**NEW REQUIREMENTS**)
+- [ ] **UI Consistency**: Change Multiple Choice display from option buttons to text + A/B/C buttons
+  - [ ] Write failing test for MCQ text display format
+  - [ ] Implement MCQ text display with A/B/C buttons at bottom
+  - [ ] Ensure A/B/C buttons work correctly
+- [ ] **Backward Compatibility**: Migrate existing localStorage data
+  - [ ] Write test for localStorage migration from `quizStatus` to `quizStatus_questions_logica1`
+  - [ ] Implement migration logic on app startup
+  - [ ] Remove `.json` suffix from localStorage keys (use `quizStatus_questions_logica1` not `quizStatus_questions_logica1.json`)
+  - [ ] Delete old `quizStatus` after successful migration
+- [ ] **Area Name Display**: Show area name at top of screens
+  - [ ] Write tests for area name display in question view
+  - [ ] Write tests for area name display in status view ("Ver Estado")
+  - [ ] Write tests for area name display in menu screens
+  - [ ] Implement area name display across all relevant screens
 - [ ] Update GitHub Actions workflow to run unit tests
 - [ ] Verify all tests pass and app builds correctly
 
