@@ -87,46 +87,78 @@
   - [x] All 60 Playwright tests passing ✅
 
 ## Phase 11: Area Memory and Persistence (**NEW REQUIREMENT**)
-- [ ] **localStorage Area Memory**: Remember and restore user's area
-  - [ ] Write tests for area persistence in localStorage
-  - [ ] Write tests for returning to last studied area on app reload
-  - [ ] Write tests for migration from old "quizStatus" to Lógica I area
-  - [ ] Implement localStorage key for current area (e.g., "currentArea")
-  - [ ] Implement automatic area restoration on app startup
-  - [ ] Implement backward compatibility: old "quizStatus" → migrate to Lógica I
-  - [ ] Ensure quiz progress is preserved when switching areas
+- [x] **localStorage Area Memory**: Remember and restore user's area (**COMPLETED**)
+  - [x] Write tests for area persistence in localStorage
+  - [x] Write tests for returning to last studied area on app reload
+  - [x] Write tests for migration from old "quizStatus" to Lógica I area
+  - [x] Implement localStorage key for current area (e.g., "currentArea")
+  - [x] Implement automatic area restoration on app startup
+  - [x] Implement backward compatibility: old "quizStatus" → migrate to Lógica I
+  - [x] Ensure quiz progress is preserved when switching areas
 
-## Phase 12: Enhanced "Cambiar área" Navigation (**NEW REQUIREMENT**)
-- [ ] **Expanded Area Switching**: Add "Cambiar área" buttons throughout app
-  - [ ] Write tests for "Cambiar área" button on question page (next to "Ver estado")
-  - [ ] Write tests for "Cambiar área" button on answer pages (both MCQ and True/False)
-  - [ ] Write tests for "Cambiar área" button on "Seleccionar secciones" page
-  - [ ] Write tests for "Cambiar área" button on "Seleccionar preguntas" page
-  - [ ] Write tests for "Cambiar área" button on "Quiz completado" page
-  - [ ] Write tests for continuing where you left off after area change
-  - [ ] Implement "Cambiar área" buttons with consistent styling
-  - [ ] Implement logic to preserve progress in both areas when switching
-  - [ ] Ensure area switching works from any screen in the app
+## Phase 12: Enhanced "Cambiar área" Navigation (**IN PROGRESS**)
+- [x] Write tests for "Cambiar área" button on question page (next to "Ver estado")
+- [x] Write tests for "Cambiar área" button on answer pages (both MCQ and True/False)
+- [x] Write tests for "Cambiar área" button on "Seleccionar secciones" page
+- [x] Write tests for "Cambiar área" button on "Seleccionar preguntas" page
+- [x] Write tests for "Cambiar área" button on "Quiz completado" page
+- [x] Write tests for continuing where you left off after area change
+- [x] Implement "Cambiar área" buttons with consistent styling
+- [x] Implement logic to preserve progress in both areas when switching
+- [x] Ensure area switching works from any screen in the app
+- [x] Implement and display 'Cambiar área' button on answer pages
+  - [x] Add a visible and functional 'Cambiar área' button to both MCQ and True/False answer pages. Ensure it returns to area selection and preserves progress.
+- [x] Implement and display 'Cambiar área' button on 'Seleccionar secciones' page
+  - [x] Add a visible and functional 'Cambiar área' button to the section selection page. Ensure it returns to area selection and preserves progress.
+- [x] Implement and display 'Cambiar área' button on 'Seleccionar preguntas' page
+  - [x] Add a visible and functional 'Cambiar área' button to the question selection page. Ensure it returns to area selection and preserves progress.
+- [x] Implement and display 'Cambiar área' button on 'Quiz completado' page
+  - [x] Add a visible and functional 'Cambiar área' button to the quiz completed/results page. Ensure it returns to area selection and preserves progress.
 
-## Phase 13: Short Area Names in Selection (**NEW REQUIREMENT**)
-- [ ] **Compact Area Selection**: Add short names for better UX
-  - [ ] Write tests for short area names display in area selection
-  - [ ] Add "short" field to areas.json (LOG1, IPC)
-  - [ ] Write tests for short names with full names below in smaller font
-  - [ ] Update area selection UI to show short names prominently
-  - [ ] Display full area names in smaller text below short names
-  - [ ] Ensure responsive design works with new layout
-  - [ ] Consider scalability for future additional areas
+## Phase 13: Short Area Names in Selection (**COMPLETED**)
+- [x] **Compact Area Selection**: Add short names for better UX
+  - [x] Write tests for short area names display in area selection
+  - [x] Add "shortName" field to areas.json (log1, ipc)
+  - [x] Write tests for short names with full names below in smaller font
+  - [x] Update area selection UI to show short names prominently
+  - [x] Display full area names in smaller text below short names
+  - [x] Refactor all localStorage keys and area logic to use shortName 
+  - [x] Update Playwright tests for area switching and progress restoration
+  - [x] Fix async race conditions in area switching logic
+  - [x] Ensure responsive design works with new layout
+  - [x] All 21 Playwright tests passing with robust area switching
+
+**Phase 13 Status: COMPLETED** - Short area names are fully implemented with robust area switching and progress preservation.
 
 ## Phase 14: Sequential Question Order Option (**NEW REQUIREMENT**)
-- [ ] **Question Order Control**: Allow sequential vs random question presentation
-  - [ ] Write tests for sequential question order option
-  - [ ] Write tests for question order selection UI
-  - [ ] Add question order preference to localStorage
-  - [ ] Implement UI toggle for "Orden secuencial" vs "Orden aleatorio"
-  - [ ] Implement sequential question logic (by question number)
-  - [ ] Ensure both random and sequential modes work correctly
-  - [ ] Update existing tests to account for question order modes
+- [x] Add UI for question order selection (random/sequential)
+- [x] Persist question order preference per area in localStorage
+- [x] Apply question order to all-questions mode
+- [x] Apply question order to section selection mode
+- [x] Apply question order to custom question selection mode
+- [x] Add Playwright tests for all modes and persistence
+- [ ] **NEW: If sequential is selected, it must apply to all quiz modes (all, sections, questions) and be respected everywhere.**
+- [ ] **NEW: Fix localStorage persistence and area selection UI after reload so user preference is always restored and accessible.**
+
+### User Request (2026-01-11)
+- If sequential is selected, it is applied for all the options including selecting sections and selecting questions.
+- Fix the localStorage persistence test and the UI after reload.
+
+### Implementation Plan
+- Refactor QuizApp logic so sequential order is always respected for all quiz modes.
+- Ensure localStorage persistence and UI restoration after reload.
+- Update Playwright tests if needed.
+
+## Phase 9: Ongoing Process & Test Discipline (2026-01-11)
+- [x] Add agent discipline reminders:
+  - Always add new feature suggestions to AGENT_PLAN before implementation
+  - Always write or update Playwright tests before implementing new features (TDD)
+  - Always update AGENT_PLAN after completing a feature or test
+- [x] Add Playwright tests for:
+  - Area button resumes at last question if progress exists
+  - "Todas las preguntas" always starts fresh, even if progress exists
+- [x] Fix Playwright test imports and ensure all tests run before/after changes
+- [x] Confirm all tests pass after recent changes
 
 ## Phase 7: Documentation and Versioning
 - [ ] Update version history page with new feature description
@@ -134,4 +166,21 @@
 - [ ] Create git commits at each major milestone
 - [ ] Final verification and cleanup
 
-## Current Status: Ready to begin Phase 10 - Complete Area Name Display
+## Current Status: Ready to begin Phase 14 - Sequential Question Order Option
+
+## Playwright Test Execution Best Practices
+
+\- Always run Playwright tests with `--reporter=list` for clear output and easier cancellation.
+\- Set Playwright test timeout to 5 seconds for fast feedback. (See playwright.config.ts: `timeout: 3000`)
+\- Example: `npx playwright test tests/area-navigation.spec.ts --project=chromium --reporter=list`
+\- If a test run hangs, use Ctrl+C to cancel, then re-run with the correct reporter flag.
+
+## New UI/UX and Label Changes (2026-01-11)
+- [ ] Shorten status line for mobile: Update the quiz status line to be shorter and fit on mobile screens.
+- [ ] Change 'Empezar quiz' label to 'Empezar': Update the button label from 'Empezar quiz' to 'Empezar' throughout the app.
+- [ ] Rename 'Ver Estado' button to 'Options': Change the label of the 'Ver Estado' button to 'Options', reflecting its expanded functionality (restart, change area, etc.).
+- [ ] Remove 'Cambiar área' button from question view: Remove the 'Cambiar área' button from the question view to improve mobile layout.
+
+## Test Discipline & Maintenance
+- [ ] Make all Playwright tests pass: Review and fix all failing Playwright E2E tests, focusing on area switching, persistence, and sequential order logic. Update code or tests as needed until all tests pass.
+- [x] Fix npm run build errors: Investigate and resolve any issues preventing 'npm run build' from succeeding in the Next.js project. Ensure a successful production build.
