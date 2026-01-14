@@ -1,10 +1,15 @@
-# Lógica - Quiz
+# UNED Tests
 
-En el examen de la asignatura Lógica I de Filosofía de la UNED hay una parte de preguntas teóricas de tipo test. Hay una colección de preguntas y respuestas con sus explicaciones en [TEORÍA LÓGICA I.pdf](data/TEORÍA LÓGICA I.pdf). En este repositorio hay una transformación de esas preguntas en un test por línea de comandos y en una aplicación web
+Aplicación que muestra tests de asignaturas de Filosofía de la UNED en formato web.
 
+Se han incluido tests de:
+- Lógica I (2025). Verdadero-Falso.
+- Introducción al Pensamiento Científico (2025). Opción múltiple.
+- Filosofía del Lenguaje (2025). Opción múltiple.
+  
 ## Aplicación Web
 
-Se trata de una aplicación "vibe coded" usando [Next.js](https://nextjs.org) con  [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Se trata de una aplicación "vibe coded" que usa [Next.js](https://nextjs.org) con  [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 Los resultados se almacenan en el `LocalStorage` del navegador y se recuperan al iniciar la aplicación.
 
@@ -61,7 +66,7 @@ package.json, package-lock.json, tsconfig.json, README.md, etc.
 El archivo `.env` debe contener la siguiente variable para definir la ruta base de la aplicación (útil para despliegues en subcarpetas):
 
 ```bash
-NEXT_PUBLIC_BASE_PATH=/es/logica1
+NEXT_PUBLIC_BASE_PATH=/uned/tests
 ```
 
 - Cambia el valor según la subcarpeta donde se sirva la app.
@@ -71,23 +76,6 @@ NEXT_PUBLIC_BASE_PATH=/es/logica1
   ```bash
   NEXT_PUBLIC_BASE_PATH=
   ```
-
-## Test por línea de comandos
-
-Se trata de una aplicación Python.
-Se ejecuta con
-
-```bash
-python src/logic_quiz.py
-```
-
-Persiste las preguntas ya formuladas en `~/.logic_quiz_history.json`.
-
-## Procesamiento de las preguntas
-
-`src/extract_questions_to_processed.py` es un script Python que lee `data/TEORÍA LÓGICA I - preguntas.txt`, texto extraido del PDF, y junta las líneas que debe juntar en `data/TEORÍA LÓGICA I - preguntas.processed.txt`.
-
-`src/extract_questions_to_json.py` es un script Python que lee de `data/TEORÍA LÓGICA I - preguntas.processed.txt` y genera `public/questions.json`.
 
 ## After installing Playwright
 

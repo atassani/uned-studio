@@ -2,6 +2,8 @@ import Link from "next/link";
 
 const VERSION_HISTORY = [
   // This will be replaced with real git log output
+  { version: "1.3.1", date: "2026-01-14", description: "Añadido contenido de Filosofía del Lenguaje." },
+  { version: "1.3.0", date: "2026-01-12", description: "Permite preguntas en múltiples áreas, y tipo de test de múltiple opción, además del verdadero-falso. Añadido tests de Introducción a Pensamiento Científico." },
   { version: "1.2.1", date: "2026-01-03", description: "Muestra la versión, el histórico de versiones, y las respuestas funcionan con el teclado." },
   { version: "1.2.0", date: "2026-01-02", description: "Tres opciones de menú para selccionar secciones y preguntas, y preguntas nuevas." },
   { version: "1.1.0", date: "2025-12-26", description: "Posibilidad de continuar quiz y mejorada presentación del estado." },
@@ -10,7 +12,7 @@ const VERSION_HISTORY = [
 ];
 
 const AUTHOR = "Toni Tassani";
-const REPO_URL = "https://github.com/atassani/logica-quiz";
+const REPO_URL = "https://github.com/atassani/uned-tests";
 
 export default function VersionHistory() {
   return (

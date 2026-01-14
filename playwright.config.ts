@@ -74,4 +74,5 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
+  timeout: 3000, // Reduce default test timeout to 3 seconds for fast feedback
 });

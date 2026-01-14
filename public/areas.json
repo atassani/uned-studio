@@ -1,0 +1,20 @@
+[
+  {
+    "area": "Lógica I",
+    "file": "questions_logica1.json",
+    "type": "True False",
+    "shortName": "log1"
+  },
+  {
+    "area": "Introducción al Pensamiento Científico",
+    "file": "questions_ipc.json",
+    "type": "Multiple Choice",
+    "shortName": "ipc"
+  },
+  {
+    "area": "Filosofía del Lenguaje",
+    "file": "questions_fdl.json",
+    "type": "Multiple Choice",
+    "shortName": "fdl"
+  }
+]

@@ -2,7 +2,6 @@
 
 ## Action plan
 
-- [ ] Fix test timeouts for firefox and webkit in Playwright tests. Currently, some tests are failing due to timeouts in these browsers. Investigate and resolve the underlying issues to ensure cross-browser compatibility.
 - [ ] Create a small standalone script that validates that for multiple choice questions, the correct answer text is among the possible answers. This script can be run as part of a CI/CD pipeline to ensure question files are well formed before deployment. The files to check will be in areas.json.
 - [ ] Package the application with webpack or similar for production deployment.
 - [ ] Separate application from JSON data files for better organization and ease of maintenance.

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lógica 1 Quiz",
-  description: "Quiz para la asignatura Lógica I de la UNED - 2025",
+  title: "UNED Tests",
+  description: "Tests de asignaturas de la UNED",
 };
 
 export default function RootLayout({
