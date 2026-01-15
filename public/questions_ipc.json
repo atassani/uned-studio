@@ -8,7 +8,7 @@
       "Es objetivo porque no depende de que creamos o no que es verdad.",
       "Es objetivo porque lo acepta la mayoría de la comunidad científica."
     ],
-    "answer": "b",
+    "answer": "Es objetivo porque no depende de que creamos o no que es verdad.",
     "explanation": ""
   },
   {
@@ -20,7 +20,7 @@
       "La ciencia no ofrece una guía fiable para la acción, porque está influida por los intereses de las instituciones que financian la investigación científica.",
       "La ciencia ofrece una guía fiable para la acción, porque se apoya en evidencia sobre cómo es el mundo, y las creencias basadas en evidencia tienden a llevar al éxito práctico con más fiabilidad que las creencias que no se basan en evidencia."
     ],
-    "answer": "c",
+    "answer": "La ciencia ofrece una guía fiable para la acción, porque se apoya en evidencia sobre cómo es el mundo, y las creencias basadas en evidencia tienden a llevar al éxito práctico con más fiabilidad que las creencias que no se basan en evidencia.",
     "explanation": ""
   },
   {
@@ -32,7 +32,7 @@
       "Son argumentos que ofrecen evidencia incuestionable a favor de una tesis.",
       "Son argumentos a favor de una tesis que apelan exclusivamente al hecho de que una autoridad la ha defendido."
     ],
-    "answer": "c",
+    "answer": "Son argumentos a favor de una tesis que apelan exclusivamente al hecho de que una autoridad la ha defendido.",
     "explanation": ""
   },
   {
@@ -44,7 +44,7 @@
       "Una distorsión sistemática en la evaluación e interpretación de la evidencia disponible.",
       "Un método sistemático para evaluar la evidencia disponible."
     ],
-    "answer": "b",
+    "answer": "Una distorsión sistemática en la evaluación e interpretación de la evidencia disponible.",
     "explanation": ""
   },
   {
@@ -56,7 +56,7 @@
       "Es evidente y no admite discusión.",
       "El que sea verdad no depende de nuestras opiniones al respecto."
     ],
-    "answer": "c",
+    "answer": "El que sea verdad no depende de nuestras opiniones al respecto.",
     "explanation": ""
   },
   {
@@ -68,7 +68,7 @@
       "La principal fuente de evidencia científica es la experiencia observacional.",
       "La principal fuente de evidencia científica es la intuición."
     ],
-    "answer": "b",
+    "answer": "La principal fuente de evidencia científica es la experiencia observacional.",
     "explanation": ""
   },
   {
@@ -80,7 +80,7 @@
       "Ofrece información falible, pero generalmente fiable, acerca de cómo es el mundo.",
       "Es infalible."
     ],
-    "answer": "b",
+    "answer": "Ofrece información falible, pero generalmente fiable, acerca de cómo es el mundo.",
     "explanation": ""
   },
   {
@@ -92,7 +92,7 @@
       "Tiene un papel secundario en la investigación, aunque puede ser importante en el proceso de formación y educación de científicos inexpertos.",
       "Tiene un papel esencial en la investigación, ya que permite descubrir posibles errores y garantiza que la evidencia observacional resultante sea utilizable por distintos investigadores."
     ],
-    "answer": "c",
+    "answer": "Tiene un papel esencial en la investigación, ya que permite descubrir posibles errores y garantiza que la evidencia observacional resultante sea utilizable por distintos investigadores.",
     "explanation": ""
   },
   {
@@ -104,7 +104,7 @@
       "Introduce inevitablemente errores e incrementa la imprecisión de la observación.",
       "Permite superar limitaciones de nuestras capacidades perceptivas."
     ],
-    "answer": "c",
+    "answer": "Permite superar limitaciones de nuestras capacidades perceptivas.",
     "explanation": ""
   },
   {
@@ -116,7 +116,7 @@
       "Solo es admisible si puede ser obtenida por observación directa.",
       "No es objetiva si involucra el uso de instrumentos."
     ],
-    "answer": "a",
+    "answer": "Con frecuencia se obtiene mediante el uso de instrumentos de observación.",
     "explanation": ""
   },
   {
@@ -128,7 +128,7 @@
       "Un experimento consiste en la manipulación de un objeto de estudio para observar los efectos resultantes de dicha manipulación.",
       "Un experimento es una observación cuyo resultado no se conoce de antemano."
     ],
-    "answer": "b",
+    "answer": "Un experimento consiste en la manipulación de un objeto de estudio para observar los efectos resultantes de dicha manipulación.",
     "explanation": ""
   },
   {
@@ -140,7 +140,7 @@
       "Un experimento realizado en el laboratorio con suficientes condiciones de seguridad, eliminando de este modo posibles riegos para los experimentadores.",
       "Un experimento en el que se examinan los efectos de manipular una variable del sistema estudiado, evitando posibles interferencias debidas a variaciones en otras variables del sistema."
     ],
-    "answer": "c",
+    "answer": "Un experimento en el que se examinan los efectos de manipular una variable del sistema estudiado, evitando posibles interferencias debidas a variaciones en otras variables del sistema.",
     "explanation": ""
   },
   {
@@ -152,7 +152,7 @@
       "Nunca podrá concluirse con suficiente seguridad que el mayor crecimiento se debe al fertilizante.",
       "Puede concluirse directamente que el fertilizante es la causa del mayor crecimiento de las plantas."
     ],
-    "answer": "a",
+    "answer": "Para averiguar si la causa del mayor crecimiento es el fertilizante, hay que hacer una comparación con el crecimiento de plantas idénticas a las que no se ha suministrado fertilizante, manteniendo constante la iluminación, el tipo de suelo, la temperatura y el riego.",
     "explanation": ""
   },
   {
@@ -164,7 +164,7 @@
       "Semmelweis realizó experimentos para descubrir la bacteria causante de las infecciones en la clínica de maternidad de Viena.",
       "Semmelweis observó que la tasa de infecciones en la clínica atendida por matronas era sistemáticamente más alta que en la atendida por médicos y estudiantes, debido a su falta de formación quirúrgica."
     ],
-    "answer": "a",
+    "answer": "Semmelweis estudió si lavarse las manos con desinfectante después de realizar autopsias tenía efecto sobre la tasa de infecciones en la maternidad de Viena.",
     "explanation": ""
   },
   {
@@ -176,7 +176,7 @@
       "En la actualidad, toda la ciencia empírica es experimental.",
       "Existen disciplinas científicas de carácter empírico en las que el papel de los experimentos es limitado, y en las que la evidencia empírica se obtiene fundamentalmente a través de observaciones no experimentales."
     ],
-    "answer": "c",
+    "answer": "Existen disciplinas científicas de carácter empírico en las que el papel de los experimentos es limitado, y en las que la evidencia empírica se obtiene fundamentalmente a través de observaciones no experimentales.",
     "explanation": ""
   },
   {
@@ -188,7 +188,7 @@
       "Proponer p como una hipótesis implica considerar p es una posibilidad abierta (las hipótesis son conjeturas).",
       "Proponer p como una hipótesis implica creer que p es verdad."
     ],
-    "answer": "b",
+    "answer": "Proponer p como una hipótesis implica considerar p es una posibilidad abierta (las hipótesis son conjeturas).",
     "explanation": ""
   },
   {
@@ -200,7 +200,7 @@
       "Para que una hipótesis sea falsable empíricamente debe haber evidencia empírica disponible que muestre su falsedad.",
       "Para que una hipótesis sea falsable empíricamente debe existir la posibilidad de que surja evidencia empírica que la refute."
     ],
-    "answer": "c",
+    "answer": "Para que una hipótesis sea falsable empíricamente debe existir la posibilidad de que surja evidencia empírica que la refute.",
     "explanation": ""
   },
   {
@@ -212,7 +212,7 @@
       "Una hipótesis quedará refutada empíricamente si alguna de sus predicciones resulta ser incompatible con la evidencia empírica disponible.",
       "Una hipótesis quedará refutada empíricamente si la evidencia disponible compatible tanto con la falsedad como con la verdad de la hipótesis."
     ],
-    "answer": "b",
+    "answer": "Una hipótesis quedará refutada empíricamente si alguna de sus predicciones resulta ser incompatible con la evidencia empírica disponible.",
     "explanation": ""
   },
   {
@@ -224,7 +224,7 @@
       "Una hipótesis compatible con la evidencia disponible será siempre verdadera, y por tanto no podrá aparecer nueva evidencia que la refute.",
       "En general, una hipótesis aceptada actualmente por la comunidad científica, y compatible con la evidencia ahora disponible, no será rechazada en el futuro."
     ],
-    "answer": "a",
+    "answer": "Es frecuente que la aparición de nueva evidencia empírica lleve a rechazar hipótesis científicas que estaban ampliamente aceptadas y que se ajustaban a la evidencia disponible hasta el momento.",
     "explanation": ""
   },
   {
@@ -236,7 +236,7 @@
       "Ha de ser claro, preciso e inteligible.",
       "Ha de recurrir a dobles sentidos, significados ambiguos e indeterminaciones."
     ],
-    "answer": "b",
+    "answer": "Ha de ser claro, preciso e inteligible.",
     "explanation": ""
   },
   {
@@ -248,7 +248,7 @@
       "Necesariamente, si las premisas son falsas, las conclusiones serán falsas.",
       "Necesariamente, si las premisas son verdaderas, las conclusiones serán también verdaderas."
     ],
-    "answer": "c",
+    "answer": "Necesariamente, si las premisas son verdaderas, las conclusiones serán también verdaderas.",
     "explanation": ""
   },
   {
@@ -260,7 +260,7 @@
       "Se parte de premisas generales para llegar a conclusiones sobre casos particulares.",
       "Se parte de premisas acerca de casos particulares para llegar a conclusiones generales que van más allá de tales casos particulares."
     ],
-    "answer": "c",
+    "answer": "Se parte de premisas acerca de casos particulares para llegar a conclusiones generales que van más allá de tales casos particulares.",
     "explanation": ""
   },
   {
@@ -272,7 +272,7 @@
       "Incluso si una inferencia inductiva está apoyada por un gran número de observaciones, en principio siempre es posible que aparezcan excepciones inesperadas.",
       "Siempre que una generalización inductiva esté apoyada por un número elevado de observaciones, estará garantizado que tal generalización se cumplirá en todo caso."
     ],
-    "answer": "b",
+    "answer": "Incluso si una inferencia inductiva está apoyada por un gran número de observaciones, en principio siempre es posible que aparezcan excepciones inesperadas.",
     "explanation": ""
   },
   {
@@ -284,7 +284,7 @@
       "La observación de un solo contraejemplo es suficiente para confirmar de manera definitiva una generalización empírica.",
       "Por muy alto que sea el número de observaciones acordes con una generalización empírica, nunca sería suficiente para considerarla confirmada de manera definitiva (ya que siempre existe la posibilidad de encontrar un contraejemplo)."
     ],
-    "answer": "c",
+    "answer": "Por muy alto que sea el número de observaciones acordes con una generalización empírica, nunca sería suficiente para considerarla confirmada de manera definitiva (ya que siempre existe la posibilidad de encontrar un contraejemplo).",
     "explanation": ""
   },
   {
@@ -296,7 +296,7 @@
       "Nunca podremos saber con certeza si las premisas de un razonamiento inductivo son verdaderas.",
       "Un razonamiento inductivo correcto requiere realizar un gran número de observaciones, lo cual no es siempre fácil."
     ],
-    "answer": "a",
+    "answer": "En principio, es una posibilidad abierta que las premisas de una inferencia inductiva sean verdaderas pero la generalización alcanzada en la conclusión sea falsa (porque haya excepciones todavía no observadas a tal generalización).",
     "explanation": ""
   },
   {
@@ -308,7 +308,7 @@
       "La probabilidad asignada a un evento refleja la incertidumbre acerca de si dicho evento ocurrirá.",
       "Solo puede tomarse como probable un evento si se sabe con certeza que sucederá."
     ],
-    "answer": "b",
+    "answer": "La probabilidad asignada a un evento refleja la incertidumbre acerca de si dicho evento ocurrirá.",
     "explanation": ""
   },
   {
@@ -320,7 +320,7 @@
       "Las conclusiones finales alcanzadas mediante análisis estadísticos.",
       "El conjunto de casos de una población sobre los que se tiene datos, y a partir del cual se realizan inferencias estadísticas acerca de la población en su totalidad."
     ],
-    "answer": "c",
+    "answer": "El conjunto de casos de una población sobre los que se tiene datos, y a partir del cual se realizan inferencias estadísticas acerca de la población en su totalidad.",
     "explanation": ""
   },
   {
@@ -332,7 +332,7 @@
       "Si tiene aplicaciones prácticas relevantes.",
       "Si es suficientemente improbable que dicho resultado sea debido al azar (e.g. una correlación fruto de una coincidencia casual en los casos observados), en lugar de reflejar una propiedad genuina de la población estudiada."
     ],
-    "answer": "c",
+    "answer": "Si es suficientemente improbable que dicho resultado sea debido al azar (e.g. una correlación fruto de una coincidencia casual en los casos observados), en lugar de reflejar una propiedad genuina de la población estudiada.",
     "explanation": ""
   },
   {
@@ -344,7 +344,7 @@
       "Correlación no implica causación (aunque puede constituir evidencia de la existencia de relaciones causales entre las variables correlacionadas)",
       "Correlación implica causación: para que dos variables estén correlacionadas estadísticamente, debe existir alguna relación causal entre ellas."
     ],
-    "answer": "b",
+    "answer": "Correlación no implica causación (aunque puede constituir evidencia de la existencia de relaciones causales entre las variables correlacionadas)",
     "explanation": ""
   },
   {
@@ -356,7 +356,7 @@
       "Escoger muestras que apoyen resultados que concuerden con las expectativas previas de los investigadores.",
       "Escoger muestras reducidas, centrándonos en un sector específico de la población."
     ],
-    "answer": "a",
+    "answer": "Utilizar una muestra amplia y escogida de manera aleatoria entre toda la población.",
     "explanation": ""
   },
   {
@@ -368,7 +368,7 @@
       "Ciencias biológicas y sociales",
       "En todas ellas"
     ],
-    "answer": "a",
+    "answer": "Física y química",
     "explanation": ""
   },
   {
@@ -380,7 +380,7 @@
       "Solo en las ciencias “blandas”",
       "En todas ellas"
     ],
-    "answer": "c",
+    "answer": "En todas ellas",
     "explanation": ""
   },
   {
@@ -392,7 +392,7 @@
       "Idealizaciones que sirven para aproximarse a las realidades abordadas",
       "Guías de actuación para los científicos"
     ],
-    "answer": "b",
+    "answer": "Idealizaciones que sirven para aproximarse a las realidades abordadas",
     "explanation": ""
   },
   {
@@ -404,7 +404,7 @@
       "Cuando son solamente modelos matemáticos o conceptuales",
       "Cuando no es posible abordar los fenómenos de ninguna otra manera"
     ],
-    "answer": "a",
+    "answer": "Cuando están bien planteados",
     "explanation": ""
   },
   {
@@ -416,7 +416,7 @@
       "Si refleja fielmente la realidad",
       "Si sirve para ofrecer conocimiento útil acerca de la realidad"
     ],
-    "answer": "c",
+    "answer": "Si sirve para ofrecer conocimiento útil acerca de la realidad",
     "explanation": ""
   },
   {
@@ -428,7 +428,7 @@
       "Fijarnos en la historia de la ciencia",
       "Hacer ciencia"
     ],
-    "answer": "b",
+    "answer": "Fijarnos en la historia de la ciencia",
     "explanation": ""
   },
   {
@@ -440,7 +440,7 @@
       "La ciencia que no supone ninguna aportación relevante",
       "La ciencia que se hace siguiendo los criterios aceptados de rigurosidad y eficacia"
     ],
-    "answer": "a",
+    "answer": "La ciencia que se hace en el marco de un paradigma",
     "explanation": ""
   },
   {
@@ -452,7 +452,7 @@
       "Se da siempre una revolución científica",
       "Se entiende comúnmente que son anomalías que no ponen en riesgo al paradigma"
     ],
-    "answer": "c",
+    "answer": "Se entiende comúnmente que son anomalías que no ponen en riesgo al paradigma",
     "explanation": ""
   },
   {
@@ -464,7 +464,7 @@
       "De forma revolucionaria",
       "No existe realmente el cambio científico"
     ],
-    "answer": "b",
+    "answer": "De forma revolucionaria",
     "explanation": ""
   },
   {
@@ -476,7 +476,7 @@
       "Cuando el paradigma antiguo se agota y no resulta ya productivo",
       "Cuando la mayoría de los miembros de la comunidad científica decide asumir un nuevo paradigma, independientemente de los motivos por los que lo haga"
     ],
-    "answer": "c",
+    "answer": "Cuando la mayoría de los miembros de la comunidad científica decide asumir un nuevo paradigma, independientemente de los motivos por los que lo haga",
     "explanation": ""
   },
   {
@@ -488,7 +488,7 @@
       "Comprender adecuadamente las implicaciones filosóficas de la ciencia",
       "La búsqueda de criterios para distinguir lo científico de lo no científico"
     ],
-    "answer": "c",
+    "answer": "La búsqueda de criterios para distinguir lo científico de lo no científico",
     "explanation": ""
   },
   {
@@ -500,7 +500,7 @@
       "El conocimiento es siempre verdadero",
       "El conocimiento debe poder expresarse siempre de forma matemática"
     ],
-    "answer": "a",
+    "answer": "El conocimiento debe ser corroborado por la experiencia",
     "explanation": ""
   },
   {
@@ -512,7 +512,7 @@
       "Si vamos a estarlo en algún momento, aunque sea muy lejano",
       "Si estamos equivocados"
     ],
-    "answer": "c",
+    "answer": "Si estamos equivocados",
     "explanation": ""
   },
   {
@@ -524,7 +524,7 @@
       "No existe realmente ningún enunciado ni ninguna teoría que pueda ser considerada como científica, pues todo está determinado socialmente",
       "Decidir si algo es científico o no es una cuestión personal, pues dependerá de los criterios individuales e inconmensurables de cada uno de los científicos particulares"
     ],
-    "answer": "a",
+    "answer": "El criterio de demarcación será algo que dependa de los valores y de los aspectos contextuales que determinan el paradigma científico dominante",
     "explanation": ""
   },
   {
@@ -536,7 +536,7 @@
       "Solamente por cuestiones prácticas",
       "Tanto por cuestiones teóricas como prácticas"
     ],
-    "answer": "c",
+    "answer": "Tanto por cuestiones teóricas como prácticas",
     "explanation": ""
   },
   {
@@ -548,7 +548,7 @@
       "Hacen referencia a ámbitos distintos que no tienen por qué ser irreconciliables",
       "Son siempre igual de válidos científicamente"
     ],
-    "answer": "a",
+    "answer": "Están necesariamente enfrentados",
     "explanation": ""
   },
   {
@@ -560,7 +560,7 @@
       "Es una corriente dentro de la biología que convive con el evolucionismo",
       "Es una confesión religiosa con gran auge en los Estados Unidos"
     ],
-    "answer": "a",
+    "answer": "Es la creencia en que el universo ha sido creado conscientemente",
     "explanation": ""
   },
   {
@@ -572,7 +572,7 @@
       "El creacionismo ha sido desterrado completamente de la cultura occidental",
       "Solamente se declaran creacionistas algunos grupos de confesión cristiana, en su mayoría protestantes"
     ],
-    "answer": "a",
+    "answer": "El creacionismo está generalmente vinculado a creencias religiosas",
     "explanation": ""
   },
   {
@@ -584,7 +584,7 @@
       "Son la misma cosa",
       "La teoría del diseño inteligente es contraria al creacionismo"
     ],
-    "answer": "a",
+    "answer": "La teoría del diseño inteligente asume el creacionismo",
     "explanation": ""
   },
   {
@@ -596,7 +596,7 @@
       "Cuando son aceptados por un gran número de personas",
       "Cuando son pseudocientíficos o anticientíficos"
     ],
-    "answer": "c",
+    "answer": "Cuando son pseudocientíficos o anticientíficos",
     "explanation": ""
   },
   {
@@ -608,7 +608,7 @@
       "Ciencia mal planteada y que no ofrece buenos resultados",
       "El tipo de conocimiento que no muestra las garantías suficientes para ser considerado científico"
     ],
-    "answer": "a",
+    "answer": "No-ciencia haciéndose pasar por ciencia",
     "explanation": ""
   },
   {
@@ -620,7 +620,7 @@
       "Por desconfianza hacia la ciencia",
       "Para aprovechar el crédito social de la ciencia"
     ],
-    "answer": "c",
+    "answer": "Para aprovechar el crédito social de la ciencia",
     "explanation": ""
   },
   {
@@ -632,7 +632,7 @@
       "Consisten en terapias alternativas que tratan solamente aquellas afecciones que la medicina tradicional no aborda",
       "No pueden ser consideradas como medicinas, según un criterio científico, porque no han demostrado su seguridad y su efectividad"
     ],
-    "answer": "c",
+    "answer": "No pueden ser consideradas como medicinas, según un criterio científico, porque no han demostrado su seguridad y su efectividad",
     "explanation": ""
   },
   {
@@ -644,7 +644,7 @@
       "Otro nombre para referirse a todas las terapias alternativas",
       "Una forma concreta de hacer medicina que se basa en concepciones y creencias acerca de la salud y la enfermedad con miles de años de antigüedad"
     ],
-    "answer": "a",
+    "answer": "Una pseudomedicina que se basa en principios que carecen de fundamentación científica",
     "explanation": ""
   },
   {
@@ -656,7 +656,7 @@
       "La homeopatía es científica solamente desde la perspectiva del verificacionismo",
       "La homeopatía no cumple con ninguno de los criterios de demarcación aceptados (verificacionismo, falsacionismo y correspondencia con el paradigma)"
     ],
-    "answer": "c",
+    "answer": "La homeopatía no cumple con ninguno de los criterios de demarcación aceptados (verificacionismo, falsacionismo y correspondencia con el paradigma)",
     "explanation": ""
   },
   {
@@ -668,7 +668,7 @@
       "Sostiene que la ciencia no tiene ningún impacto en la sociedad",
       "Es un discurso basado en la desconfianza hacia la ciencia"
     ],
-    "answer": "c",
+    "answer": "Es un discurso basado en la desconfianza hacia la ciencia",
     "explanation": ""
   },
   {
@@ -680,7 +680,7 @@
       "El marxismo",
       "El movimiento anti-vacunas"
     ],
-    "answer": "c",
+    "answer": "El movimiento anti-vacunas",
     "explanation": ""
   },
   {
@@ -692,7 +692,7 @@
       "No importa cuál sea el criterio de demarcación científico porque la ciencia como tal es una actividad que se debe eliminar (o al menos reconsiderar profundamente)",
       "Los científicos no son capaces de juzgar su propia actividad"
     ],
-    "answer": "b",
+    "answer": "No importa cuál sea el criterio de demarcación científico porque la ciencia como tal es una actividad que se debe eliminar (o al menos reconsiderar profundamente)",
     "explanation": ""
   },
   {
@@ -704,7 +704,7 @@
       "Un presupuesto ya desechado de la astronomía antigua que nadie sostiene desde hace al menos tres siglos",
       "Una teoría científica"
     ],
-    "answer": "a",
+    "answer": "Una corriente de pensamiento actual que sostiene que la Tierra es plana y que la imagen científica de la Tierra esférica es un elaborado engaño",
     "explanation": ""
   },
   {
@@ -716,7 +716,7 @@
       "La anti-ciencia puede confundirse muchas veces con ciencia y confundir a los expertos",
       "Puede fomentar la desconfianza hacia la ciencia promoviendo discursos con peligrosas implicaciones como el de los negacionistas del cambio climático o los anti-vacunas."
     ],
-    "answer": "c",
+    "answer": "Puede fomentar la desconfianza hacia la ciencia promoviendo discursos con peligrosas implicaciones como el de los negacionistas del cambio climático o los anti-vacunas.",
     "explanation": ""
   },
   {
@@ -728,7 +728,7 @@
       "En Reino Unido y Estados Unidos en las décadas de los 60 y 70 del siglo XX",
       "En la Grecia Clásica con el nacimiento de la ciencia"
     ],
-    "answer": "b",
+    "answer": "En Reino Unido y Estados Unidos en las décadas de los 60 y 70 del siglo XX",
     "explanation": ""
   },
   {
@@ -740,7 +740,7 @@
       "Es una rama muy concreta de la ciencia que se dedica a investigar, diseñar y producir artefactos técnicos",
       "Es una corriente concreta de los estudios sociales de la ciencia especialmente interesada en los desarrollos tecnológicos de la ciencia"
     ],
-    "answer": "a",
+    "answer": "Es una forma de hacer ciencia que surge en el contexto de la Segunda Guerra Mundial y que difumina las fronteras entre ciencia y tecnología",
     "explanation": ""
   },
   {
@@ -752,7 +752,7 @@
       "Exactitud, Coherencia, Exhaustividad, Elegancia",
       "Causalidad, Imparcialidad, Simetría, Reflexividad"
     ],
-    "answer": "c",
+    "answer": "Causalidad, Imparcialidad, Simetría, Reflexividad",
     "explanation": ""
   },
   {
@@ -764,7 +764,7 @@
       "La ciencia no tiene una posición privilegiada frente a otros fenómenos como la magia o la mitología",
       "No es posible de ninguna manera explicar el funcionamiento de la ciencia"
     ],
-    "answer": "b",
+    "answer": "La ciencia no tiene una posición privilegiada frente a otros fenómenos como la magia o la mitología",
     "explanation": ""
   },
   {
@@ -776,7 +776,7 @@
       "La ciencia está determinada por el androcentrismo de la sociedad",
       "La ciencia no es un conocimiento válido porque, dada su naturaleza como producto de una sociedad androcéntrica, solo puede ser ejercida por hombres"
     ],
-    "answer": "b",
+    "answer": "La ciencia está determinada por el androcentrismo de la sociedad",
     "explanation": ""
   },
   {
@@ -788,7 +788,7 @@
       "La exigencia de que un artículo científico esté firmado por al menos dos autores.",
       "El compromiso adquirido por los autores de un artículo científico de no publicar evidencia manipulada o ideas plagiadas a otros investigadores."
     ],
-    "answer": "a",
+    "answer": "El proceso editorial mediante el cual los artículos científicos enviados a una revista son revisados por otros investigadores antes de ser publicados.",
     "explanation": ""
   },
   {
@@ -800,7 +800,7 @@
       "Cuando un científico está motivado por intereses prácticos, los resultados de su investigación son fraudulentos.",
       "Incluyen motivaciones prácticas, como la búsqueda de reconocimiento y la obtención de premios y financiación."
     ],
-    "answer": "c",
+    "answer": "Incluyen motivaciones prácticas, como la búsqueda de reconocimiento y la obtención de premios y financiación.",
     "explanation": ""
   },
   {
@@ -812,7 +812,7 @@
       "Son estudios experimentales en los que se investiga la efectividad y seguridad de un medicamento o tratamiento.",
       "Están prohibidos en la mayoría de los países debido a que involucran experimentación con humanos."
     ],
-    "answer": "b",
+    "answer": "Son estudios experimentales en los que se investiga la efectividad y seguridad de un medicamento o tratamiento.",
     "explanation": ""
   },
   {
@@ -824,7 +824,7 @@
       "Un estudio en el que se presenta un experimento que refuta una hipótesis teórica relevante.",
       "Un estudio en el que se busca reproducir los resultados obtenidos en un experimento previo."
     ],
-    "answer": "c",
+    "answer": "Un estudio en el que se busca reproducir los resultados obtenidos en un experimento previo.",
     "explanation": ""
   },
   {
@@ -836,7 +836,7 @@
       "Son una de las principales formas de reconocimiento del trabajo de un investigador.",
       "Son una parte secundaria de la actividad de los científicos, ya que no tienen demasiado peso en su currículum."
     ],
-    "answer": "b",
+    "answer": "Son una de las principales formas de reconocimiento del trabajo de un investigador.",
     "explanation": ""
   },
   {
@@ -848,7 +848,7 @@
       "En la actualidad, toda la ciencia empírica es experimental, debido al desarrollo tecnológico alcanzado (aunque en el pasado también se recurría a observaciones no experimentales).",
       "La única ciencia no experimental son las matemáticas."
     ],
-    "answer": "a",
+    "answer": "Existen disciplinas científicas de carácter empírico en las que el papel de los experimentos es limitado, y en las que la evidencia empírica se obtiene fundamentalmente a través de observaciones no experimentales.",
     "explanation": "No toda ciencia empírica es experimental: en varias disciplinas la evidencia proviene sobre todo de observaciones no experimentales."
   },
   {
@@ -860,7 +860,7 @@
       "No, porque solo servirá a sumar confusión",
       "Sí, porque todos los modelos son, por definición, válidos para la ciencia"
     ],
-    "answer": "a",
+    "answer": "Sí, si da lugar a resultados interesantes y pertinentes",
     "explanation": "Un modelo puede idealizar y ser literalmente falso en detalles y aun así ser válido si permite explicar/predicir y guiar inferencias útiles en su dominio, como por ejemplo el de Lotka-Volterra para predicción de poblaciones. Examen 2024 Febrero 2"
   },
   {
@@ -872,7 +872,7 @@
       "La conclusión nunca puede ser estrictamente verdadera, ya que siempre es posible que aparezcan excepciones inesperadas.",
       "La conclusión puede ser verdadera, pero las premisas no garantizarán que lo sea necesariamente."
     ],
-    "answer": "c",
+    "answer": "La conclusión puede ser verdadera, pero las premisas no garantizarán que lo sea necesariamente.",
     "explanation": "En la inducción, aunque las premisas sean verdaderas, no garantizan necesariamente la verdad de la conclusión; por eso la conclusión puede fallar. Tema 5. El problema de la inducción; Examen 2023 Febrero 2; Examen 2025 Febrero 2"
   },
   {
@@ -884,7 +884,7 @@
       "Una hipótesis general universal queda refutada solo si no se cumple en ningún caso observado.",
       "Para que una hipótesis general universal quede refutada, ha de cumplirse en todo caso observado."
     ],
-    "answer": "a",
+    "answer": "Una hipótesis general universal queda refutada por la observación de un solo contraejemplo.",
     "explanation": "Las hipótesis universales se refutan con un solo contraejemplo observado (un caso que viola la generalización)."
   },
   {
@@ -896,7 +896,7 @@
       "Para que una hipótesis sea falsable empíricamente debe estar apoyada por la evidencia empírica disponible.",
       "Para que una hipótesis sea falsable empíricamente debe existir la posibilidad de que surja evidencia empírica que la refute."
     ],
-    "answer": "c",
+    "answer": "Para que una hipótesis sea falsable empíricamente debe existir la posibilidad de que surja evidencia empírica que la refute.",
     "explanation": "Ser falsable significa que podría existir (en principio) evidencia empírica que la contradiga; debe prohibir observaciones posibles. Tema 4. El método científico"
   },
   {
@@ -908,7 +908,7 @@
       "Es frecuentemente tácito",
       "Es necesariamente verdadero"
     ],
-    "answer": "b",
+    "answer": "Es frecuentemente tácito",
     "explanation": "Para Kuhn, gran parte del aprendizaje en ciencia normal es tácito: se adquiere con ejemplos, práctica y entrenamiento, no solo con reglas explícitas."
   },
   {
@@ -920,7 +920,7 @@
       "Elimina la posibilidad de error en la observación.",
       "Imposibilita la reproducción de las observaciones científicas."
     ],
-    "answer": "a",
+    "answer": "Permite comparar con precisión observaciones realizadas por distintos observadores.",
     "explanation": "Cuantificar permite comparar observaciones entre distintos observadores y contextos, mejorando control intersubjetivo y precisión."
   },
   {
@@ -932,7 +932,7 @@
       "Son el tipo de estudio más frecuente en las publicaciones científicas, ya que requieren menos recursos que la obtención de resultados positivos.",
       "Son esenciales para comprobar la fiabilidad de los resultados científicos."
     ],
-    "answer": "c",
+    "answer": "Son esenciales para comprobar la fiabilidad de los resultados científicos.",
     "explanation": "La replicación y los resultados negativos son claves para comprobar la fiabilidad y detectar errores o sesgos en hallazgos previos."
   },
   {
@@ -944,7 +944,7 @@
       "El nuevo paradigma quedará verificado por la evidencia de manera más completa que el anterior.",
       "El nuevo paradigma será compatible con toda la evidencia disponible, mientras que el antiguo habrá quedado falsado por una anomalía."
     ],
-    "answer": "a",
+    "answer": "El cambio de paradigma no siempre se debe exclusivamente a un mejor apoyo evidencial.",
     "explanation": "Para Kuhn el reemplazo de paradigmas no depende solo de 'mejor evidencia': influyen también valores, estándares y dinámicas de comunidad científica. Examen 2023 Febrero 2; Examen 2025 Febrero 1"
   },
   {
@@ -956,7 +956,7 @@
       "Un resultado inexacto o incorrecto, pero suficientemente cercano a la respuesta correcta.",
       "Un resultado impreciso expresado probabilísticamente, de forma que se refleje adecuadamente la incertidumbre del investigador."
     ],
-    "answer": "b",
+    "answer": "Un resultado inexacto o incorrecto, pero suficientemente cercano a la respuesta correcta.",
     "explanation": "Una aproximación es un resultado inexacto pero suficientemente cercano al valor correcto para los fines prácticos o teóricos del investigador."
   },
   {
@@ -968,7 +968,7 @@
       "Es una hipótesis que ha quedado refutada empíricamente.",
       "Puede ser una hipótesis verdadera."
     ],
-    "answer": "c",
+    "answer": "Puede ser una hipótesis verdadera.",
     "explanation": "Que aún no tengamos evidencia no implica falsedad; puede ser una hipótesis verdadera pendiente de contrastación."
   },
   {
@@ -980,7 +980,7 @@
       "Un método sistemático para evaluar la evidencia disponible.",
       "Una creencia falsa pero con utilidad práctica."
     ],
-    "answer": "a",
+    "answer": "Una distorsión sistemática en la evaluación e interpretación de la evidencia disponible.",
     "explanation": "Un sesgo cognitivo es una distorsión sistemática en cómo evaluamos e interpretamos evidencia, que puede afectar a juicios y decisiones. Tema 1. Ciencia, hechos y evidencia; Examen 2022 Febrero 1"
   },
   {
@@ -992,7 +992,7 @@
       "Tiene un papel esencial en la investigación, ya que permite descubrir posibles errores y garantiza que la evidencia observacional resultante sea utilizable por distintos investigadores.",
       "Tiene un papel secundario en la investigación, aunque puede ser importante en el proceso de formación y educación de científicos inexpertos."
     ],
-    "answer": "b",
+    "answer": "Tiene un papel esencial en la investigación, ya que permite descubrir posibles errores y garantiza que la evidencia observacional resultante sea utilizable por distintos investigadores.",
     "explanation": "Repetición y replicación permiten detectar errores y asegurar que la evidencia es utilizable intersubjetivamente por distintos investigadores. Tema 2. Conocimiento empírico y observación; Examen 2022 Septiembre"
   },
   {
@@ -1004,7 +1004,7 @@
       "Es imprecisa, pero puede ser correcta.",
       "No es informativa, ya que no elimina por completo la incertidumbre."
     ],
-    "answer": "b",
+    "answer": "Es imprecisa, pero puede ser correcta.",
     "explanation": "Una medida puede ser imprecisa (rango) y aun así correcta si el valor real está dentro de ese rango. Examen 2022 Febrero 1; Examen 2024 Febrero 1"
   },
   {
@@ -1016,7 +1016,7 @@
       "Las consecuencias que se seguirán de la verdad de la hipótesis.",
       "Aquellas proposiciones incompatibles con la verdad de la hipótesis."
     ],
-    "answer": "b",
+    "answer": "Las consecuencias que se seguirán de la verdad de la hipótesis.",
     "explanation": "Son consecuencias observacionales/empíricas que se seguirían si la hipótesis fuese verdadera. Examen 2022 Febrero 1; Examen 2024 Febrero 1; Examen 2025 Febrero 2"
   },
   {
@@ -1028,7 +1028,7 @@
       "Necesariamente, si las premisas son falsas, las conclusiones serán falsas.",
       "Puede que las premisas sean verdaderas y las conclusiones falsas."
     ],
-    "answer": "c",
+    "answer": "Puede que las premisas sean verdaderas y las conclusiones falsas.",
     "explanation": "Un argumento deductivo inválido admite contraejemplos: es posible que las premisas sean verdaderas y la conclusión falsa. Examen 2022 Septiembre; Examen 2023 Febrero 1; Examen 2024 Febrero 2; Examen 2025 Febrero 2"
   },
   {
@@ -1040,7 +1040,7 @@
       "La función principal de la observación en la ciencia es confirmar hipótesis, no refutarlas.",
       "La observación de un número suficiente de casos que cumplan una generalización permite concluir que tal generalización está confirmada."
     ],
-    "answer": "a",
+    "answer": "La función principal de la observación en la ciencia es refutar hipótesis, no confirmarlas.",
     "explanation": "Para Popper el papel clave de la observación es intentar refutar hipótesis mediante contrastaciones severas; no hay verificación definitiva. Examen 2022 Febrero 2; Examen 2023 Septiembre"
   },
   {
@@ -1052,7 +1052,7 @@
       "Incluyen motivaciones prácticas, como la búsqueda de reconocimiento y la obtención de premios y financiación.",
       "Cuando un científico está motivado por intereses prácticos, los resultados de su investigación son fraudulentos."
     ],
-    "answer": "b",
+    "answer": "Incluyen motivaciones prácticas, como la búsqueda de reconocimiento y la obtención de premios y financiación.",
     "explanation": "Además de motivos epistémicos, hay incentivos prácticos (carrera, financiación, reconocimiento) que influyen en la actividad científica. Tema 12. ¿Cómo funcionan las instituciones científicas?; Examen 2024 Septiembre"
   },
   {
@@ -1064,7 +1064,7 @@
       "El cambio de paradigma no siempre se debe exclusivamente a un mejor apoyo evidencial.",
       "El nuevo paradigma será compatible con toda la evidencia disponible, mientras que el antiguo habrá quedado falsado por una anomalía."
     ],
-    "answer": "b",
+    "answer": "El cambio de paradigma no siempre se debe exclusivamente a un mejor apoyo evidencial.",
     "explanation": "Para Kuhn el reemplazo de paradigmas no depende solo de 'mejor evidencia': influyen también valores, estándares y dinámicas de comunidad científica. Examen 2023 Febrero 2; Examen 2025 Septiembre"
   },
   {
@@ -1076,7 +1076,7 @@
       "Son representaciones fieles de la realidad.",
       "Son hipótesis científicas que no han sido refutadas por la evidencia."
     ],
-    "answer": "a",
+    "answer": "Son idealizaciones.",
     "explanation": "Los modelos suelen ser idealizaciones o simplificaciones: no copias perfectas, sino herramientas para inferir y entender fenómenos."
   },
   {
@@ -1088,7 +1088,7 @@
       "Necesariamente, si las premisas son falsas, las conclusiones serán falsas.",
       "Puede que las premisas sean verdaderas y las conclusiones falsas."
     ],
-    "answer": "c",
+    "answer": "Puede que las premisas sean verdaderas y las conclusiones falsas.",
     "explanation": "Un argumento deductivo inválido admite contraejemplos: es posible que las premisas sean verdaderas y la conclusión falsa. Examen 2022 Septiembre; Examen 2023 Febrero 1; Examen 2024 Febrero 2; Examen 2025 Febrero 1"
   },
   {
@@ -1100,7 +1100,7 @@
       "Solo estamos justificados a realizar razonamientos inductivos si partimos de observaciones hechas en condiciones ideales.",
       "Nunca podremos estar seguros de si las premisas de un razonamiento inductivo son verdaderas."
     ],
-    "answer": "a",
+    "answer": "No existe justificación racional para realizar razonamientos inductivos.",
     "explanation": "Hume sostiene que no hay justificación racional no circular para la inducción; nuestra confianza en generalizaciones es hábito o costumbre. Examen 2024 Septiembre"
   },
   {
@@ -1112,7 +1112,7 @@
       "Las hipótesis científicas son siempre verdaderas",
       "Las hipótesis científicas deben poder expresarse siempre de forma matemática"
     ],
-    "answer": "a",
+    "answer": "Las hipótesis científicas deben ser corroboradas por la experiencia",
     "explanation": "El verificacionismo vincula la aceptabilidad/meaningfulness de enunciados empíricos a su contraste (verificación/confirmación) por la experiencia."
   },
   {
@@ -1124,7 +1124,7 @@
       "El verificacionismo es susceptible al problema de la inducción",
       "El verificacionismo, al rechazar el inductivismo, no tiene ninguna relación con el problema de la inducción"
     ],
-    "answer": "b",
+    "answer": "El verificacionismo es susceptible al problema de la inducción",
     "explanation": "El verificacionismo depende de confirmaciones inductivas nunca definitivas; por eso es vulnerable al problema de la inducción."
   },
   {
@@ -1136,7 +1136,7 @@
       "La verdad de las premisas nunca está garantizada.",
       "La verdad de las conclusiones no está garantizada por la verdad de las premisas."
     ],
-    "answer": "c",
+    "answer": "La verdad de las conclusiones no está garantizada por la verdad de las premisas.",
     "explanation": "En la inducción, aunque las premisas sean verdaderas, no garantizan necesariamente la verdad de la conclusión; por eso la conclusión puede fallar. Tema 5. El problema de la inducción; Examen 2023 Febrero 2; Examen 2025 Septiembre"
   },
   {
@@ -1148,7 +1148,7 @@
       "Las consecuencias que se seguirían de la verdad de la hipótesis.",
       "Aquellas proposiciones incompatibles con la verdad de la hipótesis."
     ],
-    "answer": "b",
+    "answer": "Las consecuencias que se seguirían de la verdad de la hipótesis.",
     "explanation": "Son consecuencias observacionales/empíricas que se seguirían si la hipótesis fuese verdadera. Examen 2022 Febrero 1; Examen 2024 Febrero 1; Examen 2025 Febrero 1"
   },
   {
@@ -1160,7 +1160,7 @@
       "Solo si refleja fielmente la realidad",
       "Solo si sirve para ofrecer conocimiento útil acerca de la realidad"
     ],
-    "answer": "c",
+    "answer": "Solo si sirve para ofrecer conocimiento útil acerca de la realidad",
     "explanation": "Un modelo es aceptable si permite inferencias útiles (explicar/predicir/controlar) sobre la realidad, aunque idealice."
   },
   {
@@ -1172,7 +1172,7 @@
       "Pseudociencia, no-ciencia y anti-ciencia",
       "Evidencia, observación y experimentación"
     ],
-    "answer": "a",
+    "answer": "Correspondencia con el paradigma, falsabilidad y verificabilidad",
     "explanation": "En el curso se contraponen verificabilidad, falsabilidad y enfoques ligados a paradigmas/contexto (giro social)."
   },
   {
@@ -1184,7 +1184,7 @@
       "La ciencia no tiene una posición privilegiada frente a otros fenómenos como la magia o la mitología",
       "No es posible de ninguna manera explicar el funcionamiento de la ciencia"
     ],
-    "answer": "b",
+    "answer": "La ciencia no tiene una posición privilegiada frente a otros fenómenos como la magia o la mitología",
     "explanation": "Una tesis típica es que la ciencia no tiene un estatus epistémico absoluto 'privilegiado' al margen de prácticas y contextos; se analiza como fenómeno social. Tema 11. La ciencia como producto social"
   },
   {
@@ -1196,7 +1196,7 @@
       "Una verdad obvia.",
       "Pruebas o indicios acerca de la verdad de una proposición."
     ],
-    "answer": "c",
+    "answer": "Pruebas o indicios acerca de la verdad de una proposición.",
     "explanation": "Evidencia son pruebas/indicios que apoyan (en distinto grado) la verdad de una proposición o hipótesis. Examen 2022 Febrero 1; Examen 2023 Febrero 1"
   },
   {
@@ -1208,7 +1208,7 @@
       "Las creencias tradicionales constituyen evidencia científica fiable.",
       "Las creencias tradicionales que no estén respaldadas por la evidencia no serán aceptables científicamente."
     ],
-    "answer": "c",
+    "answer": "Las creencias tradicionales que no estén respaldadas por la evidencia no serán aceptables científicamente.",
     "explanation": "Si no están respaldadas por evidencia, las creencias tradicionales no serán aceptables como conocimiento científico."
   },
   {
@@ -1220,7 +1220,7 @@
       "Solo estamos justificados a realizar razonamientos inductivos si partimos de observaciones hechas en condiciones ideales.",
       "Nunca podremos estar seguros de si las premisas de un razonamiento inductivo son verdaderas."
     ],
-    "answer": "a",
+    "answer": "No existe justificación racional para realizar razonamientos inductivos: nuestra tendencia a aceptar generalizaciones a partir de la observación de casos particulares es un mero hábito psicológico, una inclinación mental fruto de la costumbre.",
     "explanation": "Hume sostiene que no hay justificación racional no circular para la inducción; nuestra confianza en generalizaciones es hábito o costumbre. Examen 2025 Febrero 2"
   },
   {
@@ -1232,7 +1232,7 @@
       "No siempre puede concluirse que exista una relación causal entre ellas.",
       "El resultado es nulo, ya que no resulta estadísticamente significativo."
     ],
-    "answer": "b",
+    "answer": "No siempre puede concluirse que exista una relación causal entre ellas.",
     "explanation": "Correlación no implica causalidad: puede haber variables de confusión o relaciones no causales que expliquen la correlación. Examen 2023 Febrero 2"
   },
   {
@@ -1244,7 +1244,7 @@
       "Un argumento es una secuencia de proposiciones, constituida por un conjunto de premisas de las que se siguen ciertas conclusiones.",
       "Un argumento es una proposición verdadera."
     ],
-    "answer": "b",
+    "answer": "Un argumento es una secuencia de proposiciones, constituida por un conjunto de premisas de las que se siguen ciertas conclusiones.",
     "explanation": "Un argumento es un conjunto de premisas que pretenden apoyar una conclusión; no es una sola proposición aislada."
   },
   {
@@ -1256,7 +1256,7 @@
       "Idealizaciones que sirven para aproximarse a las realidades abordadas.",
       "Guías de actuación para los científicos."
     ],
-    "answer": "b",
+    "answer": "Idealizaciones que sirven para aproximarse a las realidades abordadas.",
     "explanation": "Los modelos suelen idealizar y simplificar para aproximarse a fenómenos complejos y permitir inferencias útiles. Tema 7. El uso de los modelos en ciencia"
   },
   {
@@ -1268,7 +1268,7 @@
       "No existe realmente ningún enunciado ni ninguna teoría que pueda ser considerada como científica, pues todo está determinado socialmente.",
       "Decidir si algo es científico o no es una cuestión personal, pues dependerá de los criterios individuales e inconmensurables de cada uno de los científicos particulares."
     ],
-    "answer": "a",
+    "answer": "El criterio de demarcación será algo que dependa de los valores y de los aspectos contextuales que determinan el paradigma científico dominante.",
     "explanation": "El giro social subraya que lo que cuenta como ciencia depende también de valores y contextos que configuran paradigmas y estándares."
   },
   {
@@ -1280,7 +1280,7 @@
       "Idealizaciones que sirven para aproximarse a las realidades abordadas",
       "Guías de actuación para los científicos"
     ],
-    "answer": "b",
+    "answer": "Idealizaciones que sirven para aproximarse a las realidades abordadas",
     "explanation": "Los modelos suelen idealizar y simplificar para aproximarse a fenómenos complejos y permitir inferencias útiles. Tema 7. El uso de los modelos en ciencia"
   },
   {
@@ -1292,7 +1292,7 @@
       "Incluyen motivaciones prácticas, como la búsqueda de reconocimiento y la obtención de premios y financiación.",
       "Cuando un científico está motivado por intereses prácticos, los resultados de su investigación son fraudulentos."
     ],
-    "answer": "b",
+    "answer": "Incluyen motivaciones prácticas, como la búsqueda de reconocimiento y la obtención de premios y financiación.",
     "explanation": "Además de motivos epistémicos, hay incentivos prácticos (carrera, financiación, reconocimiento) que influyen en la actividad científica. Tema 12. ¿Cómo funcionan las instituciones científicas?; Examen 2025 Febrero 1"
   },
   {
@@ -1304,7 +1304,7 @@
       "Cuando son aceptados por un gran número de personas.",
       "Cuando son pseudocientíficos o anticientíficos."
     ],
-    "answer": "c",
+    "answer": "Cuando son pseudocientíficos o anticientíficos.",
     "explanation": "Se enfrentan cuando son pseudocientíficos o anticientíficos: pretenden sustituir o erosionar el discurso científico. Tema 10. La ciencia y sus enemigos: ciencia vs. no ciencia, pseudociencia y anticiencia"
   },
   {
@@ -1316,7 +1316,7 @@
       "Una verdad obvia.",
       "Pruebas o indicios acerca de la verdad de una proposición."
     ],
-    "answer": "c",
+    "answer": "Pruebas o indicios acerca de la verdad de una proposición.",
     "explanation": "Evidencia son pruebas/indicios que apoyan (en distinto grado) la verdad de una proposición o hipótesis. Examen 2022 Febrero 1; Examen 2023 Febrero 1"
   },
   {
@@ -1328,7 +1328,7 @@
       "Las creencias tradicionales constituyen evidencia científica fiable.",
       "Las creencias tradicionales que no estén respaldadas por la evidencia no serán aceptables científicamente."
     ],
-    "answer": "c",
+    "answer": "Las creencias tradicionales que no estén respaldadas por la evidencia no serán aceptables científicamente.",
     "explanation": "Si no están respaldadas por evidencia, las creencias tradicionales no serán aceptables como conocimiento científico."
   },
   {
@@ -1340,7 +1340,7 @@
       "Solo estamos justificados a realizar razonamientos inductivos si partimos de observaciones hechas en condiciones ideales.",
       "Nunca podremos estar seguros de si las premisas de un razonamiento inductivo son verdaderas."
     ],
-    "answer": "a",
+    "answer": "No existe justificación racional para realizar razonamientos inductivos: nuestra tendencia a aceptar generalizaciones a partir de la observación de casos particulares es un mero hábito psicológico, una inclinación mental fruto de la costumbre.",
     "explanation": "Hume sostiene que no hay justificación racional no circular para la inducción; nuestra confianza en generalizaciones es hábito o costumbre. Examen 2025 Febrero 2"
   },
   {
@@ -1352,7 +1352,7 @@
       "No siempre puede concluirse que exista una relación causal entre ellas.",
       "El resultado es nulo, ya que no resulta estadísticamente significativo."
     ],
-    "answer": "b",
+    "answer": "No siempre puede concluirse que exista una relación causal entre ellas.",
     "explanation": "Correlación no implica causalidad: puede haber variables de confusión o relaciones no causales que expliquen la correlación. Examen 2023 Febrero 2"
   },
   {
@@ -1364,7 +1364,7 @@
       "Un argumento es una secuencia de proposiciones, constituida por un conjunto de premisas de las que se siguen ciertas conclusiones.",
       "Un argumento es una proposición verdadera."
     ],
-    "answer": "b",
+    "answer": "Un argumento es una secuencia de proposiciones, constituida por un conjunto de premisas de las que se siguen ciertas conclusiones.",
     "explanation": "Un argumento es un conjunto de premisas que pretenden apoyar una conclusión; no es una sola proposición aislada."
   },
   {
@@ -1376,7 +1376,7 @@
       "Idealizaciones que sirven para aproximarse a las realidades abordadas.",
       "Guías de actuación para los científicos."
     ],
-    "answer": "b",
+    "answer": "Idealizaciones que sirven para aproximarse a las realidades abordadas.",
     "explanation": "Los modelos suelen idealizar y simplificar para aproximarse a fenómenos complejos y permitir inferencias útiles. Tema 7. El uso de los modelos en ciencia"
   },
   {
@@ -1388,7 +1388,7 @@
       "No existe realmente ningún enunciado ni ninguna teoría que pueda ser considerada como científica, pues todo está determinado socialmente.",
       "Decidir si algo es científico o no es una cuestión personal, pues dependerá de los criterios individuales e inconmensurables de cada uno de los científicos particulares."
     ],
-    "answer": "a",
+    "answer": "El criterio de demarcación será algo que dependa de los valores y de los aspectos contextuales que determinan el paradigma científico dominante.",
     "explanation": "El giro social subraya que lo que cuenta como ciencia depende también de valores y contextos que configuran paradigmas y estándares."
   },
   {
@@ -1400,7 +1400,7 @@
       "Idealizaciones que sirven para aproximarse a las realidades abordadas",
       "Guias de actuacion para los científicos"
     ],
-    "answer": "b",
+    "answer": "Idealizaciones que sirven para aproximarse a las realidades abordadas",
     "explanation": "Los modelos suelen idealizar y simplificar para aproximarse a fenómenos complejos y permitir inferencias útiles. Tema 7. El uso de los modelos en ciencia"
   },
   {
@@ -1412,7 +1412,7 @@
       "Incluyen motivaciones prácticas, como la búsqueda de reconocimiento y la obtención de premios y financiación.",
       "Cuando un científico está motivado por intereses prácticos, los resultados de su investigacidn son fraudulentos."
     ],
-    "answer": "b",
+    "answer": "Incluyen motivaciones prácticas, como la búsqueda de reconocimiento y la obtención de premios y financiación.",
     "explanation": "Además de motivos epistémicos, hay incentivos prácticos (carrera, financiación, reconocimiento) que influyen en la actividad científica. Tema 12. ¿Cómo funcionan las instituciones científicas?; Examen 2025 Febrero 1"
   },
   {
@@ -1424,7 +1424,7 @@
       "Cuando son aceptados por un gran número de personas.",
       "Cuando son pseudocientíficos o anticientíficos."
     ],
-    "answer": "c",
+    "answer": "Cuando son pseudocientíficos o anticientíficos.",
     "explanation": "Se enfrentan cuando son pseudocientíficos o anticientíficos: pretenden sustituir o erosionar el discurso científico. Tema 10. La ciencia y sus enemigos: ciencia vs. no ciencia, pseudociencia y anticiencia"
   },
   {
@@ -1436,7 +1436,7 @@
       "Un hecho es una creencia aceptada por la comunidad científica.",
       "Un hecho es una creencia que el sujeto considera verdadera."
     ],
-    "answer": "a",
+    "answer": "Es un hecho que p si y solo si es verdad que p.",
     "explanation": "Hecho: es un hecho que p si y solo si p es verdad; no es meramente una creencia aceptada."
   },
   {
@@ -1448,7 +1448,7 @@
       "Son argumentos que ofrecen evidencia incuestionable a favor de una tesis.",
       "Son argumentos que no pueden ser objeto de duda racional."
     ],
-    "answer": "a",
+    "answer": "Son argumentos a favor de una tesis que apelan exclusivamente al hecho de que una autoridad la ha defendido.",
     "explanation": "Apelan a que una autoridad sostiene una tesis como razón principal para aceptarla; no sustituyen la evidencia por sí solos. Tema 1. Ciencia, hechos y evidencia; Examen 2024 Febrero 2"
   },
   {
@@ -1460,7 +1460,7 @@
       "La principal fuente de evidencia científica es la intuición.",
       "La principal fuente de evidencia científica es la experiencia observacional."
     ],
-    "answer": "c",
+    "answer": "La principal fuente de evidencia científica es la experiencia observacional.",
     "explanation": "El empirismo sostiene que la evidencia principal procede de la experiencia, especialmente la observación. Tema 2. Conocimiento empírico y observación"
   },
   {
@@ -1472,7 +1472,7 @@
       "Es imprecisa, pero puede ser correcta.",
       "No es informativa, ya que no elimina por completo la incertidumbre."
     ],
-    "answer": "b",
+    "answer": "Es imprecisa, pero puede ser correcta.",
     "explanation": "Una medida puede ser imprecisa (rango) y aun así correcta si el valor real está dentro de ese rango. Examen 2022 Febrero 1; Examen 2025 Febrero 1"
   },
   {
@@ -1484,7 +1484,7 @@
       "Para averiguar si la causa del mayor crecimiento es el fertilizante, hay que hacer una comparación con el crecimiento de plantas idénticas a las que no se ha suministrado fertilizante, manteniendo constante la iluminación, el tipo de suelo, la temperatura y el riego.",
       "Nunca podrá concluirse con suficiente seguridad que el mayor crecimiento se debe al fertilizante."
     ],
-    "answer": "b",
+    "answer": "Para averiguar si la causa del mayor crecimiento es el fertilizante, hay que hacer una comparación con el crecimiento de plantas idénticas a las que no se ha suministrado fertilizante, manteniendo constante la iluminación, el tipo de suelo, la temperatura y el riego.",
     "explanation": "Para explicar la causalidad es necesario controlar variables y hacer comparaciones adecuadas. Tema 3. Experimentación"
   },
   {
@@ -1496,7 +1496,7 @@
       "Siempre es falsable empíricamente.",
       "Puede ser infalsable empíricamente."
     ],
-    "answer": "c",
+    "answer": "Puede ser infalsable empíricamente.",
     "explanation": "Puede haber hipótesis infalsables (p. ej., formuladas de modo que no permitan refutación empírica)."
   },
   {
@@ -1508,7 +1508,7 @@
       "Las consecuencias que se seguirían de la verdad de la hipótesis.",
       "Aquellas proposiciones incompatibles con la verdad de la hipótesis."
     ],
-    "answer": "b",
+    "answer": "Las consecuencias que se seguirían de la verdad de la hipótesis.",
     "explanation": "Son consecuencias observacionales/empíricas que se seguirían si la hipótesis fuese verdadera. Examen 2022 Febrero 1; Examen 2025 Febrero 1; Examen 2025 Febrero 2"
   },
   {
@@ -1520,7 +1520,7 @@
       "Un razonamiento es un intercambio verbal dentro de un debate.",
       "Un razonamiento es una estrategia retórica para persuadir a una audiencia de una conclusión, independientemente de que esté realmente justificada."
     ],
-    "answer": "a",
+    "answer": "Un razonamiento es una transición entre creencias (u otros estados mentales), cuya finalidad es adoptar creencias correctas o justificadas.",
     "explanation": "Razonar es una transición entre creencias/estados mentales orientada a adoptar creencias correctas o justificadas."
   },
   {
@@ -1532,7 +1532,7 @@
       "Cuando son modelos matemáticos, físicos o conceptuales.",
       "Cuando no es posible abordar los fenómenos de ninguna otra manera."
     ],
-    "answer": "a",
+    "answer": "Cuando están bien planteados.",
     "explanation": "El valor explicativo lo tiene un modelo cuando está construido para representar los factores relevantes y permitir inferencias (explicar/predicir), no simplemente cuando se usa porque no hay otra alternativa. Tema 7. El uso de los modelos en ciencia"
   },
   {
@@ -1544,7 +1544,7 @@
       "Cuando el paradigma antiguo se agota y no resulta ya productivo.",
       "Cuando la mayoría de los miembros de la comunidad científica decide asumir un nuevo paradigma, independientemente de los motivos por los que"
     ],
-    "answer": "c",
+    "answer": "Cuando la mayoría de los miembros de la comunidad científica decide asumir un nuevo paradigma, independientemente de los motivos por los que",
     "explanation": "Para Kuhn el cambio se consolida cuando la comunidad adopta el nuevo paradigma; no es solo cuestión de 'demostrar' superioridad lógica."
   },
   {
@@ -1556,7 +1556,7 @@
       "Son argumentos que ofrecen evidencia incuestionable a favor de una tesis.",
       "Son argumentos que no pueden ser objeto de duda racional."
     ],
-    "answer": "a",
+    "answer": "Son argumentos a favor de una tesis que apelan exclusivamente al hecho de que una autoridad la ha defendido.",
     "explanation": "Apelan a que una autoridad sostiene una tesis como razón principal para aceptarla; no sustituyen la evidencia por sí solos. Tema 1. Ciencia, hechos y evidencia; Examen 2024 Febrero 1"
   },
   {
@@ -1568,7 +1568,7 @@
       "En general, la evidencia empírica permite refutar directamente hipótesis aisladas.",
       "En general, la evidencia empírica no permite refutar directamente hipótesis aisladas, sino solo en combinación con otras hipótesis auxiliares y presuposiciones."
     ],
-    "answer": "c",
+    "answer": "En general, la evidencia empírica no permite refutar directamente hipótesis aisladas, sino solo en combinación con otras hipótesis auxiliares y presuposiciones.",
     "explanation": "La evidencia no refuta hipótesis aisladas, sino el conjunto (hipótesis + auxiliares + condiciones iniciales) usado para derivar predicciones, según la tesis de Quine-Duhem. Examen 2023 Febrero 1"
   },
   {
@@ -1580,7 +1580,7 @@
       "Necesariamente, si las premisas son falsas, las conclusiones serán falsas.",
       "Puede que las premisas sean verdaderas y las conclusiones falsas."
     ],
-    "answer": "c",
+    "answer": "Puede que las premisas sean verdaderas y las conclusiones falsas.",
     "explanation": "Un argumento deductivo inválido admite contraejemplos: es posible que las premisas sean verdaderas y la conclusión falsa. Examen 2022 Septiembre; Examen 2023 Febrero 1; Examen 2025 Febrero 1; Examen 2025 Febrero 2"
   },
   {
@@ -1592,7 +1592,7 @@
       "Nunca podremos estar seguros de si una generalización inductiva es falsa.",
       "La conclusión de un razonamiento inductivo puede ser falsa incluso si todas las premisas son verdaderas."
     ],
-    "answer": "c",
+    "answer": "La conclusión de un razonamiento inductivo puede ser falsa incluso si todas las premisas son verdaderas.",
     "explanation": "Una conclusión inductiva puede ser falsa aunque todas las premisas observacionales sean verdaderas (pueden existir excepciones no observadas)."
   },
   {
@@ -1604,7 +1604,7 @@
       "La probabilidad asignada a un evento refleja la incertidumbre acerca de si dicho evento ocurrirá.",
       "La probabilidad asignada a un evento es 0 cuando existe incertidumbre acerca de si dicho evento ocurrirá."
     ],
-    "answer": "b",
+    "answer": "La probabilidad asignada a un evento refleja la incertidumbre acerca de si dicho evento ocurrirá.",
     "explanation": "La probabilidad refleja el grado de incertidumbre sobre si ocurrirá un evento; no equivale a certeza. Tema 6. Probabilidad y estadística"
   },
   {
@@ -1616,7 +1616,7 @@
       "No, porque solo servirá a sumar confusión.",
       "Sí, porque todos los modelos son, por definición, válidos para la ciencia."
     ],
-    "answer": "a",
+    "answer": "Sí, si da lugar a resultados interesantes y pertinentes.",
     "explanation": "Un modelo puede idealizar y ser literalmente falso en detalles y aun así ser válido si permite explicar/predicir y guiar inferencias útiles en su dominio. Examen 2025 Septiembre"
   },
   {
@@ -1628,7 +1628,7 @@
       "Ciencia mal planteada y que no ofrece buenos resultados.",
       "El tipo de conocimiento que no muestra las garantías suficientes para ser considerado científico."
     ],
-    "answer": "a",
+    "answer": "No-ciencia haciéndose pasar por ciencia.",
     "explanation": "Pseudociencia: no-ciencia que intenta presentarse como ciencia para aprovechar su prestigio. Tema 10.2. Pseudociencia; Examen 2020 Febrero 2"
   },
   {
@@ -1640,7 +1640,7 @@
       "El progreso en ciencia es imposible dada la inconmensurabilidad de los paradigmas",
       "La ciencia no supone un tipo de conocimiento cualitativamente distinto del resto. El principio que debe regir es el \"todo vale\"."
     ],
-    "answer": "a",
+    "answer": "Las teorías y postulados científicos no se pueden considerar aisladamente, pues forman parte de programas de investigación.",
     "explanation": "Lakatos propone programas de investigación: no se evalúan hipótesis aisladas, sino núcleos duros y cinturones protectores."
   },
   {
@@ -1652,7 +1652,7 @@
       "Comprender adecuadamente las implicaciones filosóficas de la ciencia.",
       "La búsqueda de criterios para distinguir lo científico de lo no científico."
     ],
-    "answer": "c",
+    "answer": "La búsqueda de criterios para distinguir lo científico de lo no científico.",
     "explanation": "Consiste en buscar criterios para distinguir ciencia de no-ciencia/pseudociencia. Tema 9. El criterio de demarcación"
   },
   {
@@ -1664,7 +1664,7 @@
       "Un estudio en el que se presenta un experimento que refuta una hipótesis teórica relevante.",
       "Un estudio en el que se busca reproducir los resultados obtenidos en un experimento previo."
     ],
-    "answer": "c",
+    "answer": "Un estudio en el que se busca reproducir los resultados obtenidos en un experimento previo.",
     "explanation": "Un estudio de replicación intenta reproducir resultados de un estudio previo para comprobar su robustez. Tema 12. ¿Cómo funcionan las instituciones científicas?; Examen 2022 Febrero 1"
   },
   {
@@ -1676,7 +1676,7 @@
       "Es deseable que se realice mediante procesos protocolarizados que puedan ser reproducidos por otros grupos de investigación.",
       "Ha de ser realizada sin ayuda de instrumentos."
     ],
-    "answer": "b",
+    "answer": "Es deseable que se realice mediante procesos protocolarizados que puedan ser reproducidos por otros grupos de investigación.",
     "explanation": "Debe realizarse con protocolos reproducibles por otros grupos; la reproducibilidad permite control intersubjetivo. Examen 2022 Febrero 2"
   },
   {
@@ -1688,7 +1688,7 @@
       "Permite realizar observaciones infalibles.",
       "Permite superar limitaciones de nuestras capacidades perceptivas."
     ],
-    "answer": "c",
+    "answer": "Permite superar limitaciones de nuestras capacidades perceptivas.",
     "explanation": "Los instrumentos superan limitaciones perceptivas y permiten observar/medir fenómenos inaccesibles a simple vista. Examen 2022 Febrero 2"
   },
   {
@@ -1700,7 +1700,7 @@
       "Es inadmisible como hipótesis científica, porque no es falsable.",
       "Es inadmisible como hipótesis científica, porque es falsa."
     ],
-    "answer": "a",
+    "answer": "Es admisible como hipótesis científica, porque es falsable.",
     "explanation": "Si una hipótesis es falsable (podría ser refutada por evidencia), es admisible como hipótesis científica en sentido popperiano. Examen 2022 Febrero 2"
   },
   {
@@ -1712,7 +1712,7 @@
       "En principio, es una posibilidad abierta que las premisas de una inferencia inductiva sean verdaderas pero la generalización alcanzada en la conclusión sea falsa (porque haya excepciones todavía no observadas a tal generalización).",
       "Nunca podremos saber con certeza si las premisas de un razonamiento inductivo son verdaderas."
     ],
-    "answer": "b",
+    "answer": "En principio, es una posibilidad abierta que las premisas de una inferencia inductiva sean verdaderas pero la generalización alcanzada en la conclusión sea falsa (porque haya excepciones todavía no observadas a tal generalización).",
     "explanation": "Es posible que premisas observadas sean verdaderas y la generalización concluida sea falsa por excepciones no observadas. Tema 5. El problema de la inducción; Examen 2022 Febrero 2"
   },
   {
@@ -1724,7 +1724,7 @@
       "La función principal de la observación en la ciencia es confirmar hipótesis, no refutarlas.",
       "La observación de un número suficiente de casos que cumplan una generalización permite concluir que tal generalización está confirmada."
     ],
-    "answer": "a",
+    "answer": "La función principal de la observación en la ciencia es refutar hipótesis, no confirmarlas.",
     "explanation": "Para Popper el papel clave de la observación es intentar refutar hipótesis mediante contrastaciones severas; no hay verificación definitiva. Examen 2022 Febrero 2; Examen 2025 Febrero 1"
   },
   {
@@ -1736,7 +1736,7 @@
       "Métodos de análisis estadístico que garantizan la obtención de resultados imparciales y objetivos.",
       "Distorsiones introducidas en el análisis estadístico, debido a deficiencias en los métodos de análisis o en la recolección de datos, a consecuencia de las cuales las conclusiones extraídas en el análisis no reflejan propiedades genuinas de la población o fenómeno estudiado."
     ],
-    "answer": "c",
+    "answer": "Distorsiones introducidas en el análisis estadístico, debido a deficiencias en los métodos de análisis o en la recolección de datos, a consecuencia de las cuales las conclusiones extraídas en el análisis no reflejan propiedades genuinas de la población o fenómeno estudiado.",
     "explanation": "Son distorsiones debidas a métodos/recogida de datos que hacen que el análisis no refleje propiedades reales del fenómeno o población. Examen 2022 Febrero 2"
   },
   {
@@ -1748,7 +1748,7 @@
       "Son la misma cosa",
       "El creacionismo ha sido reemplazado en la actualidad por la teoría del diseño inteligente"
     ],
-    "answer": "a",
+    "answer": "La teoría del diseño inteligente asume el creacionismo",
     "explanation": "El diseño inteligente se presenta como reformulación del creacionismo para aparentar cientificidad. Tema 10. La ciencia y sus enemigos: ciencia vs. no ciencia, pseudociencia y anticiencia; Examen 2022 Febrero 2"
   },
   {
@@ -1760,7 +1760,7 @@
       "No importa cuál sea el criterio de demarcación científico porque la ciencia como tal es una actividad que se debe eliminar (o al menos reconsiderar profundamente)",
       "Los científicos no son capaces de juzgar su propia actividad."
     ],
-    "answer": "b",
+    "answer": "No importa cuál sea el criterio de demarcación científico porque la ciencia como tal es una actividad que se debe eliminar (o al menos reconsiderar profundamente)",
     "explanation": "En posiciones fuertes, consideran que la ciencia debe eliminarse o revisarse radicalmente; por eso el criterio de demarcación les resulta irrelevante. Tema 10.3. Anticiencia; Examen 2022 Febrero 2"
   },
   {
@@ -1772,7 +1772,7 @@
       "La ciencia está determinada por el androcentrismo de la sociedad",
       "La ciencia no es un conocimiento válido porque, dada su naturaleza como producto de una sociedad androcéntrica, solo puede ser ejercida por hombres"
     ],
-    "answer": "b",
+    "answer": "La ciencia está determinada por el androcentrismo de la sociedad",
     "explanation": "Se analiza cómo el androcentrismo puede sesgar preguntas, métodos e interpretaciones; no implica que solo valga la ciencia hecha por mujeres. Tema 11. La ciencia como producto social; Examen 2022 Febrero 2"
   },
   {
@@ -1784,7 +1784,7 @@
       "Literatura científica especializada en las áreas de la salud y la biomedicina",
       "Estudios experimentales en los que se investiga la efectividad y seguridad de un medicamento o tratamiento"
     ],
-    "answer": "c",
+    "answer": "Estudios experimentales en los que se investiga la efectividad y seguridad de un medicamento o tratamiento",
     "explanation": "Son estudios experimentales para evaluar efectividad y seguridad de medicamentos o tratamientos. Examen 2022 Febrero 2"
   },
   {
@@ -1796,7 +1796,7 @@
       "No siempre puede concluirse directamente que la variación en X ha causado el efecto Y: antes hay que descartar la posible interferencia de otros factores.",
       "Nunca puede concluirse con suficiente seguridad que un efecto Y tiene como causa la manipulación de una variable X."
     ],
-    "answer": "b",
+    "answer": "No siempre puede concluirse directamente que la variación en X ha causado el efecto Y: antes hay que descartar la posible interferencia de otros factores.",
     "explanation": "Puede haber factores de confusión; hay que descartar interferencias antes de afirmar causalidad. Examen 2022 Septiembre"
   },
   {
@@ -1808,7 +1808,7 @@
       "En general, la evidencia empírica permite refutar directamente hipótesis aisladas.",
       "En general, la evidencia empírica no permite refutar directamente hipótesis aisladas, sino solo en combinación con otras hipótesis auxiliares y presuposiciones."
     ],
-    "answer": "c",
+    "answer": "En general, la evidencia empírica no permite refutar directamente hipótesis aisladas, sino solo en combinación con otras hipótesis auxiliares y presuposiciones.",
     "explanation": "La evidencia no refuta hipótesis aisladas, sino el conjunto (hipótesis + auxiliares + condiciones iniciales) usado para derivar predicciones, según la tesis de Quine-Duhem. Examen 2024 Febrero 2"
   },
   {
@@ -1820,7 +1820,7 @@
       "Verificabilidad, falsabilidad y correspondencia con el paradigma.",
       "Aportación epistémica, utilidad práctica y progreso científico."
     ],
-    "answer": "b",
+    "answer": "Verificabilidad, falsabilidad y correspondencia con el paradigma.",
     "explanation": "La verificabilidad de la Escuela de Viena, la falsabilidad de Popper y la correspondencia con el paradigma de Kuhn son los tres criterios principales de demarcación."
   },
   {
@@ -1832,7 +1832,7 @@
       "Los resultados probabilísticos son admisibles en ciencia, porque eliminan completamente la incertidumbre y ofrecen conocimiento seguro.",
       "Los resultados científicos se presentan frecuentemente de manera probabilística, y son aceptables en la medida en que reflejen el grado de apoyo ofrecido por la evidencia disponible."
     ],
-    "answer": "b",
+    "answer": "Los resultados probabilísticos son admisibles en ciencia, porque eliminan completamente la incertidumbre y ofrecen conocimiento seguro.",
     "explanation": "No es cierto que eliminen completamente la incertidumbre y tampoco es cierto que no sean admisibles en ciencia."
   },
   {
@@ -1844,7 +1844,7 @@
       "Causación implica correlación, pero correlación no implica causación (aunque puede constituir evidencia de la existencia de relaciones causales entre las variables correlacionadas).",
       "La existencia de correlaciones estadísticas entre dos variables es incompatible con que haya relaciones causales entre ellas."
     ],
-    "answer": "b",
+    "answer": "Causación implica correlación, pero correlación no implica causación (aunque puede constituir evidencia de la existencia de relaciones causales entre las variables correlacionadas).",
     "explanation": "Causalidad suele implicar correlación (en promedio), pero correlación no implica causalidad. Tema 6. Probabilidad y estadística"
   },
   {
@@ -1856,7 +1856,7 @@
       "A que los resultados negativos no ofrecen evidencia fiable.",
       "A que estos resultados suelen ser percibidos como más interesantes y tienen un mayor impacto."
     ],
-    "answer": "c",
+    "answer": "A que estos resultados suelen ser percibidos como más interesantes y tienen un mayor impacto.",
     "explanation": "Los resultados positivos se perciben como más interesantes/novedosos y de mayor impacto, sesgando la publicación."
   },
   {
@@ -1868,7 +1868,7 @@
       "Sostiene que la ciencia no tiene ningún impacto en la sociedad.",
       "Es un discurso basado en la desconfianza hacia la ciencia."
     ],
-    "answer": "c",
+    "answer": "Es un discurso basado en la desconfianza hacia la ciencia.",
     "explanation": "Es un discurso de desconfianza hacia la ciencia y sus instituciones/autoridad. Tema 10.3. Anticiencia"
   },
   {
@@ -1880,7 +1880,7 @@
       "Necesariamente, si las premisas son falsas, las conclusiones serán falsas.",
       "Puede que las premisas sean verdaderas y las conclusiones falsas."
     ],
-    "answer": "c",
+    "answer": "Puede que las premisas sean verdaderas y las conclusiones falsas.",
     "explanation": "Un argumento deductivo inválido admite contraejemplos: es posible que las premisas sean verdaderas y la conclusión falsa. Examen 2022 Septiembre; Examen 2024 Febrero 2; Examen 2025 Febrero 1; Examen 2025 Febrero 2"
   },
   {
@@ -1892,7 +1892,7 @@
       "Una verdad obvia.",
       "Pruebas o indicios acerca de la verdad de una proposición."
     ],
-    "answer": "c",
+    "answer": "Pruebas o indicios acerca de la verdad de una proposición.",
     "explanation": "Evidencia son pruebas/indicios que apoyan (en distinto grado) la verdad de una proposición o hipótesis. Examen 2022 Febrero 1; Examen 2024 Septiembre"
   },
   {
@@ -1904,7 +1904,7 @@
       "Que uno de ellos ha sustituido al otro, mediante una revolución científica tras un periodo de ciencia normal.",
       "Que son paradigmas defendidos por científicos de escuelas rivales, sin que uno de ellos haya acabado de imponerse."
     ],
-    "answer": "a",
+    "answer": "Que son paradigmas incomparables, por usar marcos conceptuales y criterios de evaluación radicalmente diferentes.",
     "explanation": "Que usan marcos conceptuales y criterios de evaluación tan diferentes que la comparación no es neutral ni directa."
   },
   {
@@ -1916,7 +1916,7 @@
       "Puede ser verdadero, pese a no reducir completamente la incertidumbre.",
       "Es falso en un sentido estricto, pero puede constituir una buena aproximación."
     ],
-    "answer": "b",
+    "answer": "Puede ser verdadero, pese a no reducir completamente la incertidumbre.",
     "explanation": "Un resultado puede ser impreciso y aun así verdadero/correcto dentro de un rango."
   },
   {
@@ -1928,7 +1928,7 @@
       "No siempre puede concluirse que exista una relación causal entre ellas.",
       "El resultado es nulo, ya que no resulta estadísticamente significativo."
     ],
-    "answer": "b",
+    "answer": "No siempre puede concluirse que exista una relación causal entre ellas.",
     "explanation": "Correlación no implica causalidad: puede haber variables de confusión o relaciones no causales que expliquen la correlación. Examen 2024 Septiembre"
   },
   {
@@ -1940,7 +1940,7 @@
       "Son en general más difíciles de publicar que los resultados positivos, ya que estos suelen tener mayor impacto.",
       "Son en general más fáciles de publicar que los resultados positivos, ya que constituyen la base del método científico falsacionista."
     ],
-    "answer": "b",
+    "answer": "Son en general más difíciles de publicar que los resultados positivos, ya que estos suelen tener mayor impacto.",
     "explanation": "Suelen ser más difíciles de publicar que resultados positivos por incentivos y sesgo de publicación hacia lo 'novedoso'."
   },
   {
@@ -1952,7 +1952,7 @@
       "La verdad de las premisas nunca está garantizada.",
       "La verdad de las conclusiones no está garantizada por la verdad de las premisas."
     ],
-    "answer": "c",
+    "answer": "La verdad de las conclusiones no está garantizada por la verdad de las premisas.",
     "explanation": "En la inducción, aunque las premisas sean verdaderas, no garantizan necesariamente la verdad de la conclusión; por eso la conclusión puede fallar. Tema 5. El problema de la inducción; Examen 2025 Febrero 2; Examen 2025 Septiembre"
   },
   {
@@ -1964,7 +1964,7 @@
       "El cambio de paradigma no siempre se debe exclusivamente a un mejor apoyo evidencial.",
       "El nuevo paradigma será compatible con toda la evidencia disponible, mientras que el antiguo habrá quedado falsado por una anomalía."
     ],
-    "answer": "b",
+    "answer": "El cambio de paradigma no siempre se debe exclusivamente a un mejor apoyo evidencial.",
     "explanation": "Para Kuhn el reemplazo de paradigmas no depende solo de 'mejor evidencia': influyen también valores, estándares y dinámicas de comunidad científica. Examen 2025 Febrero 1; Examen 2025 Septiembre"
   },
   {
@@ -1976,7 +1976,7 @@
       "La observación de un solo contraejemplo es suficiente para confirmar de manera definitiva una generalización empírica.",
       "Por muy alto que sea el número de observaciones acordes con una generalización empírica, nunca sería suficiente para considerarla confirmada de manera definitiva (ya que siempre existe la posibilidad de encontrar un contraejemplo)."
     ],
-    "answer": "c",
+    "answer": "Por muy alto que sea el número de observaciones acordes con una generalización empírica, nunca sería suficiente para considerarla confirmada de manera definitiva (ya que siempre existe la posibilidad de encontrar un contraejemplo).",
     "explanation": "De acuerdo con el falsadcionismo de Popper no es posible demostrar inductivamente una hipótesis general de manera definitiva pero sí es posible refutarla con un contraejemplo. Tema 5. El problema de la inducción"
   },
   {
@@ -1988,7 +1988,7 @@
       "Un razonamiento deductivo inválido, puesto que algunas de sus premisas son falsas.",
       "Un razonamiento deductivo válido, aunque algunas de sus premisas son falsas."
     ],
-    "answer": "c",
+    "answer": "Un razonamiento deductivo válido, aunque algunas de sus premisas son falsas.",
     "explanation": "La inferencia es deductivamente válida por transitividad, aunque las premisas sean falsas."
   },
   {
@@ -2000,7 +2000,7 @@
       "Un experimento consiste en una serie sistemática de observaciones realizadas mediante el uso de instrumentos.",
       "Un experimento consiste en la manipulación de un objeto de estudio para observar los efectos resultantes de dicha manipulación."
     ],
-    "answer": "c",
+    "answer": "Un experimento consiste en la manipulación de un objeto de estudio para observar los efectos resultantes de dicha manipulación.",
     "explanation": "Un experimento implica manipular condiciones/variables para observar efectos de la manipulación. Tema 3. Experimentación"
   },
   {
@@ -2012,7 +2012,7 @@
       "Nuestro destino está predeterminado por una providencia divina.",
       "El motor de la historia es la lucha de clases."
     ],
-    "answer": "a",
+    "answer": "La fuerza neta aplicada sobre un cuerpo es proporcional a la aceleración que adquiere dicho cuerpo",
     "explanation": "Es falsable el enunciado físico que hace predicciones observables refutables (p. ej., una ley). Examen 2022 Septiembre"
   },
   {
@@ -2024,7 +2024,7 @@
       "Idealizaciones que sirven para aproximarse a las realidades abordadas.",
       "Guías de actuación para los científicos."
     ],
-    "answer": "b",
+    "answer": "Idealizaciones que sirven para aproximarse a las realidades abordadas.",
     "explanation": "Los modelos son idealizaciones que permiten aproximarse a la realidad y guiar inferencias útiles en su dominio."
   },
   {
@@ -2036,7 +2036,7 @@
       "Es evidente y no admite discusión.",
       "El que sea verdad no depende de nuestras opiniones al respecto."
     ],
-    "answer": "c",
+    "answer": "El que sea verdad no depende de nuestras opiniones al respecto.",
     "explanation": "La objetividad consiste en independencia respecto a opiniones o creencias. Tema 1. Ciencia, hechos y evidencia"
   },
   {
@@ -2048,7 +2048,7 @@
       "En una tendencia a cuestionar nuestras creencias.",
       "Es una tendencia a aceptar la opinión mayoritaria del grupo al que pertenecemos."
     ],
-    "answer": "a",
+    "answer": "En una tendencia a prestar más atención y dar más peso a la evidencia que favorece tesis que estamos inclinados a aceptar, y a ignorar evidencia en contra.",
     "explanation": "Tendencia a buscar/interpretar evidencia que confirme creencias previas."
   },
   {
@@ -2060,7 +2060,7 @@
       "Tiene un papel esencial en la investigación, ya que permite descubrir posibles errores y garantiza que la evidencia observacional resultante sea utilizable por distintos investigadores.",
       "Tiene un papel secundario en la investigación, aunque puede ser importante en el proceso de formación y educación de científicos inexpertos."
     ],
-    "answer": "b",
+    "answer": "Tiene un papel esencial en la investigación, ya que permite descubrir posibles errores y garantiza que la evidencia observacional resultante sea utilizable por distintos investigadores.",
     "explanation": "Repetición y replicación permiten detectar errores y asegurar que la evidencia es utilizable intersubjetivamente por distintos investigadores. Tema 2. Conocimiento empírico y observación; Examen 2025 Febrero 1"
   },
   {
@@ -2072,7 +2072,7 @@
       "No reduce completamente la incertidumbre acerca de la propiedad medida.",
       "Carece por completo de utilidad práctica."
     ],
-    "answer": "b",
+    "answer": "No reduce completamente la incertidumbre acerca de la propiedad medida.",
     "explanation": "Una medida imprecisa no elimina toda la incertidumbre, pero puede ser útil y correcta."
   },
   {
@@ -2084,7 +2084,7 @@
       "No siempre puede concluirse directamente que la variación en X ha causado el efecto Y: antes hay que descartar la posible interferencia de otros factores.",
       "Nunca puede concluirse con suficiente seguridad que un efecto Y tiene como causa la manipulación de una variable X."
     ],
-    "answer": "b",
+    "answer": "No siempre puede concluirse directamente que la variación en X ha causado el efecto Y: antes hay que descartar la posible interferencia de otros factores.",
     "explanation": "Puede haber factores de confusión; hay que descartar interferencias antes de afirmar causalidad. Examen 2023 Febrero 1"
   },
   {
@@ -2096,7 +2096,7 @@
       "Las premisas de un razonamiento son las proposiciones que constituyen el contenido de las creencias de las que se parte en tal razonamiento.",
       "Las premisas de un razonamiento son las finalidades prácticas que llevan al agente a realizar tal razonamiento."
     ],
-    "answer": "b",
+    "answer": "Las premisas de un razonamiento son las proposiciones que constituyen el contenido de las creencias de las que se parte en tal razonamiento.",
     "explanation": "Las premisas son las proposiciones de las que se parte para apoyar la conclusión."
   },
   {
@@ -2108,7 +2108,7 @@
       "Necesariamente, si las premisas son falsas, las conclusiones serán falsas.",
       "Puede que las premisas sean verdaderas y las conclusiones falsas."
     ],
-    "answer": "c",
+    "answer": "Puede que las premisas sean verdaderas y las conclusiones falsas.",
     "explanation": "Un argumento deductivo inválido admite contraejemplos: es posible que las premisas sean verdaderas y la conclusión falsa. Examen 2023 Febrero 1; Examen 2024 Febrero 2; Examen 2025 Febrero 1; Examen 2025 Febrero 2"
   },
   {
@@ -2120,7 +2120,7 @@
       "Si refleja fielmente la realidad",
       "Si permite realizar inferencias útiles sobre la realidad."
     ],
-    "answer": "c",
+    "answer": "Si permite realizar inferencias útiles sobre la realidad.",
     "explanation": "Los modelos son idealizaciones que permiten aproximarse a la realidad y guiar inferencias útiles en su dominio."
   },
   {
@@ -2132,7 +2132,7 @@
       "La conducta humana está determinada por el inconsciente.",
       "El motor de la historia es la lucha de clases."
     ],
-    "answer": "a",
+    "answer": "Los metales se dilatan al ser calentados.",
     "explanation": "Es falsable el enunciado físico que hace predicciones observables refutables (p. ej., una ley). Examen 2023 Febrero 2"
   },
   {
@@ -2144,7 +2144,7 @@
       "El promedio de citas de los artículos publicados en la revista.",
       "El número de visitas o lectores que recibe la revista."
     ],
-    "answer": "b",
+    "answer": "El promedio de citas de los artículos publicados en la revista.",
     "explanation": "Aproxima el promedio de citas recibidas por artículos de la revista en un periodo."
   },
   {
@@ -2156,7 +2156,7 @@
       "Una verdad obvia.",
       "Pruebas o indicios acerca de la verdad de una proposición."
     ],
-    "answer": "c",
+    "answer": "Pruebas o indicios acerca de la verdad de una proposición.",
     "explanation": "Evidencia son pruebas/indicios que apoyan (en distinto grado) la verdad de una proposición o hipótesis. Examen 2023 Febrero 1; Examen 2024 Septiembre"
   },
   {
@@ -2168,7 +2168,7 @@
       "Un método sistemático para evaluar la evidencia disponible.",
       "Una creencia falsa pero con utilidad práctica."
     ],
-    "answer": "a",
+    "answer": "Una distorsión sistemática en la evaluación e interpretación de la evidencia disponible.",
     "explanation": "Un sesgo cognitivo es una distorsión sistemática en cómo evaluamos e interpretamos evidencia, que puede afectar a juicios y decisiones. Tema 1. Ciencia, hechos y evidencia; Examen 2025 Febrero 1"
   },
   {
@@ -2180,7 +2180,7 @@
       "Es imprecisa, pero puede ser correcta.",
       "No es informativa, ya que no elimina por completo la incertidumbre."
     ],
-    "answer": "b",
+    "answer": "Es imprecisa, pero puede ser correcta.",
     "explanation": "Una medida puede ser imprecisa (rango) y aun así correcta si el valor real está dentro de ese rango. Examen 2024 Febrero 1; Examen 2025 Febrero 1"
   },
   {
@@ -2192,7 +2192,7 @@
       "Las consecuencias que se seguirían de la verdad de la hipótesis.",
       "Aquellas proposiciones incompatibles con la verdad de la hipótesis."
     ],
-    "answer": "b",
+    "answer": "Las consecuencias que se seguirían de la verdad de la hipótesis.",
     "explanation": "Son consecuencias observacionales/empíricas que se seguirían si la hipótesis fuese verdadera. Examen 2024 Febrero 1; Examen 2025 Febrero 1; Examen 2025 Febrero 2"
   },
   {
@@ -2204,7 +2204,7 @@
       "Esta justificación del razonamiento inductivo es problemática porque es circular, ya que se apoya ella misma en un razonamiento inductivo.",
       "Esta justificación es problemática porque es falso que en el pasado nuestro uso de razonamientos inductivos haya sido normalmente exitoso."
     ],
-    "answer": "b",
+    "answer": "Esta justificación del razonamiento inductivo es problemática porque es circular, ya que se apoya ella misma en un razonamiento inductivo.",
     "explanation": "Es circular: usa inducción para justificar la inducción."
   },
   {
@@ -2216,7 +2216,7 @@
       "Si vamos a estarlo en algún momento, aunque sea muy lejano.",
       "Si estamos equivocados."
     ],
-    "answer": "c",
+    "answer": "Si estamos equivocados.",
     "explanation": "Podemos detectar errores: si una predicción falla, sabemos que la hipótesis es falsa o hay un problema auxiliar. Tema 9. El criterio de demarcación; Examen 2020 Febrero 2"
   },
   {
@@ -2228,7 +2228,7 @@
       "No, la ciencia busca un lenguaje claro y preciso, libre de vaguedades.",
       "Sí, cuando son suficientemente cercanas a la respuesta correcta para los intereses de los investigadores."
     ],
-    "answer": "c",
+    "answer": "Sí, cuando son suficientemente cercanas a la respuesta correcta para los intereses de los investigadores.",
     "explanation": "Sí, cuando son lo bastante cercanas para el propósito científico (explicación/predicción/cálculo)."
   },
   {
@@ -2240,7 +2240,7 @@
       "Progreso científico.",
       "Revolución científica."
     ],
-    "answer": "c",
+    "answer": "Revolución científica.",
     "explanation": "Es un caso de revolución científica (cambio de paradigma)."
   },
   {
@@ -2252,7 +2252,7 @@
       "El progreso en ciencia es imposible dada la inconmensurabilidad de los paradigmas",
       "La ciencia no supone un tipo de conocimiento cualitativamente distinto del resto. El principio que debe regir es el \"todo vale\"."
     ],
-    "answer": "a",
+    "answer": "Las teorías y postulados científicos no se pueden considerar aisladamente, pues forman parte de programas de investigación.",
     "explanation": "Lakatos sostiene que las teorías forman parte de programas de investigación; no se evalúan aisladamente."
   },
   {
@@ -2264,7 +2264,7 @@
       "Un estudio en el que se presenta un experimento que refuta una hipótesis teórica relevante.",
       "Un estudio en el que se busca reproducir los resultados obtenidos en un experimento previo."
     ],
-    "answer": "c",
+    "answer": "Un estudio en el que se busca reproducir los resultados obtenidos en un experimento previo.",
     "explanation": "Un estudio de replicación intenta reproducir resultados de un estudio previo para comprobar su robustez. Tema 12. ¿Cómo funcionan las instituciones científicas?; Examen 2024 Febrero 2"
   },
   {
@@ -2276,7 +2276,7 @@
       "Es deseable que se realice mediante procesos protocolarizados que puedan ser reproducidos por otros grupos de investigación.",
       "Ha de ser realizada sin ayuda de instrumentos."
     ],
-    "answer": "b",
+    "answer": "Es deseable que se realice mediante procesos protocolarizados que puedan ser reproducidos por otros grupos de investigación.",
     "explanation": "Debe realizarse con protocolos reproducibles por otros grupos; la reproducibilidad permite control intersubjetivo. Examen 2023 Septiembre"
   },
   {
@@ -2288,7 +2288,7 @@
       "Permite realizar observaciones infalibles.",
       "Permite superar limitaciones de nuestras capacidades perceptivas."
     ],
-    "answer": "c",
+    "answer": "Permite superar limitaciones de nuestras capacidades perceptivas.",
     "explanation": "Los instrumentos superan limitaciones perceptivas y permiten observar/medir fenómenos inaccesibles a simple vista. Examen 2023 Septiembre"
   },
   {
@@ -2300,7 +2300,7 @@
       "Es inadmisible como hipótesis científica, porque no es falsable.",
       "Es inadmisible como hipótesis científica, porque es falsa."
     ],
-    "answer": "a",
+    "answer": "Es admisible como hipótesis científica, porque es falsable.",
     "explanation": "Si una hipótesis es falsable (podría ser refutada por evidencia), es admisible como hipótesis científica en sentido popperiano. Examen 2023 Septiembre"
   },
   {
@@ -2312,7 +2312,7 @@
       "En principio, es una posibilidad abierta que las premisas de una inferencia inductiva sean verdaderas pero la generalización alcanzada en la conclusión sea falsa (porque haya excepciones todavía no observadas a tal generalización).",
       "Nunca podremos saber con certeza si las premisas de un razonamiento inductivo son verdaderas."
     ],
-    "answer": "b",
+    "answer": "En principio, es una posibilidad abierta que las premisas de una inferencia inductiva sean verdaderas pero la generalización alcanzada en la conclusión sea falsa (porque haya excepciones todavía no observadas a tal generalización).",
     "explanation": "Es posible que premisas observadas sean verdaderas y la generalización concluida sea falsa por excepciones no observadas. Tema 5. El problema de la inducción; Examen 2023 Septiembre"
   },
   {
@@ -2324,7 +2324,7 @@
       "La función principal de la observación en la ciencia es confirmar hipótesis, no refutarlas.",
       "La observación de un número suficiente de casos que cumplan una generalización permite concluir que tal generalización está confirmada."
     ],
-    "answer": "a",
+    "answer": "La función principal de la observación en la ciencia es refutar hipótesis, no confirmarlas.",
     "explanation": "Para Popper el papel clave de la observación es intentar refutar hipótesis mediante contrastaciones severas; no hay verificación definitiva. Examen 2023 Septiembre; Examen 2025 Febrero 1"
   },
   {
@@ -2336,7 +2336,7 @@
       "Métodos de análisis estadístico que garantizan la obtención de resultados imparciales y objetivos.",
       "Distorsiones introducidas en el análisis estadístico, debido a deficiencias en los métodos de análisis o en la recolección de datos, a consecuencia de las cuales las conclusiones extraídas en el análisis no reflejan propiedades genuinas de la población o fenómeno estudiado."
     ],
-    "answer": "c",
+    "answer": "Distorsiones introducidas en el análisis estadístico, debido a deficiencias en los métodos de análisis o en la recolección de datos, a consecuencia de las cuales las conclusiones extraídas en el análisis no reflejan propiedades genuinas de la población o fenómeno estudiado.",
     "explanation": "Son distorsiones debidas a métodos/recogida de datos que hacen que el análisis no refleje propiedades reales del fenómeno o población. Examen 2023 Septiembre"
   },
   {
@@ -2348,7 +2348,7 @@
       "Son la misma cosa",
       "El creacionismo ha sido reemplazado en la actualidad por la teoría del diseño inteligente"
     ],
-    "answer": "a",
+    "answer": "La teoría del diseño inteligente asume el creacionismo",
     "explanation": "El diseño inteligente se presenta como reformulación del creacionismo para aparentar cientificidad. Tema 10. La ciencia y sus enemigos: ciencia vs. no ciencia, pseudociencia y anticiencia; Examen 2023 Septiembre"
   },
   {
@@ -2360,7 +2360,7 @@
       "No importa cuál sea el criterio de demarcación científico porque la ciencia como tal es una actividad que se debe eliminar (o al menos reconsiderar profundamente)",
       "Los científicos no son capaces de juzgar su propia actividad."
     ],
-    "answer": "b",
+    "answer": "No importa cuál sea el criterio de demarcación científico porque la ciencia como tal es una actividad que se debe eliminar (o al menos reconsiderar profundamente)",
     "explanation": "En posiciones fuertes, consideran que la ciencia debe eliminarse o revisarse radicalmente; por eso el criterio de demarcación les resulta irrelevante. Tema 10.3. Anticiencia; Examen 2023 Septiembre"
   },
   {
@@ -2372,7 +2372,7 @@
       "La ciencia está determinada por el androcentrismo de la sociedad",
       "La ciencia no es un conocimiento válido porque, dada su naturaleza como producto de una sociedad androcéntrica, solo puede ser ejercida por hombres"
     ],
-    "answer": "b",
+    "answer": "La ciencia está determinada por el androcentrismo de la sociedad",
     "explanation": "Se analiza cómo el androcentrismo puede sesgar preguntas, métodos e interpretaciones; no implica que solo valga la ciencia hecha por mujeres. Tema 11. La ciencia como producto social; Examen 2023 Septiembre"
   },
   {
@@ -2384,7 +2384,7 @@
       "Literatura científica especializada en las áreas de la salud y la biomedicina",
       "Estudios experimentales en los que se investiga la efectividad y seguridad de un medicamento o tratamiento"
     ],
-    "answer": "c",
+    "answer": "Estudios experimentales en los que se investiga la efectividad y seguridad de un medicamento o tratamiento",
     "explanation": "Son estudios experimentales para evaluar efectividad y seguridad de medicamentos o tratamientos. Examen 2023 Septiembre"
   },
   {
@@ -2396,7 +2396,7 @@
       "Puede ser una motivación legítima para trabajar en ese campo de investigación.",
       "No debería ser tenido en cuenta a la hora de decidir a qué campos de investigación se han de destinar recursos."
     ],
-    "answer": "b",
+    "answer": "Puede ser una motivación legítima para trabajar en ese campo de investigación.",
     "explanation": "La posibilidad de aplicaciones puede motivar legítimamente investigación, sin ser por sí misma evidencia de hipótesis."
   },
   {
@@ -2408,7 +2408,7 @@
       "En la actualidad, toda la ciencia empírica es experimental.",
       "La única ciencia no experimental son las matemáticas."
     ],
-    "answer": "a",
+    "answer": "Existen disciplinas científicas de carácter empírico en las que el papel de los experimentos es limitado, y en las que la evidencia empírica se obtiene fundamentalmente a través de observaciones no experimentales.",
     "explanation": "Hay ciencias empíricas (p. ej. astronomía, geología) donde el experimento es limitado y predomina la observación. Tema 3. Experimentación"
   },
   {
@@ -2420,7 +2420,7 @@
       "Una hipótesis quedará refutada empíricamente solo si todas sus predicciones resultan ser incompatible con la evidencia empírica disponible.",
       "Una hipótesis quedará refutada empíricamente si la evidencia disponible compatible tanto con la falsedad como con la verdad de la hipótesis."
     ],
-    "answer": "a",
+    "answer": "Una hipótesis quedará refutada empíricamente si alguna de sus predicciones resulta ser incompatible con la evidencia empírica disponible.",
     "explanation": "Una hipótesis quedará refutada empíricamente si alguna de sus predicciones resulta ser incompatible con la evidencia empírica disponible. Tema 4. El método científico"
   },
   {
@@ -2432,7 +2432,7 @@
       "La conclusión de un razonamiento es la creencia que se desea defender dentro de un debate.",
       "La conclusión de un razonamiento es una creencia verdadera que esté apoyada por la evidencia."
     ],
-    "answer": "a",
+    "answer": "La conclusión de un razonamiento es la proposición que constituye el contenido de la creencia a la que se llega en dicho razonamiento.",
     "explanation": "La conclusión es la proposición que se sostiene al final del razonamiento."
   },
   {
@@ -2444,7 +2444,7 @@
       "Las generalizaciones inductivas son infalibles si se basan en observaciones",
       "Incluso si una inferencia inductiva está apoyada por un gran número de observaciones, en principio siempre es posible que aparezcan excepciones inesperadas."
     ],
-    "answer": "c",
+    "answer": "Incluso si una inferencia inductiva está apoyada por un gran número de observaciones, en principio siempre es posible que aparezcan excepciones inesperadas.",
     "explanation": "La aparición de un contraejemplo puede refutar una generalización inductiva. Tema 5. El problema de la inducción"
   },
   {
@@ -2456,7 +2456,7 @@
       "La ciencia que no supone ninguna aportación relevante",
       "La ciencia que se hace siguiendo los criterios aceptados de rigurosidad y eficacia"
     ],
-    "answer": "a",
+    "answer": "La ciencia que se hace en el marco de un paradigma",
     "explanation": "La ciencia normal consiste en resolver problemas dentro del marco de un paradigma establecido. Tema 8. Paradigmas y cambio científico"
   },
   {
@@ -2468,7 +2468,7 @@
       "Cuando el paradigma antiguo se agota y no resulta ya productivo",
       "Cuando la mayoría de los miembros de la comunidad científica decide asumir un nuevo paradigma, independientemente de los motivos por los que lo haga"
     ],
-    "answer": "c",
+    "answer": "Cuando la mayoría de los miembros de la comunidad científica decide asumir un nuevo paradigma, independientemente de los motivos por los que lo haga",
     "explanation": "La adopción de un nuevo paradigma suele estar motivada por su mayor capacidad para resolver problemas y explicar datos, pero también por factores sociales.. Tema 8. Paradigmas y cambio científico"
   },
   {
@@ -2480,7 +2480,7 @@
       "El conocimiento es siempre verdadero",
       "El conocimiento debe poder expresarse siempre de forma matemática"
     ],
-    "answer": "a",
+    "answer": "El conocimiento debe ser corroborado por la experiencia",
     "explanation": "El verificacionismo de la Escuela de Viena sostiene que una proposición es significativa si y solo si puede ser verificada empíricamente. Tema 9. El criterio de demarcación"
   },
   {
@@ -2492,7 +2492,7 @@
       "La posición de los astros influye en nuestra fortuna",
       "La fuerza neta aplicada sobre un cuerpo es proporcional a la aceleración que adquiere dicho cuerpo"
     ],
-    "answer": "c",
+    "answer": "La fuerza neta aplicada sobre un cuerpo es proporcional a la aceleración que adquiere dicho cuerpo",
     "explanation": "La ley física concreta es falsable porque prohíbe ciertas observaciones."
   },
   {
@@ -2504,7 +2504,7 @@
       "Por desconfianza hacia la ciencia",
       "Por rechazo al estatus privilegiado de la ciencia en nuestras sociedades"
     ],
-    "answer": "a",
+    "answer": "Para aprovechar el crédito social de la ciencia",
     "explanation": "Son los discursos pseudocientíficos los que buscan aprovechar el prestigio social de la ciencia."
   },
   {
@@ -2516,7 +2516,7 @@
       "Es en principio aplicable a cualquier hipótesis empírica sobre cómo es el mundo.",
       "Ofrece simplemente un tipo distinto de evidencia a la proporcionada por la tradición, sin que se pueda decir que una sea mejor o peor que la otra."
     ],
-    "answer": "b",
+    "answer": "Es en principio aplicable a cualquier hipótesis empírica sobre cómo es el mundo.",
     "explanation": "El método científico se define como un procedimiento para contrastar hipótesis empíricas con evidencia, y en principio es aplicable a cualquier hipótesis sobre el mundo que sea contrastable, venga de donde venga."
   },
   {
@@ -2528,7 +2528,7 @@
       "Solo es permisible científicamente plantear hipótesis cuya verdad haya quedado probada por la evidencia.",
       "Es deseable proponer hipótesis que sean altamente improbables."
     ],
-    "answer": "a",
+    "answer": "No hay reglas rígidas: en principio puede formularse cualquier hipótesis comprobable empíricamente, aunque es deseable que presente virtudes como simplicidad, generalidad, poder predictivo o capacidad explicativa.",
     "explanation": "No hay reglas rígidas para formular hipótesis, basta con que sean contrastables empíricamente y es preferible que tengan virtudes teóricas como simplicidad y poder explicativo/predictivo."
   },
   {
@@ -2540,7 +2540,7 @@
       "Es frecuente que la aparición de nueva evidencia empírica lleve a rechazar hipótesis científicas que estaban ampliamente aceptadas y que se ajustaban a la evidencia disponible hasta el momento.",
       "Una hipótesis compatible con la evidencia disponible será siempre verdadera, y por tanto no podrá aparecer nueva evidencia que la refute."
     ],
-    "answer": "b",
+    "answer": "Es frecuente que la aparición de nueva evidencia empírica lleve a rechazar hipótesis científicas que estaban ampliamente aceptadas y que se ajustaban a la evidencia disponible hasta el momento.",
     "explanation": "Las hipótesis científicas son provisionales y pueden revisarse o rechazarse cuando aparece nueva evidencia empírica o mejores explicaciones.. Tema 4. El método científico"
   },
   {
@@ -2552,7 +2552,7 @@
       "La estadística inferencial busca ordenar los datos acerca de una población.",
       "La estadística inferencial busca aplicar técnicas computacionales a la producción de datos experimentales."
     ],
-    "answer": "a",
+    "answer": "La estadística inferencial busca realizar inferencias (inductivas) cuyas conclusiones sean aplicables a una población en su conjunto, tomando como evidencia datos sobre parte de dicha población (muestra estadística).",
     "explanation": "Inferir a una población a partir de una muestra, cuantificando incertidumbre."
   },
   {
@@ -2564,7 +2564,7 @@
       "Esta correlación muestra que hay una relación causal entre lactancia y buenos resultados económicos (si no existiese tal relación causal, la correlación no sería significativa).",
       "No se puede concluir directamente que la lactancia contribuya a la mejora de resultados académicos, si no se descartan otros factores que puedan explicar la correlación (por ejemplo, la asociación entre lactancia y nivel socio-económico)."
     ],
-    "answer": "c",
+    "answer": "No se puede concluir directamente que la lactancia contribuya a la mejora de resultados académicos, si no se descartan otros factores que puedan explicar la correlación (por ejemplo, la asociación entre lactancia y nivel socio-económico).",
     "explanation": "Opción más matizada y coherente con el temario."
   },
   {
@@ -2576,7 +2576,7 @@
       "Ciencias biológicas y sociales",
       "En todas ellas"
     ],
-    "answer": "a",
+    "answer": "Física y química",
     "explanation": "Nomológico-deductivo es más común en ciencias físicas, donde hay leyes generales claras. Tema 7. El uso de los modelos en ciencia"
   },
   {
@@ -2588,7 +2588,7 @@
       "Sí",
       "Solamente los animales de laboratorio"
     ],
-    "answer": "b",
+    "answer": "Sí",
     "explanation": "Un ratón, por ejemplo, puede ser un modelo científico para estudiar enfermedades humanas. Tema 7. El uso de los modelos en ciencia"
   },
   {
@@ -2600,7 +2600,7 @@
       "Anarquismo filosófico",
       "Democracia filosófica"
     ],
-    "answer": "b",
+    "answer": "Anarquismo filosófico",
     "explanation": "El libro más conocido de Feyerabend es \"Against Method: Outline of an Anarchistic Theory of Knowledge\", donde defiende el anarquismo epistemológico."
   },
   {
@@ -2612,7 +2612,7 @@
       "Si vamos a estarlo en algún momento, aunque sea muy lejano",
       "Si estamos equivocados"
     ],
-    "answer": "c",
+    "answer": "Si estamos equivocados",
     "explanation": "Podemos detectar errores: si una predicción falla, sabemos que la hipótesis es falsa o hay un problema auxiliar. Tema 9. El criterio de demarcación; Examen 2022 Febrero 1"
   },
   {
@@ -2624,7 +2624,7 @@
       "Ciencia mal planteada y que no ofrece buenos resultados",
       "El tipo de conocimiento que no muestra las garantías suficientes para ser considerado científico"
     ],
-    "answer": "a",
+    "answer": "No-ciencia haciéndose pasar por ciencia",
     "explanation": "Pseudociencia: no-ciencia que intenta presentarse como ciencia para aprovechar su prestigio. Tema 10.2. Pseudociencia; Examen 2024 Febrero 2"
   }
 ]

@@ -733,8 +733,11 @@ export default function QuizApp() {
         (user === "VERDADERO" && expected === "V") ||
         (user === "FALSO" && expected === "F");
     } else if (currentQuizType === "Multiple Choice") {
-      // Multiple choice logic - answer should match the letter
-      correct = user === expected;
+      // Multiple choice logic - convert letter to option text and compare
+      const userLetter = user.toLowerCase();
+      const userIndex = userLetter.charCodeAt(0) - 97; // 'a' = 0, 'b' = 1, 'c' = 2, etc.
+      const userAnswer = q.options?.[userIndex] || '';
+      correct = userAnswer === q.answer;
     }
 
     const newStatus: Record<number, "correct" | "fail" | "pending"> = { ...status, [q.index]: correct ? "correct" : "fail" };
@@ -1003,7 +1006,12 @@ export default function QuizApp() {
             dangerouslySetInnerHTML={formatRichText(
               current !== null && questions[current] 
                 ? (currentQuizType === "Multiple Choice" 
-                    ? `Respuesta esperada ${questions[current].answer.toUpperCase()}) ${questions[current].options?.[questions[current].answer.toLowerCase().charCodeAt(0) - 'a'.charCodeAt(0)] || questions[current].answer}`
+                    ? (() => {
+                        const q = questions[current];
+                        const answerIndex = q.options?.findIndex(option => option === q.answer) ?? -1;
+                        const answerLetter = answerIndex >= 0 ? String.fromCharCode(65 + answerIndex) : '';
+                        return `Respuesta esperada ${answerLetter}) ${q.answer}`;
+                      })()
                     : questions[current].answer
                   )
                 : ""

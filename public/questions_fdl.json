@@ -4,11 +4,11 @@
     "number": 1,
     "question": "“Pedro robó las joyas” y “Las joyas fueron robadas por Pedro” expresan:",
     "options": [
-      "Una misma proposición.", 
-      "No expresan ninguna proposición.", 
+      "Una misma proposición.",
+      "No expresan ninguna proposición.",
       "Dos proposiciones diferentes."
     ],
-    "answer": "a",
+    "answer": "Una misma proposición.",
     "explanation": ""
   },
   {
@@ -20,7 +20,7 @@
       "De los aspectos del lenguaje que tienen que ver con su uso y las prácticas comunicativas.",
       "Del significado de las expresiones y, en concreto, de las relaciones entre lenguaje y realidad."
     ],
-    "answer": "c",
+    "answer": "Del significado de las expresiones y, en concreto, de las relaciones entre lenguaje y realidad.",
     "explanation": ""
   },
   {
@@ -32,7 +32,7 @@
       "“Pedro” es un nombre propio.",
       "Pedro ha robado las joyas."
     ],
-    "answer": "c",
+    "answer": "Pedro ha robado las joyas.",
     "explanation": ""
   },
   {
@@ -44,7 +44,7 @@
       "El enunciado es falso porque es un uso irónico.",
       "El enunciado es verdadero en caso de que Pedro sea de hecho un ladrón."
     ],
-    "answer": "a",
+    "answer": "El enunciado es falso porque Pedro no está usado sino mencionado y, por tanto, refiere a una expresión lingüística.",
     "explanation": ""
   },
   {
@@ -56,7 +56,7 @@
       "El francés.",
       "El español"
     ],
-    "answer": "c",
+    "answer": "El español",
     "explanation": ""
   },
   {
@@ -64,11 +64,11 @@
     "number": 1,
     "question": "En el análisis lógico-semántico del lenguaje que hace Frege, ¿por qué se sustituye la estructura gramatical de sujeto-predicado?",
     "options": [
-      "Por las categorías gramaticales de sintagma nominal y verbal.", 
+      "Por las categorías gramaticales de sintagma nominal y verbal.",
       "Por la estructura lógico-matemática de argumento-función.",
       "IGNORA"
     ],
-    "answer": "b",
+    "answer": "Por la estructura lógico-matemática de argumento-función.",
     "explanation": ""
   },
   {
@@ -80,7 +80,7 @@
       "Es el objeto designado por la expresión y, por tanto, es objetivo.",
       "Es subjetivo, al igual que la representación mental."
     ],
-    "answer": "a",
+    "answer": "Es intersubjetivo, esto es, puede ser compartido.",
     "explanation": ""
   },
   {
@@ -92,7 +92,7 @@
       "Sólo los nombres propios tienen sentido.",
       "Su valor de verdad."
     ],
-    "answer": "a",
+    "answer": "Un pensamiento.",
     "explanation": ""
   },
   {
@@ -104,7 +104,7 @@
       "“Aristóteles” tiene referencia indirecta (refiere a su sentido usual).",
       "“Aristóteles” tiene su referencia habitual (refiere a un individuo)."
     ],
-    "answer": "b",
+    "answer": "“Aristóteles” tiene referencia indirecta (refiere a su sentido usual).",
     "explanation": ""
   },
   {
@@ -116,7 +116,7 @@
       "El pensamiento expresado por el enunciado, esto es, su sentido.",
       "Cambian tanto el sentido como la referencia."
     ],
-    "answer": "a",
+    "answer": "El valor de verdad del enunciado, esto es, su referencia.",
     "explanation": ""
   },
   {
@@ -128,7 +128,7 @@
       "El sentido del nombre.",
       "La representación mental asociada al nombre."
     ],
-    "answer": "a",
+    "answer": "El objeto denotado por el nombre.",
     "explanation": ""
   },
   {
@@ -140,7 +140,7 @@
       "Expresan la misma proposición fregeana y la misma proposición russelliana.",
       "Expresan la misma proposición fregeana pero proposiciones russellianas diferentes."
     ],
-    "answer": "a",
+    "answer": "Expresan dos proposiciones fregeanas diferentes pero la misma proposición russelliana.",
     "explanation": ""
   },
   {
@@ -152,7 +152,7 @@
       "La forma gramatical de un enunciado es isomórfica con su forma lógica.",
       "La forma gramatical de un enunciado puede ser engañosa y ocultar su forma lógica."
     ],
-    "answer": "c",
+    "answer": "La forma gramatical de un enunciado puede ser engañosa y ocultar su forma lógica.",
     "explanation": ""
   },
   {
@@ -164,7 +164,7 @@
       "Un supuesto de no existencia.",
       "Un supuesto de existencia y un supuesto de unicidad."
     ],
-    "answer": "c",
+    "answer": "Un supuesto de existencia y un supuesto de unicidad.",
     "explanation": ""
   },
   {
@@ -176,7 +176,7 @@
       "Son expresiones cuantificacionales.",
       "Son expresiones referenciales, al igual que los nombres propios."
     ],
-    "answer": "b",
+    "answer": "Son expresiones cuantificacionales.",
     "explanation": ""
   },
   {
@@ -188,7 +188,7 @@
       "Es un enunciado contingente a posteriori.",
       "Es un enunciado necesario a priori."
     ],
-    "answer": "a",
+    "answer": "Es un enunciado necesario a posteriori.",
     "explanation": ""
   },
   {
@@ -200,7 +200,7 @@
       "A Eugenia Pérez.",
       "A ninguno de los dos."
     ],
-    "answer": "b",
+    "answer": "A Eugenia Pérez.",
     "explanation": ""
   },
   {
@@ -208,11 +208,11 @@
     "number": 3,
     "question": "De acuerdo con Kripke, ¿qué expresiones son designadores rígidos?",
     "options": [
-      "Los nombres propios.", 
+      "Los nombres propios.",
       "Las descripciones definidas.",
       "IGNORA"
     ],
-    "answer": "a",
+    "answer": "Los nombres propios.",
     "explanation": ""
   },
   {
@@ -224,7 +224,7 @@
       "En la determinación de la referencia de un término intervienen esencialmente entidades externas a la mente.",
       "En la determinación de la referencia de un término intervienen tanto las ideas de los hablantes como entidades externas a la mente."
     ],
-    "answer": "b",
+    "answer": "En la determinación de la referencia de un término intervienen esencialmente entidades externas a la mente.",
     "explanation": ""
   },
   {
@@ -236,7 +236,7 @@
       "Internista.",
       "Externista."
     ],
-    "answer": "b",
+    "answer": "Internista.",
     "explanation": ""
   },
   {
@@ -248,7 +248,7 @@
       "Es recursiva y no genera esquemas V (en inglés, esquema T) para todos los enunciados de la lengua objeto.",
       "Es recursiva y genera esquemas V (en inglés, esquema T) para todos los enunciados de la lengua objeto."
     ],
-    "answer": "c",
+    "answer": "Es recursiva y genera esquemas V (en inglés, esquema T) para todos los enunciados de la lengua objeto.",
     "explanation": ""
   },
   {
@@ -260,7 +260,7 @@
       "Indicar a qué sentido fregeano corresponde cada expresión de dicho lenguaje.",
       "Formular la teoría de la verdad de dicho lenguaje."
     ],
-    "answer": "c",
+    "answer": "Formular la teoría de la verdad de dicho lenguaje.",
     "explanation": ""
   },
   {
@@ -268,11 +268,11 @@
     "number": 3,
     "question": "Los enunciados de habla indirecta como “María dijo que los precios han vuelto a subir” tienen una semántica especialmente compleja. ¿Qué análisis propone Davidson?",
     "options": [
-      "Prescinde de ofrecer una análisis semántico de este tipo de enunciados.", 
-      "Trata al pronombre relativo “que” como un deíctico que denota el contenido de la preferencia original.", 
+      "Prescinde de ofrecer una análisis semántico de este tipo de enunciados.",
+      "Trata al pronombre relativo “que” como un deíctico que denota el contenido de la preferencia original.",
       "Recurre a sentidos fregeanos."
     ],
-    "answer": "b",
+    "answer": "Trata al pronombre relativo “que” como un deíctico que denota el contenido de la preferencia original.",
     "explanation": ""
   },
   {
@@ -284,7 +284,7 @@
       "Hace posible la interacción humana sin comunicación.",
       "Hace posible la interpretación radical."
     ],
-    "answer": "c",
+    "answer": "Hace posible la interpretación radical.",
     "explanation": ""
   },
   {
@@ -296,7 +296,7 @@
       "El sentido fregeano de e.",
       "La contribución de e al valor de verdad del enunciado en que aparece."
     ],
-    "answer": "c",
+    "answer": "La contribución de e al valor de verdad del enunciado en que aparece.",
     "explanation": ""
   },
   {
@@ -308,7 +308,7 @@
       "Tener siempre extensión vacía.",
       "Tener referente de manera relativa al contexto de uso."
     ],
-    "answer": "c",
+    "answer": "Tener referente de manera relativa al contexto de uso.",
     "explanation": ""
   },
   {
@@ -320,7 +320,7 @@
       "‘Esto’.",
       "'Yo'."
     ],
-    "answer": "c",
+    "answer": "'Yo'.",
     "explanation": ""
   },
   {
@@ -332,7 +332,7 @@
       "El referente más habitual del indéxico en cuestión.",
       "Una regla que determina el referente del indéxico en cada contexto."
     ],
-    "answer": "c",
+    "answer": "Una regla que determina el referente del indéxico en cada contexto.",
     "explanation": ""
   },
   {
@@ -344,7 +344,7 @@
       "El mismo carácter y el mismo contenido.",
       "El mismo carácter y distinto contenido."
     ],
-    "answer": "c",
+    "answer": "El mismo carácter y distinto contenido.",
     "explanation": ""
   },
   {
@@ -356,7 +356,7 @@
       "Tendrían el mismo contenido pero distinta significación cognitiva.",
       "Tendrían distinto contenido pero la misma significación cognitiva."
     ],
-    "answer": "b",
+    "answer": "Tendrían el mismo contenido pero distinta significación cognitiva.",
     "explanation": ""
   }
 ]
