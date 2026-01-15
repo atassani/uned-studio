@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Tests
 on:
   push:
     branches: [ main, master ]
@@ -22,6 +22,8 @@ jobs:
         cat <<'EOF' > .env
         NEXT_PUBLIC_BASE_PATH=/es/logica1
         EOF
+    - name: Run Jest unit tests
+      run: npm run test:unit
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v4
