@@ -3,12 +3,12 @@
 
 ## Features To Implement
 
-- [ ] LocalStorage is not deleted on iPhone when using the option to Empezar de nuevo. Validate in iPhone and iPad. LocalStorage is not cleared with Volver a empezar in iPhone. Test and fix it.
-- [ ] Add new JSON field for "appearsIn" containing an array of the sections (exams or topics) where the question appears. Currently it is only in IPC questions, as part of the text and it could be formatted in the JSON file, but it is more maintainable to have it as a separate field.
+- [ ] LocalStorage is not deleted on iPhone when using the option to Empezar de nuevo. Validate in iPhone and iPad. LocalStorage is not cleared with Volver a empezar in iPhone. Test and fix it. PATCH
+- [ ] Add new JSON field for "appearsIn" containing an array of the sections (exams or topics) where the question appears. Currently it is only in IPC questions, as part of the text and it could be formatted in the JSON file, but it is more maintainable to have it as a separate field. MINOR
 - [ ] Application does not work on uned/tests without a trailing slash. Fix routing to work with and without trailing slash. humblyproud.com/uned/tests does not work without final slash. humblyproud.com/uned/tests/ works.
-- [ ] For Multiple Choice questions, there could be an arbitrary number of possible answers, not only 3. If there are 2, show only A and B. If there are 4, show A, B, C and D. If more options, increase the number of letters accordingly.
-- [ ] For Multiple Choice questions, the possible answers should be shown in random order each time the question is presented. The correct answer must be adjusted accordingly. Consider adding optionality in the menu to shuffle answers or not.
-- [ ] In localStorage we are storing currentArea, quizStatus_[ByArea], questionOrder_[ByArea] and currentQuestion_[ByArea]. Consider storing all quiz related data under a single key "unedTestsData" to avoid cluttering localStorage with multiple keys.
+- [ ] For Multiple Choice questions, there could be an arbitrary number of possible answers, not only 3. If there are 2, show only A and B. If there are 4, show A, B, C and D. If more options, increase the number of letters accordingly. PATCH
+- [ ] For Multiple Choice questions, the possible answers should be shown in random order each time the question is presented. The correct answer must be adjusted accordingly. Consider adding optionality in the menu to shuffle answers or not. MINOR
+- [ ] In localStorage we are storing currentArea, quizStatus_[ByArea], questionOrder_[ByArea] and currentQuestion_[ByArea]. Consider storing all quiz related data under a single key "unedTestsData" to avoid cluttering localStorage with multiple keys. PATCH
 
 ## Feature Implementation Workflow
 
