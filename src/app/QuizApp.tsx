@@ -1003,6 +1003,17 @@ export default function QuizApp() {
           className="text-xl font-semibold rich-content question-text"
           dangerouslySetInnerHTML={formatRichText(`${q.number}. ${q.question}`)}
         ></div>
+        {/* appearsIn bullet list if present */}
+        {Array.isArray(q.appearsIn) && q.appearsIn.length > 0 && (
+          <div className="mt-2">
+            <div className="font-semibold">Aparece en:</div>
+            <ul className="list-disc list-inside ml-4">
+              {q.appearsIn.map((ref: string, idx: number) => (
+                <li key={idx}>{ref}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         {currentQuizType === "Multiple Choice" && Array.isArray(q.options) && (
           <div className="mt-4 space-y-2">
             {q.options.map((option: string, index: number) => {
@@ -1098,6 +1109,17 @@ export default function QuizApp() {
             )}
           ></div>
           <div className="text-base rich-content" dangerouslySetInnerHTML={formatRichText(showResult.explanation)}></div>
+          {/* appearsIn bullet list if present */}
+          {current !== null && questions[current] && Array.isArray(questions[current].appearsIn) && questions[current].appearsIn.length > 0 && (
+            <div className="mt-2">
+              <div className="font-semibold">Aparece en:</div>
+              <ul className="list-disc list-inside ml-4">
+                {questions[current].appearsIn.map((ref: string, idx: number) => (
+                  <li key={idx}>{ref}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           <div className="flex gap-4 mt-4">
             <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => handleContinue("C")}>Continuar</button>
             <button className="px-4 py-2 bg-gray-400 text-white rounded" onClick={() => handleContinue("E")}>Options</button>

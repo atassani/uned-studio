@@ -1,4 +1,4 @@
-# UNED Tests
+# UNED Studio
 
 Aplicación que muestra tests de asignaturas de Filosofía de la UNED en formato web.
 
@@ -66,7 +66,7 @@ package.json, package-lock.json, tsconfig.json, README.md, etc.
 El archivo `.env` debe contener la siguiente variable para definir la ruta base de la aplicación (útil para despliegues en subcarpetas):
 
 ```bash
-NEXT_PUBLIC_BASE_PATH=/uned/tests
+NEXT_PUBLIC_BASE_PATH=/uned/studio
 ```
 
 - Cambia el valor según la subcarpeta donde se sirva la app.
@@ -102,3 +102,26 @@ We suggest that you begin by typing:
 And check out the following files:
 - `./tests/example.spec.ts` - Example end-to-end test
 - `./playwright.config.ts` - Playwright Test configuration
+
+# appearsIn field in IPC questions
+
+## ¿Qué es appearsIn?
+
+En `questions_ipc.json`, cada pregunta puede tener un campo opcional `appearsIn`, que es un array de strings. Este array indica en qué secciones (temas o exámenes) aparece la pregunta.
+
+- El campo `appearsIn` solo existe en `questions_ipc.json`.
+- Los valores de `appearsIn` siempre son nombres de sección o examen válidos, extraídos del propio archivo.
+- Si la explicación de una pregunta termina con referencias a secciones o exámenes (por ejemplo, "Examen 2024 Febrero 1; Tema 1."), esas referencias se extraen y se colocan en el array `appearsIn`, y se eliminan de la explicación.
+- Si no hay referencias, el campo puede estar ausente o ser un array vacío.
+
+## Visualización en la aplicación
+
+Cuando una pregunta tiene el campo `appearsIn`, la aplicación muestra una lista de viñetas (bullet list) debajo de la explicación, indicando en qué secciones o exámenes aparece esa pregunta.
+
+## Validación automática
+
+Existe un test unitario (`tests/unit/appears-in-field.test.ts`) que garantiza que:
+- Solo las preguntas de `questions_ipc.json` pueden tener el campo `appearsIn`.
+- Todos los valores de `appearsIn` son nombres de sección o examen válidos presentes en el archivo.
+
+Esto asegura la coherencia y mantenibilidad de los datos.

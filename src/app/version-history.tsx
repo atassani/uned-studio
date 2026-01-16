@@ -13,7 +13,7 @@ const VERSION_HISTORY = [
 ];
 
 const AUTHOR = "Toni Tassani";
-const REPO_URL = "https://github.com/atassani/uned-tests";
+const REPO_URL = "https://github.com/atassani/uned-studio";
 
 export default function VersionHistory() {
   return (

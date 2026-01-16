@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UNED Tests",
-  description: "Tests de asignaturas de la UNED",
+  title: "UNED Studio",
+  description: "Herramientas de estudio para asignaturas de la UNED",
 };
 
 export default function RootLayout({

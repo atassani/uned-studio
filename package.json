@@ -1,6 +1,7 @@
 {
-  "name": "uned-tests",
-  "version": "1.3.2",
+  "type": "module",
+  "name": "uned-studio",
+  "version": "1.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,7 +14,7 @@
   },
   "dependencies": {
     "isomorphic-dompurify": "^2.35.0",
-    "next": "^16.1.0",
+    "next": "^16.1.2",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },
