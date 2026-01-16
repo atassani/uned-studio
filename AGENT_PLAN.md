@@ -4,8 +4,8 @@
 ## Features To Implement
 
 - [x] LocalStorage is not deleted on iPhone when using the option to Empezar de nuevo. Validate in iPhone and iPad. LocalStorage is not cleared with Volver a empezar in iPhone. Test and fix it. PATCH
-- [ ] Add new JSON field for "appearsIn" containing an array of the sections (exams or topics) where the question appears. Currently it is only in IPC questions, as part of the text and it could be formatted in the JSON file, but it is more maintainable to have it as a separate field. MINOR
-- [ ] Application does not work on uned/tests without a trailing slash. Fix routing to work with and without trailing slash. humblyproud.com/uned/tests does not work without final slash. humblyproud.com/uned/tests/ works.
+- [ ] Add 'appearsIn' field to questions_ipc.json: Only questions in questions_ipc.json should have an appearsIn array, which lists valid section or exam names where the question appears. Section/exam references are parsed from the end of the explanation and moved to appearsIn, and the explanation is cleaned. The UI must display appearsIn as a bullet list after the explanation, if present. A test must ensure all appearsIn values are valid and only present in questions_ipc.json. MINOR
+- [ ] Application does not work on uned/studio without a trailing slash. Fix routing to work with and without trailing slash. humblyproud.com/uned/studio does not work without final slash. humblyproud.com/uned/studio/ works. Possibly an AWS problem.
 - [ ] For Multiple Choice questions, there could be an arbitrary number of possible answers, not only 3. If there are 2, show only A and B. If there are 4, show A, B, C and D. If more options, increase the number of letters accordingly. PATCH
 - [ ] For Multiple Choice questions, the possible answers should be shown in random order each time the question is presented. The correct answer must be adjusted accordingly. Consider adding optionality in the menu to shuffle answers or not. MINOR
 - [ ] In localStorage we are storing currentArea, quizStatus_[ByArea], questionOrder_[ByArea] and currentQuestion_[ByArea]. Consider storing all quiz related data under a single key "unedTestsData" to avoid cluttering localStorage with multiple keys. PATCH
@@ -18,7 +18,7 @@
 2. **Test-Driven Development (TDD):**
 	- Always write a breaking test before implementing a new feature.
 	- Use the Red-Green-Refactor cycle:
-	  - Red: Write a failing (breaking) test.
+	  - Red: Write a failing (breaking) test. Once the test is written and is failing with the right logic, commit the test code with a descriptive message.
 	  - Green: Implement the minimum code to make the test pass.
 	  - Refactor: Clean up the code and tests. In this step, update AGENT_PLAN.md to reflect progress, tick off completed items, and add new items as needed.
 	- After the step is finished, commit the changes with a descriptive message.
