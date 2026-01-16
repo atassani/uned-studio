@@ -12,6 +12,7 @@ interface QuestionType {
   answer: string;
   explanation: string;
   options?: string[]; // For multiple choice questions
+  appearsIn?: string[];
 }
 
 
