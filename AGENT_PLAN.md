@@ -3,6 +3,9 @@
 
 ## Features To Implement
 
+- [ ] Bug. 16/01/2025. Esteve. A l’examen 24 S les preguntes estàn duplicades, n’hi ha vint.
+- [ ] Bug. 16/01/2025. Esteve. A l’examen 25 F2 només hi surten nou preguntes.
+- [ ] Bug. 16/01/2025. Tot i que he marcat l’opció seqüencial, la primera pregunta de cada secció no sempre es la pregunta 1. De vegades comença amb una altra, i a partir d’aquí va seqüencial.
 - [ ] For Multiple Choice questions, there could be an arbitrary number of possible answers, not only 3. If there are 2, show only A and B. If there are 4, show A, B, C and D. If more options, increase the number of letters accordingly. PATCH
 - [ ] In localStorage we are storing currentArea, quizStatus_[ByArea], questionOrder_[ByArea] and currentQuestion_[ByArea]. Consider storing all quiz related data under a single key "unedTestsData" to avoid cluttering localStorage with multiple keys. PATCH
 - [ ] Application does not work on uned/studio without a trailing slash. Fix routing to work with and without trailing slash. humblyproud.com/uned/studio does not work without final slash. humblyproud.com/uned/studio/ works. Possibly an AWS problem.
