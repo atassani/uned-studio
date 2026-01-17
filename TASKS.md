@@ -45,13 +45,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reporter:** TT
 - **Notes:** Show A..N depending on options; don’t assume exactly 3.
 
-### FEAT-001 — Keyboard shortcuts for multiple-choice (1/2/3…)
-- **Status:** backlog
-- **Priority:** P3
-- **Reported:** 2025-01-16
-- **Reporter:** TT
-- **Notes:** Allow numeric keys to select answers, in addition to A/B/C.
-
 ### TECH-002 — Consolidate localStorage keys under a single root key
 - **Status:** backlog
 - **Priority:** P3
@@ -62,6 +55,18 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ---
 
 ## Done
+
+### FEAT-001 — Keyboard shortcuts for multiple-choice (1/2/3…)
+- **Status:** done
+- **Priority:** P3
+- **Reported:** 2025-01-16
+- **Completed:** 2026-01-17
+- **Commits:**
+  - RED: Playwright E2E test (mcq-numeric-shortcuts.spec.ts)
+  - GREEN: QuizApp.tsx implementation
+- **PR:** (add link when merged)
+- **Reporter:** TT
+- **Notes:** Numeric keys now select MCQ answers (1 = A, 2 = B, etc.) in addition to A/B/C. Improves accessibility and speed for keyboard users.
 
 ### ✅ BUG-000 — Sequential order skipped first question in section
 - **Status:** done

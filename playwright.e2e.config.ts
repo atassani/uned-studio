@@ -12,7 +12,7 @@ const localOrigin = 'http://localhost:3000';
 const baseUrl = `${localOrigin}${baseSuffix}`;
 
 export default defineConfig({
-  testDir: './tests/e2e/tests',
+  testDir: './tests/e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

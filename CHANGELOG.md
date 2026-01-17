@@ -1,6 +1,9 @@
 # CHANGELOG.md
 
+
 ## [Unreleased]
+- feat: add numeric keyboard shortcuts for MCQ answers (1/2/3…)
+- bug: fix sequential order skipping first question in section
 - docs: add Conventional Commits and changelog process to AGENT_PLAN.md
 - docs: explain release identification and independent data/code evolution
 

@@ -123,6 +123,16 @@ npm run build
   2) **GREEN commit**: implementation to make it pass
 - If the failing test cannot be committed (e.g. test requires unavailable infrastructure or is unavoidably flaky), explain why clearly in the PR.
 
+### Test scripts: unit and E2E
+- `npm test` runs both Jest unit tests and Playwright E2E tests (sequentially).
+- `npm run test:unit` runs only Jest unit tests.
+- `npm run test:e2e` runs only Playwright E2E tests.
+- Use the focused Playwright command for a single E2E test:
+  ```bash
+  npx playwright test tests/e2e/your-test.spec.ts --reporter=list --project=chromium
+  ```
+- This setup allows you to run all or just one type of test as needed.
+
 ### Jest (unit/integration)
 - Use Jest for deterministic logic and fast feedback.
 - For bugfixes: add a regression test that fails before the fix.
@@ -133,6 +143,18 @@ npm run build
   - Use stable selectors (e.g., `data-testid` if the repo uses it).
   - Prefer assertions like `expect(...).toBeVisible()` over arbitrary timeouts.
 - Keep e2e scenarios short and focused.
+- Playwright E2E tests should use the shared helpers in `tests/e2e/helpers.ts` for consistent initialization and cleanup, unless have special conditions.
+- In each test file, use `beforeEach` to call `setupFreshTest(page)` and `waitForAppReady(page)` to ensure the app is loaded and in a clean state before each test.
+- Example:
+  ```typescript
+  import { setupFreshTest, waitForAppReady } from './helpers';
+  test.beforeEach(async ({ page }) => {
+    await setupFreshTest(page);
+    await waitForAppReady(page);
+    await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
+  });
+  ```
+- This ensures all tests start from the initial page and are reliable across environments.
 
 ---
 
@@ -197,12 +219,14 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) for all c
   - fix: prevent cross-area localStorage contamination
   ```
 
+
 ### PR description should include
 - What changed (1–3 bullets)
 - Why it changed
 - How to test locally
 - Any deployment impact (S3/Vercel)
 - Mention the **RED/GREEN commit structure** when relevant
+- **Always update CHANGELOG.md for every PR.**
 
 ---
 
