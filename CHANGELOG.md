@@ -1,6 +1,7 @@
 # CHANGELOG.md
 
 ## [Unreleased]
+- bug: fix sequential order skipping first question in section
 - docs: add Conventional Commits and changelog process to AGENT_PLAN.md
 - docs: explain release identification and independent data/code evolution
 
