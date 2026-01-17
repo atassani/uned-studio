@@ -123,6 +123,16 @@ npm run build
   2) **GREEN commit**: implementation to make it pass
 - If the failing test cannot be committed (e.g. test requires unavailable infrastructure or is unavoidably flaky), explain why clearly in the PR.
 
+### Test scripts: unit and E2E
+- `npm test` runs both Jest unit tests and Playwright E2E tests (sequentially).
+- `npm run test:unit` runs only Jest unit tests.
+- `npm run test:e2e` runs only Playwright E2E tests.
+- Use the focused Playwright command for a single E2E test:
+  ```bash
+  npx playwright test tests/e2e/your-test.spec.ts --reporter=list --project=chromium
+  ```
+- This setup allows you to run all or just one type of test as needed.
+
 ### Jest (unit/integration)
 - Use Jest for deterministic logic and fast feedback.
 - For bugfixes: add a regression test that fails before the fix.
