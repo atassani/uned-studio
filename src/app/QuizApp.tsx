@@ -1208,8 +1208,16 @@ export default function QuizApp() {
           if (e.key.toLowerCase() === 'f') handleAnswer('F');
         } else if (currentQuizType === "Multiple Choice") {
           const letter = e.key.toLowerCase();
-          if (['a', 'b', 'c', 'd', 'e', 'f'].includes(letter)) {
+          if ([
+            'a', 'b', 'c', 'd', 'e', 'f'
+          ].includes(letter)) {
             handleAnswer(letter);
+          }
+          // Numeric shortcuts: 1 = A, 2 = B, ...
+          const num = parseInt(e.key, 10);
+          if (!isNaN(num) && num >= 1 && current !== null && questions[current]?.options && num <= questions[current].options.length) {
+            const letterForNum = String.fromCharCode(96 + num); // 1->a, 2->b, ...
+            handleAnswer(letterForNum);
           }
         }
         if (e.key.toLowerCase() === 'e') goToStatusWithResume();
