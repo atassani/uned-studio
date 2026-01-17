@@ -1,5 +1,4 @@
 import { Page, expect } from '@playwright/test';
-
 const homePath = process.env.BASE_PATH || '';
 
 /**

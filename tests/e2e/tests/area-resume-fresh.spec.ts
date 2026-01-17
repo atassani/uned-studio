@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { setupFreshTest } from './helpers';
-
 test.describe('Resume Quiz Fresh Experience', () => {
   test.beforeEach(async ({ page }) => {
     await setupFreshTest(page);

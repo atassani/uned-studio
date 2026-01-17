@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { setupFreshTest, waitForAppReady } from './helpers';
-
 // Clear localStorage before each test to ensure a clean state
 test.beforeEach(async ({ page }) => {
   await setupFreshTest(page);

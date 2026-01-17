@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 import { setupFreshTest } from './helpers';
-
 test.beforeEach(async ({ page }) => {
   await setupFreshTest(page);
 });
