@@ -107,9 +107,9 @@ And check out the following files:
 
 ## ¿Qué es appearsIn?
 
-En `questions_ipc.json`, cada pregunta puede tener un campo opcional `appearsIn`, que es un array de strings. Este array indica en qué secciones (temas o exámenes) aparece la pregunta.
+En `questions-ipc.json`, cada pregunta puede tener un campo opcional `appearsIn`, que es un array de strings. Este array indica en qué secciones (temas o exámenes) aparece la pregunta.
 
-- El campo `appearsIn` solo existe en `questions_ipc.json`.
+- El campo `appearsIn` solo existe en `questions-ipc.json`.
 - Los valores de `appearsIn` siempre son nombres de sección o examen válidos, extraídos del propio archivo.
 - Si la explicación de una pregunta termina con referencias a secciones o exámenes (por ejemplo, "Examen 2024 Febrero 1; Tema 1."), esas referencias se extraen y se colocan en el array `appearsIn`, y se eliminan de la explicación.
 - Si no hay referencias, el campo puede estar ausente o ser un array vacío.
@@ -121,7 +121,7 @@ Cuando una pregunta tiene el campo `appearsIn`, la aplicación muestra una lista
 ## Validación automática
 
 Existe un test unitario (`tests/unit/appears-in-field.test.ts`) que garantiza que:
-- Solo las preguntas de `questions_ipc.json` pueden tener el campo `appearsIn`.
+- Solo las preguntas de `questions-ipc.json` pueden tener el campo `appearsIn`.
 - Todos los valores de `appearsIn` son nombres de sección o examen válidos presentes en el archivo.
 
 Esto asegura la coherencia y mantenibilidad de los datos.
