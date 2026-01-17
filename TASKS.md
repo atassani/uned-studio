@@ -12,6 +12,13 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
+### FEAT-001 — Keyboard shortcuts for multiple-choice (1/2/3…)
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-16
+- **Reporter:** TT
+- **Notes:** Allow numeric keys to select answers, in addition to A/B/C.
+
 ### BUG-002 — Duplicated / missing questions in IPC exam sections
 - **Status:** backlog
 - **Priority:** P1
@@ -44,13 +51,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reported:** 2025-01-16
 - **Reporter:** TT
 - **Notes:** Show A..N depending on options; don’t assume exactly 3.
-
-### FEAT-001 — Keyboard shortcuts for multiple-choice (1/2/3…)
-- **Status:** backlog
-- **Priority:** P3
-- **Reported:** 2025-01-16
-- **Reporter:** TT
-- **Notes:** Allow numeric keys to select answers, in addition to A/B/C.
 
 ### TECH-002 — Consolidate localStorage keys under a single root key
 - **Status:** backlog
