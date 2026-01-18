@@ -47,3 +47,5 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+public/areas-mcq-tests.json
+public/questions-mcq-tests.json
