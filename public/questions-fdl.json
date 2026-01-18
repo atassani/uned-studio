@@ -65,8 +65,7 @@
     "question": "En el análisis lógico-semántico del lenguaje que hace Frege, ¿por qué se sustituye la estructura gramatical de sujeto-predicado?",
     "options": [
       "Por las categorías gramaticales de sintagma nominal y verbal.",
-      "Por la estructura lógico-matemática de argumento-función.",
-      "IGNORA"
+      "Por la estructura lógico-matemática de argumento-función."
     ],
     "answer": "Por la estructura lógico-matemática de argumento-función.",
     "explanation": ""
@@ -209,8 +208,7 @@
     "question": "De acuerdo con Kripke, ¿qué expresiones son designadores rígidos?",
     "options": [
       "Los nombres propios.",
-      "Las descripciones definidas.",
-      "IGNORA"
+      "Las descripciones definidas."
     ],
     "answer": "Los nombres propios.",
     "explanation": ""
