@@ -19,10 +19,10 @@ test.describe('Question Order Control', () => {
     // Start Lógica I quiz
     await page.getByRole('button', { name: /Lógica I/ }).click();
     // Switch to sequential order (click label)
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await expect(page.getByLabel('Alternar orden de preguntas')).toBeChecked();
     // Switch back to random order (click label)
-    await page.getByText('Orden aleatorio').click();
+    await page.getByRole('button', { name: 'Orden aleatorio' }).click();
     await expect(page.getByLabel('Alternar orden de preguntas')).not.toBeChecked();
   });
 
@@ -30,7 +30,7 @@ test.describe('Question Order Control', () => {
   test('sequential order shows questions by number order', async ({ page }) => {
     // Start Lógica I quiz with sequential order
     await page.getByRole('button', { name: /Lógica I/ }).click();
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
     
     // First question should be question number 1
@@ -48,7 +48,7 @@ test.describe('Question Order Control', () => {
   test('random order shows questions in randomized order', async ({ page }) => {
     // Start Lógica I quiz with random order
     await page.getByRole('button', { name: /Lógica I/ }).click();
-    await page.getByText('Orden aleatorio').click();
+    await page.getByRole('button', { name: 'Orden aleatorio' }).click();
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
     
     // Collect first few question numbers to verify randomness
@@ -75,7 +75,7 @@ test.describe('Question Order Control', () => {
   test('question order preference applies to section selection', async ({ page }) => {
     // Start Lógica I quiz with sequential order
     await page.getByRole('button', { name: /Lógica I/ }).click();
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Seleccionar secciones' }).click();
     
     // Select a section and verify order
@@ -91,13 +91,14 @@ test.describe('Question Order Control', () => {
   test('question order preference is per-area', async ({ page }) => {
     // Set Lógica I to sequential
     await page.getByRole('button', { name: /Lógica I/ }).click();
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Cambiar área' }).click();
     // Switch to IPC area - should default to random
     await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-    await expect(page.getByLabel('Alternar orden de preguntas')).not.toBeChecked();
+    // Wait for the area to load and state to update from localStorage
+    await expect(page.getByLabel('Alternar orden de preguntas')).not.toBeChecked({ timeout: 2000 });
     // Set IPC to sequential
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Cambiar área' }).click();
     // Return to Lógica I - should still be sequential
     await page.getByRole('button', { name: /Lógica I/ }).click();
@@ -107,7 +108,7 @@ test.describe('Question Order Control', () => {
   test('sequential order works for question selection mode', async ({ page }) => {
     // Start Lógica I quiz with sequential order
     await page.getByRole('button', { name: /Lógica I/ }).click();
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Seleccionar preguntas' }).click();
     
     // Wait for question list to load and select a few specific questions
@@ -139,7 +140,7 @@ test.describe('Question Order Control', () => {
   test('sequential order preserved after resuming quiz', async ({ page }) => {
     // Start quiz with sequential order and answer first question
     await page.getByRole('button', { name: /Lógica I/ }).click();
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
     
     // Verify first question is 1
@@ -173,7 +174,7 @@ test.describe('Question Order Control', () => {
   test('sequential order applies consistently across all quiz modes', async ({ page }) => {
     // Test all quiz modes use sequential order when selected
     await page.getByRole('button', { name: /Lógica I/ }).click();
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     
     // Test "Todas las preguntas" mode
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();

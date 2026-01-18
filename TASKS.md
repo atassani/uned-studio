@@ -10,13 +10,14 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ---
 
+
 ## Now
 
 ### FEAT-003 — Shuffle multiple-choice answer order (optional)
-- **Status:** backlog
+- **Status:** in-progress
 - **Priority:** P3
 - **Reported:** 2025-01-16
-- **Reporter:** TT
+- **Assignee:** GitHub Copilot
 - **Notes:** Randomize options each time; adjust correct answer accordingly; add setting to enable/disable.
 
 ---

@@ -74,8 +74,10 @@ export default function QuizApp() {
   const [showAreaSelection, setShowAreaSelection] = useState<boolean>(true);
   const [currentQuizType, setCurrentQuizType] = useState<"True False" | "Multiple Choice" | null>(null);
 
-  // Question order control state
-  const [questionOrder, setQuestionOrder] = useState<"random" | "sequential">("random");
+  // Shuffle questions toggle state
+  const [shuffleQuestions, setShuffleQuestions] = useState<boolean>(true); // true = random, false = sequential
+  // Shuffle answers toggle state
+  const [shuffleAnswers, setShuffleAnswers] = useState<boolean>(false);
 
   // Persist current question index per area (must be after selectedArea is defined)
 
@@ -88,11 +90,47 @@ export default function QuizApp() {
 
   // Persist question order preference per area
   useEffect(() => {
+    if (selectedArea && shuffleQuestions !== undefined) {
+      const areaKey = selectedArea.shortName;
+      localStorage.setItem(`shuffleQuestions_${areaKey}`, JSON.stringify(shuffleQuestions));
+    }
+  }, [shuffleQuestions]); // Only run when shuffleQuestions changes, not when selectedArea changes
+
+  // Load question order preference when area changes
+  useEffect(() => {
     if (selectedArea) {
       const areaKey = selectedArea.shortName;
-      localStorage.setItem(`questionOrder_${areaKey}`, questionOrder);
+      const saved = localStorage.getItem(`shuffleQuestions_${areaKey}`);
+      if (saved !== null) {
+        setShuffleQuestions(JSON.parse(saved));
+      } else {
+        // Default to true (random/shuffled) for new areas
+        setShuffleQuestions(true);
+      }
     }
-  }, [selectedArea, questionOrder]);
+  }, [selectedArea]);
+
+  // Persist answer order preference per area
+  useEffect(() => {
+    if (selectedArea && shuffleAnswers !== undefined) {
+      const areaKey = selectedArea.shortName;
+      localStorage.setItem(`shuffleAnswers_${areaKey}`, JSON.stringify(shuffleAnswers));
+    }
+  }, [shuffleAnswers]); // Only run when shuffleAnswers changes, not when selectedArea changes
+
+  // Load answer order preference when area changes
+  useEffect(() => {
+    if (selectedArea) {
+      const areaKey = selectedArea.shortName;
+      const saved = localStorage.getItem(`shuffleAnswers_${areaKey}`);
+      if (saved !== null) {
+        setShuffleAnswers(JSON.parse(saved));
+      } else {
+        // Default to false (no shuffle) for new areas
+        setShuffleAnswers(false);
+      }
+    }
+  }, [selectedArea]);
 
   // Load areas on component mount and migrate any old global quizStatus to per-area keys
   useEffect(() => {
@@ -134,12 +172,19 @@ export default function QuizApp() {
           if (areaToRestore) {
             setSelectedArea(areaToRestore);
             setCurrentQuizType(areaToRestore.type);
-            // Restore question order for this area
-            const savedOrder = localStorage.getItem(`questionOrder_${areaToRestore.shortName}`) as "random" | "sequential" | null;
-            if (savedOrder) {
-              setQuestionOrder(savedOrder);
+            // Restore shuffleQuestions for this area
+            const savedShuffleQuestions = localStorage.getItem(`shuffleQuestions_${areaToRestore.shortName}`);
+            if (savedShuffleQuestions !== null) {
+              setShuffleQuestions(JSON.parse(savedShuffleQuestions));
             } else {
-              setQuestionOrder("random");
+              setShuffleQuestions(true);
+            }
+            // Restore shuffleAnswers for this area
+            const savedShuffleAnswers = localStorage.getItem(`shuffleAnswers_${areaToRestore.shortName}`);
+            if (savedShuffleAnswers !== null) {
+              setShuffleAnswers(JSON.parse(savedShuffleAnswers));
+            } else {
+              setShuffleAnswers(false);
             }
             // Do not hide area selection here; let user/test choose area
             return;
@@ -171,11 +216,7 @@ export default function QuizApp() {
     const savedStatus = localStorage.getItem(`quizStatus_${areaKey}`);
     const savedCurrent = localStorage.getItem(`currentQuestion_${areaKey}`);
     const savedSelectedQuestions = localStorage.getItem(`selectedQuestions_${areaKey}`);
-    const savedOrder = localStorage.getItem(`questionOrder_${areaKey}`) as "random" | "sequential" | null;
-    
-    let restoredOrder: "random" | "sequential" = "random";
-    if (savedOrder === "sequential") restoredOrder = "sequential";
-    setQuestionOrder(restoredOrder);
+    // questionOrder_${areaKey} is now handled by shuffleQuestions state
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${area.file}`);
     if (currentLoadingAreaRef.current !== loadingId) return;
     if (response.ok) {
@@ -194,9 +235,13 @@ export default function QuizApp() {
       }
       setStatus(parsedStatus);
       
-      // Order questions according to restoredOrder
+      // Load shuffle preference for this area from localStorage
+      const savedShuffleQuestions = localStorage.getItem(`shuffleQuestions_${areaKey}`);
+      const shouldShuffleQuestions = savedShuffleQuestions !== null ? JSON.parse(savedShuffleQuestions) : true;
+      
+      // Order questions according to shuffle preference
       let orderedQuestions = [...questionsWithIndex];
-      if (restoredOrder === "sequential") {
+      if (!shouldShuffleQuestions) {
         orderedQuestions.sort((a, b) => a.number - b.number);
       }
       
@@ -347,17 +392,7 @@ export default function QuizApp() {
     setSelectedQuestions(new Set());
 
     // Robust localStorage clearing for iOS Safari compatibility
-    const clearLocalStorageRobust = () => {
-      if (!selectedArea) {
-        // Clear generic currentArea if no selected area
-        try {
-          localStorage.removeItem('currentArea');
-        } catch (error) {
-          console.warn('Failed to remove currentArea:', error);
-        }
-        return;
-      }
-      
+    if (selectedArea) {
       const areaKey = selectedArea.shortName;
       const keysToRemove = [
         'currentArea',
@@ -404,27 +439,13 @@ export default function QuizApp() {
           }
         });
       }, 100);
-    };
-
-    // Execute localStorage clearing with iOS compatibility measures
-    try {
-      clearLocalStorageRobust();
-    } catch (error) {
-      console.error('Error clearing localStorage:', error);
-      // Last resort for iOS Safari - try clearing all localStorage
-      try {
-        localStorage.clear();
-        console.log('Performed full localStorage.clear() as fallback');
-      } catch (clearError) {
-        console.error('Even localStorage.clear() failed:', clearError);
-      }
     }
   }, [selectedArea]);
 
   // Start quiz with all questions
   // Centralized ordering logic
   function getOrderedQuestions(questions: QuestionType[]): QuestionType[] {
-    if (questionOrder === 'sequential') {
+    if (!shuffleQuestions) {
       return [...questions].sort((a, b) => a.number - b.number);
     }
     return [...questions];
@@ -456,7 +477,7 @@ export default function QuizApp() {
     setShowResult(null);
     setShowSelectionMenu(false);
     setSelectionMode(null);
-  }, [allQuestions, selectedArea, questionOrder]);
+  }, [allQuestions, selectedArea, shuffleQuestions]);
 
   // Start quiz with selected sections
   const startQuizSections = useCallback(() => {
@@ -494,7 +515,7 @@ export default function QuizApp() {
     setShowResult(null);
     setShowSelectionMenu(false);
     setSelectionMode(null);
-  }, [allQuestions, selectedSections, selectedArea, questionOrder]);
+  }, [allQuestions, selectedSections, selectedArea, shuffleQuestions]);
 
   // Start quiz with selected questions
   const startQuizQuestions = useCallback(() => {
@@ -532,7 +553,7 @@ export default function QuizApp() {
     setShowResult(null);
     setShowSelectionMenu(false);
     setSelectionMode(null);
-  }, [allQuestions, selectedQuestions, selectedArea, questionOrder]);
+  }, [allQuestions, selectedQuestions, selectedArea, shuffleQuestions]);
 
   // Load questions for selected area
   const loadQuestionsForArea = useCallback(async (area: AreaType) => {
@@ -604,44 +625,77 @@ export default function QuizApp() {
           </div>
         )}
         <div className="text-2xl font-bold mb-4">¿Cómo quieres las preguntas?</div>
-        
         {/* Question Order Selection */}
-        <div className="flex flex-col items-center space-y-2 mb-4">
+        {/* Orden de preguntas */}
+        <div className="flex flex-col items-center space-y-2 mb-2">
           <div className="text-lg font-semibold mb-2">Orden de preguntas:</div>
           <div className="flex items-center justify-center w-64">
             <span
-              className={`text-sm font-medium mr-3 cursor-pointer ${questionOrder === 'random' ? 'text-blue-600' : 'text-gray-500'}`}
-              onClick={() => setQuestionOrder('random')}
+              className={`text-sm font-medium mr-3 cursor-pointer ${shuffleQuestions ? 'text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setShuffleQuestions(true)}
               tabIndex={0}
               role="button"
               aria-label="Orden aleatorio"
             >
-              Orden aleatorio
+              Aleatorio
             </span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={questionOrder === 'sequential'}
-                onChange={e => setQuestionOrder(e.target.checked ? 'sequential' : 'random')}
+                checked={!shuffleQuestions}
+                onChange={e => setShuffleQuestions(!e.target.checked)}
                 className="sr-only peer"
                 aria-label="Alternar orden de preguntas"
               />
               <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
-                <div className={`absolute left-0 top-0 h-8 w-8 rounded-full bg-blue-600 transition-transform duration-300 ${questionOrder === 'sequential' ? 'translate-x-6' : ''}`}></div>
+                <div className={`absolute left-0 top-0 h-8 w-8 rounded-full bg-blue-600 transition-transform duration-300 ${!shuffleQuestions ? 'translate-x-6' : ''}`}></div>
               </div>
             </label>
             <span
-              className={`text-sm font-medium ml-3 cursor-pointer ${questionOrder === 'sequential' ? 'text-blue-600' : 'text-gray-500'}`}
-              onClick={() => setQuestionOrder('sequential')}
+              className={`text-sm font-medium ml-3 cursor-pointer ${!shuffleQuestions ? 'text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setShuffleQuestions(false)}
               tabIndex={0}
               role="button"
               aria-label="Orden secuencial"
             >
-              Orden secuencial
+              Secuencial
             </span>
           </div>
         </div>
-        
+        {/* Orden de respuestas */}
+        <div className="flex flex-col items-center space-y-2 mb-4">
+          <div className="text-lg font-semibold mb-2">Orden de respuestas:</div>
+          <div className="flex items-center justify-center w-64">
+            <span className={`text-sm font-medium mr-3 cursor-pointer ${!shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setShuffleAnswers(false)}
+              tabIndex={0}
+              role="button"
+              aria-label="Aleatorizar respuestas"
+            >
+              Aleatorio
+            </span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={shuffleAnswers}
+                onChange={e => setShuffleAnswers(e.target.checked)}
+                className="sr-only peer"
+                aria-label="Alternar orden de respuestas"
+              />
+              <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
+                <div className={`absolute left-0 top-0 h-8 w-8 rounded-full bg-blue-600 transition-transform duration-300 ${shuffleAnswers ? 'translate-x-6' : ''}`}></div>
+              </div>
+            </label>
+            <span className={`text-sm font-medium ml-3 cursor-pointer ${shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setShuffleAnswers(true)}
+              tabIndex={0}
+              role="button"
+              aria-label="Respuestas secuenciales"
+            >
+              Secuencial
+            </span>
+          </div>
+        </div>
         <button className="px-6 py-3 bg-blue-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("all"); startQuizAll(); }} aria-label="Todas las preguntas">Todas las preguntas</button>
         <button className="px-6 py-3 bg-green-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("sections"); }} aria-label="Seleccionar secciones">Seleccionar secciones</button>
         <button className="px-6 py-3 bg-purple-600 text-white rounded text-lg w-64" onClick={() => { setSelectionMode("questions"); }} aria-label="Seleccionar preguntas">Seleccionar preguntas</button>
@@ -818,7 +872,7 @@ export default function QuizApp() {
       return;
     }
     let nextIdx: number | null = null;
-    if (questionOrder === 'sequential') {
+    if (!shuffleQuestions) {
       // Find the next higher-numbered pending question after current, or the lowest if at end
       const currentIdx = current ?? -1;
       // Get all pending questions sorted by .number
@@ -1003,14 +1057,20 @@ export default function QuizApp() {
         )}
         {currentQuizType === "Multiple Choice" && Array.isArray(q.options) && (
           <div className="mt-4 space-y-2">
-            {q.options.map((option: string, index: number) => {
-              const letter = String.fromCharCode(65 + index); // 'A', 'B', 'C', etc.
-              return (
-                <div key={index} className="text-base">
-                  <span className="font-bold">{letter})</span> {option}
-                </div>
-              );
-            })}
+            {(() => {
+              // Shuffle options if shuffleAnswers is true
+              const displayOptions = shuffleAnswers 
+                ? [...q.options].sort(() => Math.random() - 0.5)
+                : q.options;
+              return displayOptions.map((option: string, index: number) => {
+                const letter = String.fromCharCode(65 + index); // 'A', 'B', 'C', etc.
+                return (
+                  <div key={index} className="text-base">
+                    <span className="font-bold">{letter})</span> {option}
+                  </div>
+                );
+              });
+            })()}
           </div>
         )}
         
@@ -1024,18 +1084,25 @@ export default function QuizApp() {
         ) : (
           // Multiple Choice A/B/C buttons
           <div className="flex gap-4 mt-4">
-            {Array.isArray(q.options) && q.options.map((option: string, index: number) => {
-              const letter = String.fromCharCode(65 + index); // 'A', 'B', 'C', etc.
-              return (
-                <button
-                  key={index}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-lg"
-                  onClick={() => handleAnswer(letter.toLowerCase())}
-                >
-                  {letter}
-                </button>
-              );
-            })}
+            {(() => {
+              if (!Array.isArray(q.options)) return null;
+              // Shuffle options if shuffleAnswers is true
+              const displayOptions = shuffleAnswers 
+                ? [...q.options].sort(() => Math.random() - 0.5)
+                : q.options;
+              return displayOptions.map((option: string, index: number) => {
+                const letter = String.fromCharCode(65 + index); // 'A', 'B', 'C', etc.
+                return (
+                  <button
+                    key={index}
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-lg"
+                    onClick={() => handleAnswer(letter.toLowerCase())}
+                  >
+                    {letter}
+                  </button>
+                );
+              });
+            })()}
             <button className="px-6 py-2 bg-gray-400 text-white rounded text-lg" onClick={goToStatusWithResume}>Options</button>
           </div>
         )}
@@ -1241,7 +1308,7 @@ export default function QuizApp() {
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showAreaSelection, areas, showSelectionMenu, selectionMode, selectedSections, selectedQuestions, showStatus, showResult, current, questions, currentQuizType, questionOrder, loadQuestionsForArea, handleAnswer, goToStatusWithResume, handleContinue, resetQuiz, startQuizAll, startQuizSections, startQuizQuestions, pendingQuestions]);
+  }, [showAreaSelection, areas, showSelectionMenu, selectionMode, selectedSections, selectedQuestions, showStatus, showResult, current, questions, currentQuizType, shuffleQuestions, loadQuestionsForArea, handleAnswer, goToStatusWithResume, handleContinue, resetQuiz, startQuizAll, startQuizSections, startQuizQuestions, pendingQuestions]);
 
   const allAnswered = questions.length > 0 && Object.values(status).filter(s => s === "pending").length === 0;
   return (

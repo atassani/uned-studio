@@ -12,7 +12,7 @@ test.describe('Question Order Bugs', () => {
   test('sequential order with manually set localStorage to trigger bug', async ({ page }) => {
     // First, start clean and get to a quiz state
     await page.getByRole('button', { name: /Lógica I/ }).click();
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     
     // Manually set localStorage to simulate having answered question 1 and being on question 2
     await page.evaluate(() => {

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest } from './helpers';
+import { setupFreshTest, waitForQuizReady } from './helpers';
 
 test.describe('Resume Quiz Fresh Experience', () => {
   test.beforeEach(async ({ page }) => {
@@ -11,7 +11,7 @@ test.describe('Resume Quiz Fresh Experience', () => {
   await page.waitForLoadState('networkidle');
   await page.getByRole('button', { name: /Lógica I/ }).waitFor();
   await page.getByRole('button', { name: /Lógica I/ }).click();
-  await page.getByText('Orden secuencial').click();
+  await page.getByRole('button', { name: 'Orden secuencial' }).click();
   await page.getByRole('button', { name: 'Todas las preguntas' }).click();
   
   // Wait for quiz to load and answer 2 questions
@@ -45,8 +45,9 @@ test.describe('Resume Quiz Fresh Experience', () => {
   test('Clicking "Todas las preguntas" always starts fresh', async ({ page }) => {
   // Go to IPC, answer 2 questions
   await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-  await page.getByText('Orden secuencial').click();
+  await page.getByRole('button', { name: 'Orden secuencial' }).click();
   await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+  await waitForQuizReady(page);
   for (let i = 0; i < 2; i++) {
     await page.getByRole('button', { name: 'A', exact: true }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
@@ -56,6 +57,7 @@ test.describe('Resume Quiz Fresh Experience', () => {
   await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
   // Click "Todas las preguntas" again
   await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+  await waitForQuizReady(page);
   // Should be on question 1
   //await expect(page.getByText(/1\./)).toBeVisible();
   const isVisible = await page.getByText(/1\./).first().isVisible();

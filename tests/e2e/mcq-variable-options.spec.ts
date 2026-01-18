@@ -9,7 +9,7 @@ test.describe('MCQ variable options (2–5)', () => {
   test('should render and allow keyboard shortcuts for MCQ with 2 options', async ({ page }) => {
     // Go to area with MCQ (e.g., IPC)
     await page.getByRole('button', { name: /MCQ/i }).click();
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: /todas las preguntas/i }).click();
     await waitForQuizReady(page);
 
@@ -45,7 +45,7 @@ test.describe('MCQ variable options (2–5)', () => {
     test(`should display ${count} answer buttons for MCQ with ${count} options`, async ({ page }) => {
       // Start quiz in area with MCQ (e.g., IPC)
       await page.getByRole('button', { name: /MCQ/i }).click();
-      await page.getByText('Orden secuencial').click();
+      await page.getByRole('button', { name: 'Orden secuencial' }).click();
       await page.getByRole('button', { name: /todas las preguntas/i }).click();
       await waitForQuizReady(page);
 

@@ -10,7 +10,7 @@ test.describe('MCQ variable number of answers', () => {
     // Use test data with MCQ questions having 2, 3, 4, 5 options in order
     await page.getByRole('button', { name: /MCQ/i }).click();
     // Set to sequential order to ensure predictable question order
-    await page.getByText('Orden secuencial').click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: /todas las preguntas/i }).click();
     await waitForQuizReady(page);
 
