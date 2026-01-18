@@ -96,7 +96,15 @@ export default function QuizApp() {
 
   // Load areas on component mount and migrate any old global quizStatus to per-area keys
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/areas.json`)
+    // Support custom areas file via env var or ?areas= query param
+    let areasFile = process.env.NEXT_PUBLIC_AREAS_FILE || 'areas.json';
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('areas')) {
+        areasFile = params.get('areas')!;
+      }
+    }
+    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${areasFile}`)
       .then((r) => {
         if (!r.ok) {
           throw new Error(`HTTP error! status: ${r.status}`);
