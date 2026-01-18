@@ -12,17 +12,17 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-
----
-
-## Backlog
-
 ### FEAT-003 — Shuffle multiple-choice answer order (optional)
 - **Status:** backlog
 - **Priority:** P3
 - **Reported:** 2025-01-16
 - **Reporter:** TT
 - **Notes:** Randomize options each time; adjust correct answer accordingly; add setting to enable/disable.
+
+---
+
+## Backlog
+
 
 ### TECH-002 — Consolidate localStorage keys under a single root key
 - **Status:** backlog
