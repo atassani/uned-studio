@@ -12,12 +12,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### FEAT-002 — Support variable number of answers in multiple choice (2..5)
-- **Status:** backlog
-- **Priority:** P2
-- **Reported:** 2025-01-16
-- **Reporter:** TT
-- **Notes:** Show A..E depending on options; don’t assume exactly 3.
 
 ---
 
@@ -54,6 +48,17 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ---
 
 ## Done
+
+### ✅ FEAT-002 — Support variable number of answers in multiple choice (2..5)
+- **Status:** done
+- **Priority:** P2
+- **Reported:** 2025-01-16
+- **Completed:** 2026-01-18
+- **Assignee:** GitHub Copilot
+- **Commits:**
+  - RED: E2E test for MCQ variable options (mcq-variable-options.spec.ts)
+  - GREEN: Test data infrastructure and custom areas file support
+- **Notes:** Added support for MCQ questions with 2-5 answer options (not just 3). Created test data infrastructure to keep test-only data separate from production. Added environment variable support for custom areas.json file.
 
 ### ✅ BUG-002 — Duplicated / missing questions in IPC exam sections
 - **Status:** backlog
