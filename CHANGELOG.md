@@ -2,6 +2,8 @@
 
 
 ## [Unreleased]
+- feat: support variable number of MCQ answers (2-5)
+- feat: add test data infrastructure for E2E testing
 
 ## [1.4.1] - 2026-01-17
 - feat: add numeric keyboard shortcuts for MCQ answers (1/2/3…)
