@@ -3,7 +3,7 @@ import { setupSuperFreshTest, waitForQuizReady } from './helpers';
 
 test.describe('Randomization Bugs', () => {
   test.beforeEach(async ({ page }) => {
-    await setupSuperFreshTest(page, '42');
+    await setupSuperFreshTest(page);
   });
 
   test('random question order should randomize first question', async ({ page }) => {
@@ -30,9 +30,6 @@ test.describe('Randomization Bugs', () => {
 
     // If randomization works, we shouldn't always get question 1
     const allSameQuestion = firstQuestions.every((q) => q === firstQuestions[0]);
-
-    // Log the results for debugging
-    console.log('First questions seen:', firstQuestions);
 
     expect(allSameQuestion).toBe(false);
   });

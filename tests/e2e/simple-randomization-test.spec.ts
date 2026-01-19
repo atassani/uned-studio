@@ -3,7 +3,7 @@ import { setupFreshTest } from './helpers';
 
 test.describe('Simple Randomization Test', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page, '42');
+    await setupFreshTest(page);
   });
 
   test('question order demonstrates the bug', async ({ page }) => {
@@ -14,7 +14,6 @@ test.describe('Simple Randomization Test', () => {
 
     // Log all visible .question-text elements before waiting
     const allQuestions = await page.locator('.question-text').allInnerTexts();
-    console.log('All .question-text before waiting:', allQuestions);
     // Wait for the quiz to load
     await page.waitForSelector('.question-text');
 
@@ -25,9 +24,6 @@ test.describe('Simple Randomization Test', () => {
       questionElement1 = await page.locator('.question-text').first();
       questionText1 = await questionElement1.innerText();
     } catch (e) {
-      console.log('Failed to find .question-text (first attempt). Current URL:', page.url());
-      const html = await page.content();
-      console.log('Current page HTML (first attempt):', html);
       throw e;
     }
     const match1 = questionText1.match(/^(\d+)\./);
@@ -39,7 +35,6 @@ test.describe('Simple Randomization Test', () => {
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
     // Log all visible .question-text elements before waiting (second attempt)
     const allQuestions2 = await page.locator('.question-text').allInnerTexts();
-    console.log('All .question-text before waiting (second attempt):', allQuestions2);
     await page.waitForSelector('.question-text');
 
     // Get the first question number - second attempt
@@ -49,16 +44,10 @@ test.describe('Simple Randomization Test', () => {
       questionElement2 = await page.locator('.question-text').first();
       questionText2 = await questionElement2.innerText();
     } catch (e) {
-      console.log('Failed to find .question-text (second attempt). Current URL:', page.url());
-      const html = await page.content();
-      console.log('Current page HTML (second attempt):', html);
       throw e;
     }
     const match2 = questionText2.match(/^(\d+)\./);
     const firstQuestionNum2 = match2 ? parseInt(match2[1], 10) : null;
-
-    console.log('First attempt first question:', firstQuestionNum1);
-    console.log('Second attempt first question:', firstQuestionNum2);
 
     // If randomization works, these should be different
     expect(firstQuestionNum1).not.toBe(firstQuestionNum2); // This should fail, showing the bug

@@ -1,7 +1,6 @@
 'use client';
 import { useCallback } from 'react';
 import { QuestionType, AreaType } from '../types';
-import { seededRandom } from '../utils';
 
 interface UseQuizLogicProps {
   allQuestions: QuestionType[];
@@ -36,48 +35,18 @@ export function useQuizLogic({
   setSelectedSections,
   setSelectedQuestions,
 }: UseQuizLogicProps) {
-  // Store the random generator and seed for the session
-  let sessionSeed: number | null = null;
-  let sessionRand: (() => number) | null = null;
-  function getSessionRand() {
-    if (sessionRand) return sessionRand;
-    let seed: number | null = null;
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('seed')) {
-        seed = parseInt(params.get('seed')!, 10);
-      }
-    }
-    if (!seed && typeof process !== 'undefined' && process.env.NEXT_PUBLIC_TEST_SEED) {
-      seed = parseInt(process.env.NEXT_PUBLIC_TEST_SEED, 10);
-    }
-    if (!seed) {
-      if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
-        const array = new Uint32Array(1);
-        window.crypto.getRandomValues(array);
-        seed = array[0];
-      } else {
-        seed = Date.now() + Math.floor(Math.random() * 1000000);
-      }
-    }
-    sessionSeed = seed!;
-    sessionRand = seededRandom(sessionSeed);
-    return sessionRand;
-  }
-
   // Start quiz with all questions
   const startQuizAll = useCallback(() => {
     if (!selectedArea) return;
 
     const areaKey = selectedArea.shortName;
-    let orderedQuestions = [...allQuestions];
+    const orderedQuestions = [...allQuestions];
 
     // Apply ordering based on shuffleQuestions setting
     if (shuffleQuestions) {
-      const rand = getSessionRand();
-      // Fisher-Yates shuffle
+      // Fisher-Yates shuffle using Math.random
       for (let i = orderedQuestions.length - 1; i > 0; i--) {
-        const j = Math.floor(rand() * (i + 1));
+        const j = Math.floor(Math.random() * (i + 1));
         [orderedQuestions[i], orderedQuestions[j]] = [orderedQuestions[j], orderedQuestions[i]];
       }
     } else {
@@ -148,14 +117,13 @@ export function useQuizLogic({
     const areaKey = selectedArea.shortName;
     const filtered = allQuestions.filter((q) => selectedSections.has(q.section));
 
-    let orderedQuestions = [...filtered];
+    const orderedQuestions = [...filtered];
 
     // Apply ordering based on shuffleQuestions setting
     if (shuffleQuestions) {
-      const rand = getSessionRand();
-      // Fisher-Yates shuffle
+      // Fisher-Yates shuffle using Math.random
       for (let i = orderedQuestions.length - 1; i > 0; i--) {
-        const j = Math.floor(rand() * (i + 1));
+        const j = Math.floor(Math.random() * (i + 1));
         [orderedQuestions[i], orderedQuestions[j]] = [orderedQuestions[j], orderedQuestions[i]];
       }
     } else {
@@ -227,14 +195,13 @@ export function useQuizLogic({
     const areaKey = selectedArea.shortName;
     const filtered = allQuestions.filter((q) => selectedQuestions.has(q.index));
 
-    let orderedQuestions = [...filtered];
+    const orderedQuestions = [...filtered];
 
     // Apply ordering based on shuffleQuestions setting
     if (shuffleQuestions) {
-      const rand = getSessionRand();
-      // Fisher-Yates shuffle
+      // Fisher-Yates shuffle using Math.random
       for (let i = orderedQuestions.length - 1; i > 0; i--) {
-        const j = Math.floor(rand() * (i + 1));
+        const j = Math.floor(Math.random() * (i + 1));
         [orderedQuestions[i], orderedQuestions[j]] = [orderedQuestions[j], orderedQuestions[i]];
       }
     } else {

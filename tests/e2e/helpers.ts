@@ -1,5 +1,5 @@
 import { Page, expect } from '@playwright/test';
-const homePath = process.env.BASE_PATH || '';
+const homePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 /**
  * Common test setup - navigate to home and clear state for fresh start
@@ -84,10 +84,7 @@ export async function waitForQuizReady(page: Page) {
         .first() // Take the first match to avoid strict mode violations
     ).toBeVisible();
   } catch (error) {
-    // Log the current page state for debugging
-    console.error('Error in waitForQuizReady:', error);
-    console.log('Current URL:', page.url());
-    console.log('Page content:', await page.content());
+    // Optionally log error for debugging
     throw error; // Re-throw the error to ensure test fails with context
   }
 }

@@ -3,7 +3,7 @@ import { setupSuperFreshTest, waitForQuizReady, waitForAppReady } from './helper
 
 test.describe('MCQ shuffle option', () => {
   test('should randomize answer order when shuffle is enabled', async ({ page }) => {
-    await setupSuperFreshTest(page, '42');
+    await setupSuperFreshTest(page);
     await waitForAppReady(page);
     // Enable shuffle (assume a toggle exists)
     await page.getByRole('button', { name: /MCQ/i }).click();
@@ -29,7 +29,7 @@ test.describe('MCQ shuffle option', () => {
   });
 
   test('should keep answer order fixed when shuffle is disabled', async ({ page }) => {
-    await setupSuperFreshTest(page, '42');
+    await setupSuperFreshTest(page);
     await waitForAppReady(page);
     await page.getByRole('button', { name: /MCQ/i }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
