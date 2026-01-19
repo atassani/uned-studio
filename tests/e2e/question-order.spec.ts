@@ -6,8 +6,8 @@ test.describe('Question Order Control', () => {
   });
 
   test('shows question order selection toggle in quiz menu', async ({ page }) => {
-    // Start Lógica I quiz
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    // Start IPC quiz (Multiple Choice area)
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     // Should see question order toggle options
     await expect(page.getByText('Orden de preguntas:')).toBeVisible();
     await expect(page.getByLabel('Alternar orden de preguntas')).toBeVisible();
@@ -16,8 +16,8 @@ test.describe('Question Order Control', () => {
   });
 
   test('allows switching between random and sequential order', async ({ page }) => {
-    // Start Lógica I quiz
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    // Start IPC quiz (Multiple Choice area)
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     // Switch to sequential order (click label)
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await expect(page.getByLabel('Alternar orden de preguntas')).toBeChecked();
@@ -27,8 +27,8 @@ test.describe('Question Order Control', () => {
   });
 
   test('sequential order shows questions by number order', async ({ page }) => {
-    // Start Lógica I quiz with sequential order
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    // Start IPC quiz with sequential order (Multiple Choice area)
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
 
@@ -37,7 +37,7 @@ test.describe('Question Order Control', () => {
     expect(questionText).toMatch(/\n1\./);
 
     // Continue to next question - should be question 2
-    await page.getByRole('button', { name: 'V', exact: true }).click();
+    await page.getByRole('button', { name: 'A', exact: true }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
 
     const nextQuestionText = await page.locator('body').innerText();
@@ -45,8 +45,8 @@ test.describe('Question Order Control', () => {
   });
 
   test('random order shows questions in randomized order', async ({ page }) => {
-    // Start Lógica I quiz with random order
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    // Start IPC quiz with random order (Multiple Choice area)
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     await page.getByRole('button', { name: 'Orden aleatorio' }).click();
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
 
@@ -62,7 +62,7 @@ test.describe('Question Order Control', () => {
 
       if (i < 4) {
         // Don't continue after last question
-        await page.getByRole('button', { name: 'V', exact: true }).click();
+        await page.getByRole('button', { name: 'A', exact: true }).click();
         await page.getByRole('button', { name: 'Continuar' }).click();
       }
     }
@@ -73,13 +73,13 @@ test.describe('Question Order Control', () => {
   });
 
   test('question order preference applies to section selection', async ({ page }) => {
-    // Start Lógica I quiz with sequential order
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    // Start IPC quiz with sequential order (Multiple Choice area)
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Seleccionar secciones' }).click();
 
     // Select a section and verify order
-    await page.getByText('CUESTIONES GENERALES').click();
+    await page.getByText('Tema 1. Ciencia, hechos y evidencia').click();
     await page.getByRole('button', { name: 'Empezar' }).click();
 
     // Should start with the first question number in that section
@@ -89,25 +89,25 @@ test.describe('Question Order Control', () => {
   });
 
   test('question order preference is per-area', async ({ page }) => {
-    // Set Lógica I to sequential
-    await page.getByRole('button', { name: /Lógica I/ }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: 'Cambiar área' }).click();
-    // Switch to IPC area - should default to random
+    // Set IPC to sequential (Multiple Choice area)
     await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-    // Wait for the area to load and state to update from localStorage
-    await expect(page.getByLabel('Alternar orden de preguntas')).not.toBeChecked({ timeout: 2000 });
-    // Set IPC to sequential
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Cambiar área' }).click();
-    // Return to Lógica I - should still be sequential
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    // Switch to FDL area (Multiple Choice) - should not have question order set yet
+    await page.getByRole('button', { name: /Filosofía del Lenguaje/ }).click();
+    // The toggle should not be checked (randomized is default)
+    await expect(page.getByLabel('Alternar orden de preguntas')).not.toBeChecked({ timeout: 2000 });
+    // Set FDL to sequential
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
+    await page.getByRole('button', { name: 'Cambiar área' }).click();
+    // Return to IPC - should still be sequential
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     await expect(page.getByLabel('Alternar orden de preguntas')).toBeChecked();
   });
 
   test('sequential order works for question selection mode', async ({ page }) => {
-    // Start Lógica I quiz with sequential order
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    // Start IPC quiz with sequential order (Multiple Choice area)
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Seleccionar preguntas' }).click();
 
@@ -125,7 +125,7 @@ test.describe('Question Order Control', () => {
     const firstQuestionNum = parseInt(questionMatch![1], 10);
 
     // Continue to next question
-    await page.getByRole('button', { name: 'V', exact: true }).click();
+    await page.getByRole('button', { name: 'A', exact: true }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
 
     const nextQuestionText = await page.locator('body').innerText();
@@ -138,8 +138,8 @@ test.describe('Question Order Control', () => {
   });
 
   test('sequential order preserved after resuming quiz', async ({ page }) => {
-    // Start quiz with sequential order and answer first question
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    // Start quiz with sequential order and answer first question (Multiple Choice area)
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
 
@@ -148,7 +148,7 @@ test.describe('Question Order Control', () => {
     expect(questionText).toMatch(/\n1\./);
 
     // Answer first question
-    await page.getByRole('button', { name: 'V', exact: true }).click();
+    await page.getByRole('button', { name: 'A', exact: true }).click();
 
     // Continue to see next question (should be question 2)
     await page.getByRole('button', { name: 'Continuar' }).click();
@@ -158,10 +158,10 @@ test.describe('Question Order Control', () => {
     // Now go to Options and change area to test persistence
     await page.getByRole('button', { name: 'Options' }).click();
     await page.getByRole('button', { name: 'Cambiar área' }).first().click();
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
+    await page.getByRole('button', { name: /Filosofía del Lenguaje/ }).click();
     await page.getByRole('button', { name: 'Cambiar área' }).click();
-    await page.getByRole('button', { name: /Lógica I/ }).waitFor();
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).waitFor();
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
 
     // Wait for area to load completely
     await page.waitForSelector('text=❓');
@@ -172,8 +172,8 @@ test.describe('Question Order Control', () => {
   }, 30000);
 
   test('sequential order applies consistently across all quiz modes', async ({ page }) => {
-    // Test all quiz modes use sequential order when selected
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    // Test all quiz modes use sequential order when selected (Multiple Choice area)
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
 
     // Test "Todas las preguntas" mode
@@ -187,21 +187,25 @@ test.describe('Question Order Control', () => {
 
     // Test "Seleccionar secciones" mode
     await page.getByRole('button', { name: 'Seleccionar secciones' }).click();
-    await page.getByText('CUESTIONES GENERALES').click();
+    await page.getByText('Tema 1. Ciencia, hechos y evidencia').click();
     await page.getByRole('button', { name: 'Empezar' }).click();
 
     // Should start with first question number in sequential order for that section
-    questionText = await page.locator('body').innerText();
-    const questionNumber = questionText.match(/(\d+)\./);
+    const firstQuestionElement = await page.locator('.question-text').first();
+    const firstQuestionText = await firstQuestionElement.innerText();
+    const questionNumber = firstQuestionText.match(/^(\d+)\./);
     expect(questionNumber).not.toBeNull();
     const firstQuestionNum = parseInt(questionNumber![1], 10);
 
     // Continue to next question - should be next sequential number
-    await page.getByRole('button', { name: 'V', exact: true }).click();
+    await page.getByRole('button', { name: 'A', exact: true }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
 
-    const nextQuestionText = await page.locator('body').innerText();
-    const nextQuestionMatch = nextQuestionText.match(/(\d+)\./);
+    // Wait for next question to load
+    await page.waitForSelector('text=A');
+    const nextQuestionElement = await page.locator('.question-text').first();
+    const nextQuestionText = await nextQuestionElement.innerText();
+    const nextQuestionMatch = nextQuestionText.match(/^(\d+)\./);
     expect(nextQuestionMatch).not.toBeNull();
     const nextQuestionNum = parseInt(nextQuestionMatch![1], 10);
 

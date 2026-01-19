@@ -7,32 +7,32 @@ test.describe('Resume Quiz Fresh Experience', () => {
   });
 
   test('Clicking area resumes at last question if progress exists', async ({ page }) => {
-    // Go to Lógica I, answer 2 questions
+    // Go to IPC (Multiple Choice), answer 2 questions
     await page.waitForLoadState('networkidle');
-    await page.getByRole('button', { name: /Lógica I/ }).waitFor();
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).waitFor();
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
 
     // Wait for quiz to load and answer 2 questions
-    await page.waitForSelector('text=V');
+    await page.waitForSelector('text=A');
     for (let i = 0; i < 2; i++) {
-      await page.getByRole('button', { name: 'V', exact: true }).click();
+      await page.getByRole('button', { name: 'A', exact: true }).click();
       await page.getByRole('button', { name: 'Continuar' }).click();
-      if (i < 1) await page.waitForSelector('text=V');
+      if (i < 1) await page.waitForSelector('text=A');
     }
 
     await page.getByRole('button', { name: 'Options' }).click();
     await page.getByRole('button', { name: 'Cambiar área' }).first().click();
-    await page.getByText(/Introducción al Pensamiento Científico/).waitFor();
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
+    await page.getByText(/Filosofía del Lenguaje/).waitFor();
+    await page.getByRole('button', { name: /Filosofía del Lenguaje/ }).click();
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
     await page.getByRole('button', { name: 'A', exact: true }).click();
 
     await page.getByRole('button', { name: 'Options' }).click();
     await page.getByRole('button', { name: 'Cambiar área' }).first().click();
-    await page.getByRole('button', { name: /Lógica I/ }).waitFor();
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).waitFor();
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
 
     // Wait for page to load completely
     await page.waitForSelector('text=❓');

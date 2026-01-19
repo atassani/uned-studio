@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import DOMPurify from 'isomorphic-dompurify';
 import Link from 'next/link';
 import packageJson from '../../package.json';
@@ -261,6 +261,18 @@ export default function QuizApp() {
       let orderedQuestions = [...questionsWithIndex];
       if (!shouldShuffleQuestions) {
         orderedQuestions.sort((a, b) => a.number - b.number);
+      } else {
+        // Replace Math.random() with Fisher-Yates shuffle for stable randomization
+        function fisherYatesShuffle(array: any[]) {
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        }
+
+        // Use Fisher-Yates shuffle for random order
+        orderedQuestions = fisherYatesShuffle(orderedQuestions);
       }
 
       // If we have saved selected questions, filter to only those questions
@@ -681,84 +693,84 @@ export default function QuizApp() {
           <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
         )}
         <div className="text-2xl font-bold mb-4">¿Cómo quieres las preguntas?</div>
-        {/* Question Order Selection: Only for Multiple Choice */}
-        {currentQuizType === 'Multiple Choice' && (
-          <div className="flex flex-col items-center space-y-2 mb-2">
-            <div className="text-lg font-semibold mb-2">Orden de preguntas:</div>
-            <div className="flex items-center justify-center w-64">
-              <span
-                className={`text-sm font-medium mr-3 cursor-pointer ${shuffleQuestions ? 'text-blue-600' : 'text-gray-500'}`}
-                onClick={() => setShuffleQuestions(true)}
-                tabIndex={0}
-                role="button"
-                aria-label="Orden aleatorio"
-              >
-                Aleatorio
-              </span>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={!shuffleQuestions}
-                  onChange={(e) => setShuffleQuestions(!e.target.checked)}
-                  className="sr-only peer"
-                  aria-label="Alternar orden de preguntas"
-                />
-                <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
-                  <div
-                    className={`absolute left-0 top-0 h-8 w-8 rounded-full bg-blue-600 transition-transform duration-300 ${!shuffleQuestions ? 'translate-x-6' : ''}`}
-                  ></div>
-                </div>
-              </label>
-              <span
-                className={`text-sm font-medium ml-3 cursor-pointer ${!shuffleQuestions ? 'text-blue-600' : 'text-gray-500'}`}
-                onClick={() => setShuffleQuestions(false)}
-                tabIndex={0}
-                role="button"
-                aria-label="Orden secuencial"
-              >
-                Secuencial
-              </span>
-            </div>
-          </div>
-        )}
-        {/* Orden de respuestas */}
-        <div className="flex flex-col items-center space-y-2 mb-4">
-          <div className="text-lg font-semibold mb-2">Orden de respuestas:</div>
+        {/* Question Order Selection: Available for both True/False and Multiple Choice */}
+        <div className="flex flex-col items-center space-y-2 mb-2">
+          <div className="text-lg font-semibold mb-2">Orden de preguntas:</div>
           <div className="flex items-center justify-center w-64">
             <span
-              className={`text-sm font-medium mr-3 cursor-pointer ${!shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
-              onClick={() => setShuffleAnswers(false)}
+              className={`text-sm font-medium mr-3 cursor-pointer ${shuffleQuestions ? 'text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setShuffleQuestions(true)}
               tabIndex={0}
               role="button"
-              aria-label="Aleatorizar respuestas"
+              aria-label="Orden aleatorio"
             >
               Aleatorio
             </span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={shuffleAnswers}
-                onChange={(e) => setShuffleAnswers(e.target.checked)}
+                checked={!shuffleQuestions}
+                onChange={(e) => setShuffleQuestions(!e.target.checked)}
                 className="sr-only peer"
-                aria-label="Alternar orden de respuestas"
+                aria-label="Alternar orden de preguntas"
               />
               <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
                 <div
-                  className={`absolute left-0 top-0 h-8 w-8 rounded-full bg-blue-600 transition-transform duration-300 ${shuffleAnswers ? 'translate-x-6' : ''}`}
+                  className={`absolute left-0 top-0 h-8 w-8 rounded-full bg-blue-600 transition-transform duration-300 ${!shuffleQuestions ? 'translate-x-6' : ''}`}
                 ></div>
               </div>
             </label>
             <span
-              className={`text-sm font-medium ml-3 cursor-pointer ${shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
-              onClick={() => setShuffleAnswers(true)}
+              className={`text-sm font-medium ml-3 cursor-pointer ${!shuffleQuestions ? 'text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setShuffleQuestions(false)}
               tabIndex={0}
               role="button"
-              aria-label="Respuestas secuenciales"
+              aria-label="Orden secuencial"
             >
               Secuencial
             </span>
           </div>
         </div>
+        {/* Answer Order Selection: Only for Multiple Choice */}
+        {currentQuizType === 'Multiple Choice' && (
+          <div className="flex flex-col items-center space-y-2 mb-4">
+            <div className="text-lg font-semibold mb-2">Orden de respuestas:</div>
+            <div className="flex items-center justify-center w-64">
+              <span
+                className={`text-sm font-medium mr-3 cursor-pointer ${!shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
+                onClick={() => setShuffleAnswers(false)}
+                tabIndex={0}
+                role="button"
+                aria-label="Aleatorizar respuestas"
+              >
+                Aleatorio
+              </span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={shuffleAnswers}
+                  onChange={(e) => setShuffleAnswers(e.target.checked)}
+                  className="sr-only peer"
+                  aria-label="Alternar orden de respuestas"
+                />
+                <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
+                  <div
+                    className={`absolute left-0 top-0 h-8 w-8 rounded-full bg-blue-600 transition-transform duration-300 ${shuffleAnswers ? 'translate-x-6' : ''}`}
+                  ></div>
+                </div>
+              </label>
+              <span
+                className={`text-sm font-medium ml-3 cursor-pointer ${shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
+                onClick={() => setShuffleAnswers(true)}
+                tabIndex={0}
+                role="button"
+                aria-label="Respuestas secuenciales"
+              >
+                Secuencial
+              </span>
+            </div>
+          </div>
+        )}
         <button
           className="px-6 py-3 bg-blue-600 text-white rounded text-lg w-64"
           onClick={() => {
@@ -1189,9 +1201,12 @@ export default function QuizApp() {
         {currentQuizType === 'Multiple Choice' && Array.isArray(q.options) && (
           <div className="mt-4 space-y-2">
             {(() => {
-              // Shuffle options if shuffleAnswers is true
+              // Shuffle options if shuffleAnswers is true, but use a stable shuffle
               const displayOptions = shuffleAnswers
-                ? [...q.options].sort(() => Math.random() - 0.5)
+                ? useMemo(
+                    () => [...(q.options || [])].sort(() => Math.random() - 0.5),
+                    [q.options, shuffleAnswers]
+                  )
                 : q.options;
               return displayOptions.map((option: string, index: number) => {
                 const letter = String.fromCharCode(65 + index); // 'A', 'B', 'C', etc.
@@ -1243,9 +1258,12 @@ export default function QuizApp() {
           <div className="flex gap-4 mt-4">
             {(() => {
               if (!Array.isArray(q.options)) return null;
-              // Shuffle options if shuffleAnswers is true
+              // Shuffle options if shuffleAnswers is true, but use a stable shuffle
               const displayOptions = shuffleAnswers
-                ? [...q.options].sort(() => Math.random() - 0.5)
+                ? useMemo(
+                    () => [...(q.options || [])].sort(() => Math.random() - 0.5),
+                    [q.options, shuffleAnswers]
+                  )
                 : q.options;
               return displayOptions.map((option: string, index: number) => {
                 const letter = String.fromCharCode(65 + index); // 'A', 'B', 'C', etc.

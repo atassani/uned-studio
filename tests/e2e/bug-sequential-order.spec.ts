@@ -10,7 +10,7 @@ test.describe('Question Order Bugs', () => {
 
   test('sequential order with manually set localStorage to trigger bug', async ({ page }) => {
     // First, start clean and get to a quiz state
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
 
     // Manually set localStorage to simulate having answered question 1 and being on question 2
@@ -21,7 +21,7 @@ test.describe('Question Order Bugs', () => {
 
     // Now start a section - it should start at question 1, not use the saved index
     await page.getByRole('button', { name: 'Seleccionar secciones' }).click();
-    await page.getByText('CUESTIONES GENERALES').click();
+    await page.getByText('Tema 1. Ciencia, hechos y evidencia').click();
     await page.getByRole('button', { name: 'Empezar' }).click();
 
     // Check what question we're seeing

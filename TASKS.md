@@ -25,6 +25,13 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Backlog
 
+### FEAT-004 — Show the question in the grid when clicking
+
+- **Status:** Backlog
+- **Priority:** P3
+- **Reported:** 2025-01-19
+- **Notes:** When the status grid is shown, at the end of que quiz or when reviewing, clicking a question box should show that question immediately as information, not to answer it. If the question has been answered, it will also show the valid answer.
+
 ### TECH-003 — Separate application from data
 
 - **Status:** backlog
@@ -50,7 +57,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Status:** done
 - **Priority:** P3
 - **Reported:** 2025-01-16
-- **Assignee:** GitHub Copilot
 - **Completed:** 2026-01-18
 - **Notes:** Randomize options each time; adjust correct answer accordingly; add setting to enable/disable. Also: 'Aparece en' always at the end, only show order toggle for MCQ, and UI improvements for 'Aparece en'.
   - See: [CHANGELOG.md]
@@ -61,7 +67,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Priority:** P2
 - **Reported:** 2025-01-16
 - **Completed:** 2026-01-18
-- **Assignee:** GitHub Copilot
 - **Commits:**
   - RED: E2E test for MCQ variable options (mcq-variable-options.spec.ts)
   - GREEN: Test data infrastructure and custom areas file support
