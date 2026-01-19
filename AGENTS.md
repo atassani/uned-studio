@@ -340,3 +340,9 @@ When you propose or implement changes, include:
 ❌ Large-scale refactors or renames  
 ❌ Changing deploy pipelines (S3/Vercel)  
 ❌ Adding many dependencies
+
+---
+
+## Additional Notes
+
+- **SPA Architecture**: This project is a Single Page Application (SPA). Ensure that all interactions and tests account for SPA behavior, such as dynamic routing and client-side state management.
