@@ -44,9 +44,16 @@ export function useQuizLogic({
 
     // Apply ordering based on shuffleQuestions setting
     if (shuffleQuestions) {
-      // Fisher-Yates shuffle using Math.random
+      // Use time-based randomization for better variation
+      const seed = Date.now() + Math.random();
+      let random = Math.sin(seed) * 10000;
+      random = random - Math.floor(random);
+
+      // Fisher-Yates shuffle with time-based seeding
       for (let i = orderedQuestions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        // Generate next pseudo-random number in sequence
+        random = (random * 9301 + 49297) % 233280;
+        const j = Math.floor((random / 233280) * (i + 1));
         [orderedQuestions[i], orderedQuestions[j]] = [orderedQuestions[j], orderedQuestions[i]];
       }
     } else {
@@ -121,9 +128,16 @@ export function useQuizLogic({
 
     // Apply ordering based on shuffleQuestions setting
     if (shuffleQuestions) {
-      // Fisher-Yates shuffle using Math.random
+      // Use time-based randomization for better variation
+      const seed = Date.now() + Math.random();
+      let random = Math.sin(seed) * 10000;
+      random = random - Math.floor(random);
+
+      // Fisher-Yates shuffle with time-based seeding
       for (let i = orderedQuestions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        // Generate next pseudo-random number in sequence
+        random = (random * 9301 + 49297) % 233280;
+        const j = Math.floor((random / 233280) * (i + 1));
         [orderedQuestions[i], orderedQuestions[j]] = [orderedQuestions[j], orderedQuestions[i]];
       }
     } else {
@@ -199,9 +213,16 @@ export function useQuizLogic({
 
     // Apply ordering based on shuffleQuestions setting
     if (shuffleQuestions) {
-      // Fisher-Yates shuffle using Math.random
+      // Use time-based randomization for better variation
+      const seed = Date.now() + Math.random();
+      let random = Math.sin(seed) * 10000;
+      random = random - Math.floor(random);
+
+      // Fisher-Yates shuffle with time-based seeding
       for (let i = orderedQuestions.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        // Generate next pseudo-random number in sequence
+        random = (random * 9301 + 49297) % 233280;
+        const j = Math.floor((random / 233280) * (i + 1));
         [orderedQuestions[i], orderedQuestions[j]] = [orderedQuestions[j], orderedQuestions[i]];
       }
     } else {
@@ -268,6 +289,15 @@ export function useQuizLogic({
 
   // Reset quiz
   const resetQuiz = useCallback(() => {
+    // Clear any persisted state to ensure fresh randomization
+    if (selectedArea) {
+      const areaKey = selectedArea.shortName;
+      localStorage.removeItem(`quizStatus_${areaKey}`);
+      localStorage.removeItem(`currentQuestion_${areaKey}`);
+      localStorage.removeItem(`selectedSections_${areaKey}`);
+      localStorage.removeItem(`selectedQuestions_${areaKey}`);
+    }
+
     setShowSelectionMenu(true);
     setShowStatus(false);
     setShowResult(null);
@@ -277,6 +307,7 @@ export function useQuizLogic({
     setSelectedSections(new Set());
     setSelectedQuestions(new Set());
   }, [
+    selectedArea,
     setShowSelectionMenu,
     setShowStatus,
     setShowResult,

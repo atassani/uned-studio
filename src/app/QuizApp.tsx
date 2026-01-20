@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { QuestionType, AreaType } from './types';
-import { groupBySection, formatRichText } from './utils';
+import { groupBySection, formatRichText, shuffleOptionsWithMemory, createSeededRng } from './utils';
 import {
   EMOJI_SUCCESS,
   EMOJI_FAIL,
@@ -38,6 +38,9 @@ export default function QuizApp() {
   );
   const [showSelectionMenu, setShowSelectionMenu] = useState<boolean>(true);
   const [selectionMode, setSelectionMode] = useState<null | 'all' | 'sections' | 'questions'>(null);
+  const previousAnswerOrderRef = useRef<Record<number, string[]>>({});
+  const currentAnswerOrderRef = useRef<Record<number, string[]>>({});
+  const answerShuffleSeedRef = useRef(0);
   const [selectedSections, setSelectedSections] = useState<Set<string>>(new Set());
   const [selectedQuestions, setSelectedQuestions] = useState<Set<number>>(new Set());
   const questionScrollRef = useRef<HTMLDivElement | null>(null);
@@ -65,23 +68,32 @@ export default function QuizApp() {
   // Compute displayOptions for MCQ at the top level, using useMemo at the component level
   const displayOptions = useMemo(() => {
     if (
-      current !== null &&
-      currentQuizType === 'Multiple Choice' &&
-      questions[current] &&
-      Array.isArray(questions[current].options)
+      current === null ||
+      currentQuizType !== 'Multiple Choice' ||
+      !questions[current] ||
+      !Array.isArray(questions[current].options)
     ) {
-      if (shuffleAnswers) {
-        // Fisher-Yates shuffle for stable randomization
-        const arr = [...questions[current].options];
-        for (let i = arr.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
-      }
-      return questions[current].options;
+      return [];
     }
-    return [];
+
+    const q = questions[current];
+    const baseOptions = q.options ?? [];
+
+    if (shuffleAnswers && baseOptions.length > 1) {
+      const cachedOrder = currentAnswerOrderRef.current[q.index];
+      if (cachedOrder) {
+        return cachedOrder;
+      }
+      const previousOrder = previousAnswerOrderRef.current[q.index];
+      const rng = createSeededRng(answerShuffleSeedRef.current * 977 + q.index * 131);
+      const nextOrder = shuffleOptionsWithMemory(baseOptions, previousOrder, rng);
+      currentAnswerOrderRef.current[q.index] = nextOrder;
+      return nextOrder;
+    }
+
+    const sequentialOrder = [...baseOptions];
+    currentAnswerOrderRef.current[q.index] = sequentialOrder;
+    return sequentialOrder;
   }, [current, currentQuizType, questions, shuffleAnswers]);
 
   // Use custom hooks for persistence, keyboard shortcuts, and quiz logic
@@ -160,6 +172,12 @@ export default function QuizApp() {
       })
       .catch((err) => console.error('Failed to load areas:', err));
   }, []);
+
+  useEffect(() => {
+    previousAnswerOrderRef.current = {};
+    currentAnswerOrderRef.current = {};
+    answerShuffleSeedRef.current = 0;
+  }, [selectedArea]);
 
   // Shared function to load area questions and restore progress
   const loadAreaAndQuestions = async (area: AreaType, forceMenu = false) => {
@@ -313,7 +331,12 @@ export default function QuizApp() {
   };
 
   // Get quiz logic functions from custom hook
-  const { startQuizAll, startQuizSections, startQuizQuestions, resetQuiz } = useQuizLogic({
+  const {
+    startQuizAll: baseStartQuizAll,
+    startQuizSections: baseStartQuizSections,
+    startQuizQuestions: baseStartQuizQuestions,
+    resetQuiz,
+  } = useQuizLogic({
     allQuestions,
     selectedSections,
     selectedQuestions,
@@ -329,6 +352,27 @@ export default function QuizApp() {
     setSelectedSections,
     setSelectedQuestions,
   });
+
+  const prepareNewRun = useCallback(() => {
+    answerShuffleSeedRef.current += 1;
+    previousAnswerOrderRef.current = currentAnswerOrderRef.current;
+    currentAnswerOrderRef.current = {};
+  }, []);
+
+  const startQuizAll = useCallback(() => {
+    prepareNewRun();
+    baseStartQuizAll();
+  }, [prepareNewRun, baseStartQuizAll]);
+
+  const startQuizSections = useCallback(() => {
+    prepareNewRun();
+    baseStartQuizSections();
+  }, [prepareNewRun, baseStartQuizSections]);
+
+  const startQuizQuestions = useCallback(() => {
+    prepareNewRun();
+    baseStartQuizQuestions();
+  }, [prepareNewRun, baseStartQuizQuestions]);
 
   // Load questions for selected area on every area change
   useEffect(() => {
@@ -484,7 +528,7 @@ export default function QuizApp() {
       } else if (currentQuizType === 'Multiple Choice') {
         const userLetter = user.toLowerCase();
         const userIndex = userLetter.charCodeAt(0) - 97;
-        const userAnswer = q.options?.[userIndex] || '';
+        const userAnswer = displayOptions[userIndex] || '';
         correct = userAnswer === q.answer;
         answerToStore = userAnswer;
       }
@@ -499,7 +543,7 @@ export default function QuizApp() {
       localStorage.setItem(`quizStatus_${areaKey}`, JSON.stringify(newStatus));
       setShowResult({ correct, explanation: q.explanation });
     },
-    [current, questions, status, selectedArea, currentQuizType]
+    [current, questions, status, selectedArea, currentQuizType, displayOptions]
   );
 
   const nextQuestion = useCallback(() => {
@@ -599,6 +643,8 @@ export default function QuizApp() {
         selectedArea={selectedArea}
         questions={questions}
         status={status}
+        userAnswers={userAnswers}
+        currentQuizType={currentQuizType}
         handleContinue={handleContinue}
         pendingQuestions={pendingQuestions}
         resetQuiz={resetQuiz}

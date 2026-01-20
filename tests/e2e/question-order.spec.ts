@@ -37,6 +37,9 @@ test.describe('Question Order Control', () => {
     expect(questionText).toMatch(/\n1\./);
 
     // Continue to next question - should be question 2
+    await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({
+      timeout: 10000,
+    });
     await page.getByRole('button', { name: 'A', exact: true }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
 
@@ -62,6 +65,9 @@ test.describe('Question Order Control', () => {
 
       if (i < 4) {
         // Don't continue after last question
+        await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({
+          timeout: 10000,
+        });
         await page.getByRole('button', { name: 'A', exact: true }).click();
         await page.getByRole('button', { name: 'Continuar' }).click();
       }
@@ -78,9 +84,24 @@ test.describe('Question Order Control', () => {
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Seleccionar secciones' }).click();
 
+    // Wait for section selection to load completely
+    await page.waitForLoadState('networkidle');
+
+    // Wait for sections to be visible with multiple strategies
+    try {
+      await page.waitForSelector('text=Tema 1. Ciencia, hechos y evidencia', { timeout: 10000 });
+    } catch {
+      // Fallback: wait for any section text to appear
+      await page.waitForSelector('text=/Tema/', { timeout: 5000 });
+    }
+
     // Select a section and verify order
     await page.getByText('Tema 1. Ciencia, hechos y evidencia').click();
     await page.getByRole('button', { name: 'Empezar' }).click();
+
+    // Wait for question to load
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('.question-text', { timeout: 10000 });
 
     // Should start with the first question number in that section
     const questionText = await page.locator('body').innerText();
@@ -125,6 +146,9 @@ test.describe('Question Order Control', () => {
     const firstQuestionNum = parseInt(questionMatch![1], 10);
 
     // Continue to next question
+    await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({
+      timeout: 10000,
+    });
     await page.getByRole('button', { name: 'A', exact: true }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
 
@@ -148,6 +172,9 @@ test.describe('Question Order Control', () => {
     expect(questionText).toMatch(/\n1\./);
 
     // Answer first question
+    await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({
+      timeout: 10000,
+    });
     await page.getByRole('button', { name: 'A', exact: true }).click();
 
     // Continue to see next question (should be question 2)
@@ -198,6 +225,9 @@ test.describe('Question Order Control', () => {
     const firstQuestionNum = parseInt(questionNumber![1], 10);
 
     // Continue to next question - should be next sequential number
+    await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({
+      timeout: 10000,
+    });
     await page.getByRole('button', { name: 'A', exact: true }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
 

@@ -9,6 +9,12 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - When finished, move it to **Done** (don’t delete it). Add PR/commit link or hash + completion date.
 - AI agents: pick the **first item in “Now”** (top to bottom). If “Now” is empty, pick the first **P1** item in Backlog.
 
+## Last number
+
+- FEAT: 6
+- BUG: 5
+- TECH: 7
+
 ---
 
 ## Now
@@ -32,6 +38,62 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Backlog
 
+### TEMPLATE
+
+- **Status:** backlog
+- **Priority:** [P1/P2/P3]
+- **Reported:** YYYY-MM-DD
+- **Reporter:** TT
+- **Notes:**
+
+### BUG-005 — When working on T/F and sequential, after interrupting with options, when resuming it goes to a random question
+
+- **Status:** backlog
+- **Priority:** P1
+- **Reported:** 2025-01-20
+- **Reporter:** TT
+- **Notes:** It may happen in MCQ.
+
+### BUG-004 Sections in the grid should always be listed in the same order, the same one used when offering sections to choose from: the one in the file
+
+- **Status:** backlog
+- **Priority:** P1
+- **Reported:** 2025-01-20
+- **Reporter:** TT
+- **Notes:** I haven't checked how they appear in Section selection, but in the grid they appear in a different order than in the file. In IPC I saw Exams and sections mixed up.
+
+### TECH-004 — Move E2E tests to unit tests where possible
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-20
+- **Reporter:** TT
+- **Notes:** It will speed up the test suite and make it less flaky. I am thinking, for instance, about sorting.
+
+### TECH-005 — Standardize ESLint, Prettier, and TypeCheck with VSCode settings
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-20
+- **Reporter:** TT
+- **Notes:** It will prevent a noisy VSCode or surprises when running prettier.
+
+### TECH-006 — Instruct in AGENTS how to work with TASKS.md
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-20
+- **Reporter:** TT
+- **Notes:** Will prevent mistakes and make it easier for agents to contribute. And not making a mess with the file.
+
+### TECH-007 — Decide what to add to finished Tasks, PR, branch, commit…
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-20
+- **Reporter:** TT
+- **Notes:** To document done features and to be able to track and revert, we need to record when things were done. But what is the best way? PR link, branch name, commit hash…?
+
 ### TECH-003 — Separate application from data
 
 - **Status:** backlog
@@ -47,6 +109,14 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reported:** 2025-01-16
 - **Reporter:** TT
 - **Notes:** `/uned/studio` fails without trailing slash, but `/uned/studio/` works. Might be AWS/S3/CloudFront routing or Vercel rewrites.
+
+### FEAT-006 — Sections in Section selection can have sub-sections, so I can click all exams, for instance, and see all their sections inside
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-20
+- **Reporter:** TT
+- **Notes:** The could be named like "Section top name > Sub-section name", and clicking the top name would expand/collapse the list of sub-sections.
 
 ---
 

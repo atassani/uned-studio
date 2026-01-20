@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { QuestionType, AreaType } from '../types';
-import { groupBySection } from '../utils';
+import { groupBySection, formatRichText } from '../utils';
 import {
   EMOJI_SUCCESS,
   EMOJI_FAIL,
@@ -13,6 +14,8 @@ interface StatusGridProps {
   selectedArea: AreaType | null;
   questions: QuestionType[];
   status: Record<number, 'correct' | 'fail' | 'pending'>;
+  userAnswers: Record<number, string>;
+  currentQuizType: 'True False' | 'Multiple Choice' | null;
   handleContinue: (option: string) => void;
   pendingQuestions: () => [number, QuestionType][];
   resetQuiz: () => void;
@@ -25,6 +28,8 @@ export function StatusGrid({
   selectedArea,
   questions,
   status,
+  userAnswers,
+  currentQuizType,
   handleContinue,
   pendingQuestions,
   resetQuiz,
@@ -32,6 +37,40 @@ export function StatusGrid({
   setShowStatus,
   setShowResult,
 }: StatusGridProps) {
+  const [selectedQuestion, setSelectedQuestion] = useState<QuestionType | null>(null);
+
+  // Prevent body scroll when overlay is open
+  useEffect(() => {
+    if (selectedQuestion) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function to restore scroll when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedQuestion]);
+
+  // Close overlay with Esc key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && selectedQuestion) {
+        setSelectedQuestion(null);
+      }
+    };
+
+    if (selectedQuestion) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    // Cleanup function to remove event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedQuestion]);
+
   const grouped = groupBySection(questions);
   const correctCount = Object.values(status).filter((s) => s === 'correct').length;
   const failCount = Object.values(status).filter((s) => s === 'fail').length;
@@ -70,7 +109,167 @@ export function StatusGrid({
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Question Details Overlay */}
+      {selectedQuestion && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-[9999]"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          onClick={() => setSelectedQuestion(null)}
+        >
+          <div
+            className="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto border-2 border-gray-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="text-xl font-bold text-red-600">
+                {EMOJI_FAIL} Pregunta {selectedQuestion.number} - Fallada
+              </h2>
+              <button
+                className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+                onClick={() => setSelectedQuestion(null)}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Question Text */}
+              <div
+                className="text-xl font-semibold rich-content question-text"
+                dangerouslySetInnerHTML={formatRichText(
+                  `${selectedQuestion.number}. ${selectedQuestion.question}`
+                )}
+              ></div>
+
+              {/* Options for MCQ */}
+              {currentQuizType === 'Multiple Choice' && Array.isArray(selectedQuestion.options) && (
+                <div>
+                  <div className="bg-gray-50 p-4 rounded border border-gray-200">
+                    {selectedQuestion.options.map((option: string, index: number) => {
+                      const letter = String.fromCharCode(65 + index); // 'A', 'B', 'C', etc.
+                      const isCorrect = option.trim() === selectedQuestion.answer.trim();
+                      const userAnswer = userAnswers[selectedQuestion.index];
+                      const isUserChoice =
+                        userAnswer && userAnswer.toLowerCase() === letter.toLowerCase();
+
+                      return (
+                        <div
+                          key={index}
+                          className={`text-base py-2 px-3 mb-2 rounded ${
+                            isCorrect
+                              ? 'bg-green-100 border-l-4 border-green-500 text-green-800'
+                              : isUserChoice
+                                ? 'bg-red-100 border-l-4 border-red-500 text-red-800'
+                                : 'bg-white border border-gray-200'
+                          }`}
+                        >
+                          <span className="font-bold">{letter})</span> {option}
+                          {isCorrect && (
+                            <span className="ml-2 text-green-600 font-semibold">✓ Correcta</span>
+                          )}
+                          {isUserChoice && !isCorrect && (
+                            <span className="ml-2 text-red-600 font-semibold">✗ Tu respuesta</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* True/False Correct Answer */}
+              {currentQuizType === 'True False' && (
+                <div>
+                  <h3 className="font-semibold text-gray-700 mb-2">Respuesta correcta:</h3>
+                  <div
+                    className={`p-3 rounded border-l-4 ${
+                      selectedQuestion.answer === 'V' || selectedQuestion.answer === 'Verdadero'
+                        ? 'bg-green-50 border-green-500'
+                        : 'bg-red-50 border-red-500'
+                    }`}
+                  >
+                    <span
+                      className={`font-medium ${
+                        selectedQuestion.answer === 'V' || selectedQuestion.answer === 'Verdadero'
+                          ? 'text-green-800'
+                          : 'text-red-800'
+                      }`}
+                    >
+                      {selectedQuestion.answer === 'V' || selectedQuestion.answer === 'Verdadero'
+                        ? 'Verdadero'
+                        : 'Falso'}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Your Answer for MCQ only */}
+              {currentQuizType === 'Multiple Choice' && userAnswers[selectedQuestion.index] && (
+                <div>
+                  <h3 className="font-semibold text-gray-700 mb-2">Tu respuesta:</h3>
+                  <div className="bg-red-50 p-3 rounded border-l-4 border-red-500">
+                    <span className="text-red-800 font-medium">
+                      ❌{' '}
+                      {currentQuizType === 'Multiple Choice' && selectedQuestion.options
+                        ? (() => {
+                            const userAnswer = userAnswers[selectedQuestion.index];
+                            // Convert letter answer (a, b, c...) to index (0, 1, 2...)
+                            const optionIndex = userAnswer.toLowerCase().charCodeAt(0) - 97;
+                            const optionLetter = userAnswer.toUpperCase();
+                            const optionText = selectedQuestion.options[optionIndex] || userAnswer;
+                            return `${optionLetter}) ${optionText}`;
+                          })()
+                        : userAnswers[selectedQuestion.index]}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Explanation */}
+              {selectedQuestion.explanation && (
+                <div>
+                  <h3 className="font-semibold text-gray-700 mb-2">Explicación:</h3>
+                  <div className="bg-blue-50 p-4 rounded border-l-4 border-blue-500">
+                    <p className="text-blue-900 leading-relaxed">{selectedQuestion.explanation}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Appears In */}
+              {selectedQuestion.appearsIn && (
+                <div>
+                  <h3 className="font-semibold text-gray-700 mb-2">Aparece en:</h3>
+                  <div className="bg-yellow-50 p-3 rounded border border-yellow-200">
+                    {Array.isArray(selectedQuestion.appearsIn) ? (
+                      <ul className="list-disc list-inside space-y-1">
+                        {selectedQuestion.appearsIn.map((ref: string, idx: number) => (
+                          <li key={idx} className="text-sm text-yellow-800">
+                            {ref}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-yellow-800">{selectedQuestion.appearsIn}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                onClick={() => setSelectedQuestion(null)}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Show area name at top */}
       {selectedArea && (
         <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
@@ -97,7 +296,22 @@ export function StatusGrid({
             {qs.map((q: QuestionType) => {
               let emoji = EMOJI_ASK;
               if (status[q.index] === 'correct') emoji = EMOJI_SUCCESS;
-              else if (status[q.index] === 'fail') emoji = EMOJI_FAIL;
+              else if (status[q.index] === 'fail') {
+                emoji = EMOJI_FAIL;
+                return (
+                  <div
+                    key={q.index}
+                    className="flex flex-col items-center cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors"
+                    onClick={() => setSelectedQuestion(q)}
+                    title={`Ver detalles de la pregunta ${q.number}`}
+                  >
+                    <span className="text-2xl">
+                      {q.number}
+                      {emoji}
+                    </span>
+                  </div>
+                );
+              }
               return (
                 <div key={q.index} className="flex flex-col items-center">
                   <span className="text-2xl">

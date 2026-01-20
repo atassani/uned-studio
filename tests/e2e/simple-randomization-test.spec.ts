@@ -12,44 +12,69 @@ test.describe('Simple Randomization Test', () => {
     await page.getByRole('button', { name: 'Orden aleatorio' }).click();
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
 
-    // Log all visible .question-text elements before waiting
-    const allQuestions = await page.locator('.question-text').allInnerTexts();
-    // Wait for the quiz to load
-    await page.waitForSelector('.question-text');
+    // Wait for the quiz to load completely
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('.question-text', { timeout: 10000 });
 
     // Get the first question number - first attempt
-    let questionElement1;
-    let questionText1;
-    try {
-      questionElement1 = await page.locator('.question-text').first();
-      questionText1 = await questionElement1.innerText();
-    } catch (e) {
-      throw e;
-    }
+    const questionElement1 = await page.locator('.question-text').first();
+    const questionText1 = await questionElement1.innerText();
     const match1 = questionText1.match(/^(\d+)\./);
     const firstQuestionNum1 = match1 ? parseInt(match1[1], 10) : null;
 
-    // Go back to start a new quiz
+    expect(firstQuestionNum1).not.toBeNull();
+
+    // Go back to start a new quiz with proper state clearing
     await page.getByRole('button', { name: 'Options' }).click();
     await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
+
+    // Wait for page to reset completely
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000); // Allow state to clear
+
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
-    // Log all visible .question-text elements before waiting (second attempt)
-    const allQuestions2 = await page.locator('.question-text').allInnerTexts();
-    await page.waitForSelector('.question-text');
+
+    // Wait for new quiz to load
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('.question-text', { timeout: 10000 });
 
     // Get the first question number - second attempt
-    let questionElement2;
-    let questionText2;
-    try {
-      questionElement2 = await page.locator('.question-text').first();
-      questionText2 = await questionElement2.innerText();
-    } catch (e) {
-      throw e;
-    }
+    const questionElement2 = await page.locator('.question-text').first();
+    const questionText2 = await questionElement2.innerText();
     const match2 = questionText2.match(/^(\d+)\./);
     const firstQuestionNum2 = match2 ? parseInt(match2[1], 10) : null;
 
-    // If randomization works, these should be different
-    expect(firstQuestionNum1).not.toBe(firstQuestionNum2); // This should fail, showing the bug
+    expect(firstQuestionNum2).not.toBeNull();
+
+    // Try multiple times to account for potential randomization collisions
+    // In true randomization, getting the same result twice is possible but unlikely
+    const questionNumbers: number[] = [firstQuestionNum1!, firstQuestionNum2!];
+
+    // If first two are the same, try a few more times to reduce false positives
+    if (firstQuestionNum1 === firstQuestionNum2) {
+      for (let i = 0; i < 3; i++) {
+        await page.getByRole('button', { name: 'Options' }).click();
+        await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(500);
+        await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+        await page.waitForLoadState('networkidle');
+        await page.waitForSelector('.question-text', { timeout: 10000 });
+
+        const questionElement = await page.locator('.question-text').first();
+        const questionText = await questionElement.innerText();
+        const match = questionText.match(/^(\d+)\./);
+        const questionNum = match ? parseInt(match[1], 10) : null;
+
+        if (questionNum) {
+          questionNumbers.push(questionNum);
+        }
+      }
+    }
+
+    // Check if we have at least some variety in question numbers
+    // If randomization works, we should see different numbers
+    const uniqueNumbers = new Set(questionNumbers);
+    expect(uniqueNumbers.size).toBeGreaterThan(1);
   });
 });

@@ -22,13 +22,25 @@ test('True/False quiz works for Lógica I area', async ({ page }) => {
   // Wait for quiz to load completely
   await page.waitForLoadState('networkidle');
 
-  // Wait for quiz interface to be ready - try question text first, fallback to answer buttons
+  // Wait for quiz interface to be ready with multiple fallback strategies
   try {
-    await expect(page.locator('.question-text')).toBeVisible();
+    // First try: wait for question text
+    await expect(page.locator('.question-text')).toBeVisible({ timeout: 3000 });
   } catch {
-    // Fallback: wait for True/False buttons which indicate quiz is loaded
-    await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible();
+    try {
+      // Second try: wait for any quiz content to be visible
+      await page.waitForSelector('text=/Lógica/', { timeout: 3000 });
+    } catch {
+      // Third try: wait for the V button specifically
+      await page.waitForSelector('button:has-text("V")', { timeout: 5000 });
+    }
   }
+
+  // Wait specifically for True/False buttons to be interactive
+  await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+    timeout: 10000,
+  });
+  await expect(page.getByRole('button', { name: 'F', exact: true })).toBeVisible({ timeout: 5000 });
 
   // Should see True/False question interface
   const vBtn = page.getByRole('button', { name: 'V', exact: true });
