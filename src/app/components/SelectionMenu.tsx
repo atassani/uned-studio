@@ -76,8 +76,8 @@ export function SelectionMenu({
           <div className="text-lg font-semibold mb-2">Orden de respuestas:</div>
           <div className="flex items-center justify-center w-64">
             <span
-              className={`text-sm font-medium mr-3 cursor-pointer ${!shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
-              onClick={() => setShuffleAnswers(false)}
+              className={`text-sm font-medium mr-3 cursor-pointer ${shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setShuffleAnswers(true)}
               tabIndex={0}
               role="button"
               aria-label="Aleatorizar respuestas"
@@ -87,20 +87,20 @@ export function SelectionMenu({
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={shuffleAnswers}
-                onChange={(e) => setShuffleAnswers(e.target.checked)}
+                checked={!shuffleAnswers}
+                onChange={(e) => setShuffleAnswers(!e.target.checked)}
                 className="sr-only peer"
                 aria-label="Alternar orden de respuestas"
               />
               <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
                 <div
-                  className={`absolute left-0 top-0 h-8 w-8 rounded-full bg-blue-600 transition-transform duration-300 ${shuffleAnswers ? 'translate-x-6' : ''}`}
+                  className={`absolute left-0 top-0 h-8 w-8 rounded-full bg-blue-600 transition-transform duration-300 ${!shuffleAnswers ? 'translate-x-6' : ''}`}
                 ></div>
               </div>
             </label>
             <span
-              className={`text-sm font-medium ml-3 cursor-pointer ${shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
-              onClick={() => setShuffleAnswers(true)}
+              className={`text-sm font-medium ml-3 cursor-pointer ${!shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
+              onClick={() => setShuffleAnswers(false)}
               tabIndex={0}
               role="button"
               aria-label="Respuestas secuenciales"

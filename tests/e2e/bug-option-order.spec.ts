@@ -1,0 +1,43 @@
+import { test, expect } from '@playwright/test';
+import { setupFreshTest, waitForQuizReady } from './helpers';
+
+// May be duplicated with mcq-shuffle.spec.ts
+test.describe('bug-006: options are always in the same order, even with shuffle enabled', () => {
+  test('options appear in different order when restarting a quiz', async ({ page }) => {
+    await setupFreshTest(page);
+    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/i }).click();
+    await page.getByRole('button', { name: 'Orden secuencial' }).click();
+    await page.getByRole('button', { name: 'Aleatorizar respuestas' }).click();
+    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await waitForQuizReady(page);
+
+    const options: string[][] = [];
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const questionElement = await page.locator('.question-options').first();
+      const questionText = await questionElement.innerText();
+      const matchA = questionText.match(/^A\) (.+)/m);
+      const matchB = questionText.match(/^B\) (.+)/m);
+      const matchC = questionText.match(/^C\) (.+)/m);
+      const optionsForThisAttempt: string[] = [
+        matchA ? matchA[1] : 'UNKNOWN',
+        matchB ? matchB[1] : 'UNKNOWN',
+        matchC ? matchC[1] : 'UNKNOWN',
+      ];
+      options.push(optionsForThisAttempt);
+      await page.getByRole('button', { name: 'Opciones' }).click();
+      await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
+      await page.getByRole('button', { name: /todas las preguntas/i }).click();
+      await waitForQuizReady(page);
+    }
+
+    // all attempts have the same options (sorted)
+    const sortedOptions = options.map((arr) => [...arr].sort().join('|'));
+    const allSortedEqual = sortedOptions.every((val) => val === sortedOptions[0]);
+    expect(allSortedEqual).toBe(true);
+
+    // not all option orders are the same
+    const allSame = options.every((order) => JSON.stringify(order) === JSON.stringify(options[0]));
+    expect(allSame).toBe(false);
+  });
+});

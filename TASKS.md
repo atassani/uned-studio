@@ -114,6 +114,17 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Done
 
+### ✅ BUG-006 — Options are always in the same order, even with shuffle enabled
+
+- **Status:** done
+- **Priority:** P1
+- **Reported:** 2025-01-21
+- **Completed:** 2026-01-21
+- **Reporter:** TT
+- **PR:** [fix: answer shuffling now works between runs and is stable within a run (BUG-006) #14](https://github.com/atassani/uned-studio/pull/14)
+- **Completed:** 2026-01-21
+- **Notes:** Fixed answer shuffling logic and made toggles consistent. See E2E test bug-option-order.spec.ts.
+
 ### ✅ BUG-004 — Sections in the grid should always be listed in the same order, the same one used when offering sections to choose from: the one in the file
 
 - **Status:** done

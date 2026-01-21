@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- fix: answer shuffling now works between runs and is stable within a run (BUG-006)
+- ui: make question/answer order toggles visually and logically consistent
+
 ## [1.4.2] - 2026-01-20
 
 - fix: ensure section order in status grid matches section selection (BUG-004)

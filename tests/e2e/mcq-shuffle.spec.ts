@@ -1,13 +1,15 @@
 import { test, expect } from '@playwright/test';
 import { setupSuperFreshTest, waitForQuizReady, waitForAppReady } from './helpers';
 
+// May be duplicated with bug-option-order.spec.ts
+// BUG-006: Options are always in the same order, even with shuffle enabled
 test.describe('MCQ shuffle option', () => {
-  test('should randomize answer order when shuffle is enabled', async ({ page }) => {
+  test('should randomize answer/option order when shuffle is enabled', async ({ page }) => {
     await setupSuperFreshTest(page);
     await waitForAppReady(page);
     // Enable shuffle (assume a toggle exists)
     await page.getByRole('button', { name: /MCQ/i }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
+    await page.getByRole('button', { name: 'Aleatorizar respuestas' }).click();
     // Enable shuffle BEFORE starting quiz - click on "Secuencial" label instead of using .check()
     await page.getByRole('button', { name: 'Respuestas secuenciales' }).click();
 
@@ -28,7 +30,7 @@ test.describe('MCQ shuffle option', () => {
     expect(ordersSeen.size).toBeGreaterThanOrEqual(2);
   });
 
-  test('should keep answer order fixed when shuffle is disabled', async ({ page }) => {
+  test('should keep answer/option order fixed when shuffle is disabled', async ({ page }) => {
     await setupSuperFreshTest(page);
     await waitForAppReady(page);
     await page.getByRole('button', { name: /MCQ/i }).click();

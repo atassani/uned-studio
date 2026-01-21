@@ -49,3 +49,4 @@ node_modules/
 /playwright/.auth/
 public/areas-mcq-tests.json
 public/questions-mcq-tests.json
+tests/e2e/tempCodeRunnerFile.ts

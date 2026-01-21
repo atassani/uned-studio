@@ -354,8 +354,10 @@ export default function QuizApp() {
   });
 
   const prepareNewRun = useCallback(() => {
-    answerShuffleSeedRef.current += 1;
-    previousAnswerOrderRef.current = currentAnswerOrderRef.current;
+    // Ensure a new seed for answer shuffling on every run
+    answerShuffleSeedRef.current = Math.floor(Math.random() * 1e9);
+    // Reset answer order caches so new shuffle is generated for each run
+    previousAnswerOrderRef.current = {};
     currentAnswerOrderRef.current = {};
   }, []);
 

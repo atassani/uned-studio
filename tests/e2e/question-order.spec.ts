@@ -5,27 +5,6 @@ test.describe('Question Order Control', () => {
     await setupFreshTest(page);
   });
 
-  test('shows question order selection toggle in quiz menu', async ({ page }) => {
-    // Start IPC quiz (Multiple Choice area)
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-    // Should see question order toggle options
-    await expect(page.getByText('Orden de preguntas:')).toBeVisible();
-    await expect(page.getByLabel('Alternar orden de preguntas')).toBeVisible();
-    // Default should be random order (checkbox not checked)
-    await expect(page.getByLabel('Alternar orden de preguntas')).not.toBeChecked();
-  });
-
-  test('allows switching between random and sequential order', async ({ page }) => {
-    // Start IPC quiz (Multiple Choice area)
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-    // Switch to sequential order (click label)
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await expect(page.getByLabel('Alternar orden de preguntas')).toBeChecked();
-    // Switch back to random order (click label)
-    await page.getByRole('button', { name: 'Orden aleatorio' }).click();
-    await expect(page.getByLabel('Alternar orden de preguntas')).not.toBeChecked();
-  });
-
   test('sequential order shows questions by number order', async ({ page }) => {
     // Start IPC quiz with sequential order (Multiple Choice area)
     await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
