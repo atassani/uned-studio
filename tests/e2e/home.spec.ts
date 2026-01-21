@@ -353,16 +353,29 @@ test('shows area name with mortarboard on True/False answer page', async ({ page
   // Wait for quiz to load completely
   await page.waitForLoadState('networkidle');
 
-  // Wait for quiz interface to be ready
-  try {
-    await expect(page.locator('.question-text')).toBeVisible({ timeout: 8000 });
-  } catch {
-    await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
-      timeout: 8000,
-    });
+  // Wait for either the question or the V button to appear, whichever comes first
+  const questionText = page.locator('.question-text');
+  const vButton = page.getByRole('button', { name: 'V', exact: true });
+  const start = Date.now();
+  let questionVisible = false;
+  let vButtonVisible = false;
+  while (Date.now() - start < 12000) {
+    questionVisible = await questionText.isVisible().catch(() => false);
+    vButtonVisible = await vButton.isVisible().catch(() => false);
+    if (questionVisible || vButtonVisible) break;
+    await page.waitForTimeout(200);
   }
-
-  await page.getByRole('button', { name: 'V', exact: true }).click({ timeout: 15000 });
+  if (!questionVisible && !vButtonVisible) {
+    throw new Error('Neither question nor V button became visible in time');
+  }
+  // If question is visible, click V button; if not, wait for V button
+  if (questionVisible) {
+    await vButton.waitFor({ state: 'visible', timeout: 8000 });
+    await vButton.click({ timeout: 15000 });
+  } else {
+    await vButton.waitFor({ state: 'visible', timeout: 12000 });
+    await vButton.click({ timeout: 15000 });
+  }
 
   // Should see area name with mortarboard on True/False answer page
   await expect(page.getByText('🎓 Área: Lógica I')).toBeVisible();
