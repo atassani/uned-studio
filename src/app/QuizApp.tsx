@@ -1,22 +1,14 @@
 'use client';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { QuestionType, AreaType } from './types';
-import { groupBySection, formatRichText, shuffleOptionsWithMemory, createSeededRng } from './utils';
-import {
-  EMOJI_SUCCESS,
-  EMOJI_FAIL,
-  EMOJI_ASK,
-  EMOJI_SECTION,
-  EMOJI_PROGRESS,
-  EMOJI_DONE,
-} from './constants';
+import { shuffleOptionsWithMemory, createSeededRng } from './utils';
+import packageJson from '../../package.json';
 import { AreaSelection } from './components/AreaSelection';
 import { SelectionMenu } from './components/SelectionMenu';
 import { SectionSelection } from './components/SectionSelection';
 import { QuestionSelection } from './components/QuestionSelection';
 import { StatusGrid } from './components/StatusGrid';
 import { QuestionDisplay } from './components/QuestionDisplay';
-import { VersionLink } from './components/VersionLink';
 import { ResultDisplay } from './components/ResultDisplay';
 
 import { useQuizPersistence } from './hooks/useQuizPersistence';
@@ -380,7 +372,6 @@ export default function QuizApp() {
   useEffect(() => {
     if (!selectedArea) return;
     loadAreaAndQuestions(selectedArea);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedArea]);
 
   // Keep a visible scroll indicator for the question selection view
@@ -559,7 +550,6 @@ export default function QuizApp() {
     let nextIdx: number | null = null;
     if (!shuffleQuestions) {
       // Find the next higher-numbered pending question after current, or the lowest if at end
-      const currentIdx = current ?? -1;
       // Get all pending questions sorted by .number
       const pendingSorted = pending
         .map(([idx, q]) => ({ idx, number: q.number }))
@@ -592,7 +582,7 @@ export default function QuizApp() {
     setCurrent(nextIdx ?? null);
     setShowStatus(false);
     setShowResult(null);
-  }, [pendingQuestions]);
+  }, [pendingQuestions, current, questions, shuffleQuestions]);
 
   const handleContinue = useCallback(
     (action: string) => {
@@ -765,9 +755,12 @@ export default function QuizApp() {
         {renderContent()}
         {/* Version link only on main menu (no selection in progress) */}
         {showAreaSelection ? (
-          <VersionLink />
-        ) : showSelectionMenu && !selectionMode ? (
-          <VersionLink />
+          <span
+            className="absolute right-4 bottom-4 text-xs text-gray-500 hover:underline z-20"
+            style={{ fontSize: '0.75rem' }}
+          >
+            v{packageJson.version}
+          </span>
         ) : null}
       </div>
     </div>

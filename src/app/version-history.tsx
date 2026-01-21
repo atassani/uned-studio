@@ -63,35 +63,26 @@ const AUTHOR = 'Toni Tassani';
 const REPO_URL = 'https://github.com/atassani/uned-studio';
 
 export default function VersionHistory() {
+  // Only show the current version as plain text
+  const current = VERSION_HISTORY[0];
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
       <div className="w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8">
-        <h1 className="text-2xl font-bold mb-6">Historial de versiones</h1>
-        <ul className="mb-8">
-          {VERSION_HISTORY.map((v) => (
-            <li key={v.version} className="mb-2">
-              <span className="font-mono font-bold">v{v.version}</span>{' '}
-              <span className="text-xs text-gray-500">({v.date})</span>
-              <div className="ml-4 text-sm">{v.description}</div>
-            </li>
-          ))}
-        </ul>
+        <h1 className="text-2xl font-bold mb-6">Versión actual</h1>
+        <div className="mb-8">
+          <span className="font-mono font-bold">v{current.version}</span>{' '}
+          <span className="text-xs text-gray-500">({current.date})</span>
+          <div className="ml-4 text-sm">{current.description}</div>
+        </div>
         <div className="mb-6 text-sm">
           <span className="font-semibold">Autor:</span> {AUTHOR}
-          <br />
-          <span className="font-semibold">Repositorio:</span>{' '}
-          <a
-            href={REPO_URL}
-            className="text-blue-600 underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {REPO_URL}
-          </a>
         </div>
-        <Link href="/" className="px-4 py-2 bg-blue-600 text-white rounded text-sm">
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded text-sm"
+          onClick={() => (window.location.href = '/')}
+        >
           Volver al menú
-        </Link>
+        </button>
       </div>
     </div>
   );
