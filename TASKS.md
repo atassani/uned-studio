@@ -19,6 +19,14 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
+### TECH-002 — Consolidate localStorage keys under a single root key
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-16
+- **Reporter:** TT
+- **Notes:** Today we store `currentArea`, `quizStatus_*`, `questionOrder_*`, `currentQuestion_*`. Consider one `unedTestsData` object.
+
 ---
 
 ## Backlog
@@ -47,28 +55,12 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reporter:** TT
 - **Notes:**
 
-### BUG-005 — When working on T/F and sequential, after interrupting with options, when resuming it goes to a random question
-
-- **Status:** backlog
-- **Priority:** P1
-- **Reported:** 2025-01-20
-- **Reporter:** TT
-- **Notes:** It may happen in MCQ.
-
 ### FEAT-004 — Show the question in the grid when clicking
 
 - **Status:** Backlog
 - **Priority:** P3
 - **Reported:** 2025-01-19
 - **Notes:** When the status grid is shown, at the end of que quiz or when reviewing, clicking a question box should show that question immediately as information, not to answer it. If the question has been answered, it will also show the valid answer. In particular, I want to see in the final page after the test, when reviewing solutions, the question I got wrong, and go to their detail.
-
-### TECH-002 — Consolidate localStorage keys under a single root key
-
-- **Status:** backlog
-- **Priority:** P3
-- **Reported:** 2025-01-16
-- **Reporter:** TT
-- **Notes:** Today we store `currentArea`, `quizStatus_*`, `questionOrder_*`, `currentQuestion_*`. Consider one `unedTestsData` object.
 
 ### TECH-004 — Move E2E tests to unit tests where possible
 
@@ -129,6 +121,14 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ---
 
 ## Done
+
+### ❌ BUG-005 — When working on T/F and sequential, after interrupting with options, when resuming it goes to a random question
+
+- **Status:** backlog
+- **Priority:** P1
+- **Reported:** 2025-01-20
+- **Reporter:** TT
+- **Notes:** NOT REPRODUCED
 
 ### ✅ BUG-006 — The greyed area behind the modal does not cover the full screen on desktop
 
