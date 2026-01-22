@@ -11,13 +11,57 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Last number
 
-- FEAT: 6
-- BUG: 5
+- FEAT: 9
+- BUG: 6
 - TECH: 7
 
 ---
 
 ## Now
+
+### FEAT-007 — Move options out to a cogwheel menu
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-22
+- **Reporter:** TT
+- **Notes:** To simplify the buttons and make them fit in mobile for MCQ questions, move the Options button in the questions and answers page to a cogwheel menu in the top-right corner.
+
+### BUG-006 — The greyed area behind the modal does not cover the full screen on desktop
+
+- **Status:** backlog
+- **Priority:** P2
+- **Reported:** 2025-01-22
+- **Reporter:** TT
+- **Notes:**
+
+---
+
+## Backlog
+
+### TEMPLATE
+
+- **Status:** backlog
+- **Priority:** [P1/P2/P3]
+- **Reported:** YYYY-MM-DD
+- **Reporter:** TT
+- **Notes:**
+
+### FEAT-008 — Make the questions directly clickable in MCQ quiz mode, instead of adding buttons
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-22
+- **Reporter:** TT
+- **Notes:**
+
+### FEAT-009 — Make the Answer page integrated to the question page, instead of a separate page, for True/False and MCQ modes
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-22
+- **Reporter:** TT
+- **Notes:**
 
 ### BUG-005 — When working on T/F and sequential, after interrupting with options, when resuming it goes to a random question
 
@@ -41,18 +85,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reported:** 2025-01-16
 - **Reporter:** TT
 - **Notes:** Today we store `currentArea`, `quizStatus_*`, `questionOrder_*`, `currentQuestion_*`. Consider one `unedTestsData` object.
-
----
-
-## Backlog
-
-### TEMPLATE
-
-- **Status:** backlog
-- **Priority:** [P1/P2/P3]
-- **Reported:** YYYY-MM-DD
-- **Reporter:** TT
-- **Notes:**
 
 ### TECH-004 — Move E2E tests to unit tests where possible
 
