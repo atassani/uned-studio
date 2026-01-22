@@ -19,14 +19,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### BUG-006 — The greyed area behind the modal does not cover the full screen on desktop
-
-- **Status:** backlog
-- **Priority:** P2
-- **Reported:** 2025-01-22
-- **Reporter:** TT
-- **Notes:**
-
 ---
 
 ## Backlog
@@ -138,12 +130,23 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Done
 
+### ✅ BUG-006 — The greyed area behind the modal does not cover the full screen on desktop
+
+- **Status:** backlog
+- **Priority:** P2
+- **Reported:** 2025-01-22
+- **Completed:** 2026-01-22
+- **Reporter:** TT
+- **PR:**
+- **Notes:**
+
 ### ✅ FEAT-007 — Move options out to a cogwheel menu
 
 - **Status:** backlog
 - **Priority:** P3
 - **Reported:** 2025-01-22
 - **Reporter:** TT
+- **Completed:** 2026-01-22
 - **PR:** [ui: move Options button to a cogwheel menu to improve mobile layout (FEAT-007) #14](https://github.com/atassani/uned-studio/pull/14)
 - **Notes:** To simplify the buttons and make them fit in mobile for MCQ questions, move the Options button in the questions and answers page to a cogwheel menu in the top-right corner.
 
