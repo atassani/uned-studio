@@ -1,0 +1,61 @@
+import { render, screen, fireEvent } from '@testing-library/react';
+import { StatusGrid } from '../../src/app/components/StatusGrid';
+import { AreaType, QuestionType } from '../../src/app/types';
+
+describe('StatusGrid overlay BUG-007', () => {
+  const mockArea: AreaType = {
+    area: 'Test Area',
+    file: 'test.json',
+    type: 'Multiple Choice',
+    shortName: 'TA',
+  };
+
+  const mockQuestions: QuestionType[] = [
+    {
+      index: 0,
+      section: 'Section A',
+      number: 1,
+      question: 'What is 2 + 2?',
+      answer: '4',
+      explanation: 'Basic arithmetic ensures 2 + 2 equals 4.',
+      appearsIn: ['Exam 1'],
+      options: ['3', '4'],
+    },
+    {
+      index: 1,
+      section: 'Section A',
+      number: 2,
+      question: 'Capital of France?',
+      answer: 'Paris',
+      explanation: 'Paris is the capital of France.',
+      appearsIn: ['Exam 1'],
+      options: ['Paris', 'Madrid'],
+    },
+  ];
+
+  it('shows user answer as letter, not full text, when it is a full text string', () => {
+    render(
+      <StatusGrid
+        selectedArea={mockArea}
+        questions={mockQuestions}
+        status={{ 0: 'fail', 1: 'correct' }}
+        userAnswers={{ 0: '3' }} // User answered with the full text '3'
+        currentQuizType="Multiple Choice"
+        handleContinue={jest.fn()}
+        pendingQuestions={jest.fn(() => [] as [number, QuestionType][])}
+        resetQuiz={jest.fn()}
+        setShowAreaSelection={jest.fn()}
+        setShowStatus={jest.fn()}
+        setShowResult={jest.fn()}
+        originalSectionOrder={['Section A']}
+      />
+    );
+
+    // Click on the failed question
+    fireEvent.click(screen.getByText('1❌'));
+
+    // Check that the user's answer is displayed with the letter, not the full text
+    // This is the buggy behavior: it will show '3) 3' instead of 'A) 3'
+    expect(screen.getByText('❌ A) 3')).toBeInTheDocument();
+  });
+});
