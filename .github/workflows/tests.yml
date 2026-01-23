@@ -23,7 +23,7 @@ jobs:
         run: npx playwright install --with-deps
       - name: Create .env for CI
         run: |
-          cat <<'EOF' > .env
+          cat <<'EOF' > .env.test
           NEXT_PUBLIC_BASE_PATH=/uned/studio
           NEXT_PUBLIC_AREAS_FILE=areas-mcq-tests.json
           EOF

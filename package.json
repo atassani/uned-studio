@@ -12,7 +12,7 @@
     "test:cleanup-e2e": "rm -f public/areas-mcq-tests.json public/questions-mcq-tests.json",
     "test:e2e:withdata": "npm run test:prepare-e2e && NEXT_PUBLIC_AREAS_FILE=areas-mcq-tests.json npm run test:e2e && npm run test:cleanup-e2e",
     "test:unit": "jest",
-    "test:e2e": "playwright test --config=playwright.e2e.config.ts --reporter=list",
+    "test:e2e": "playwright test",
     "test": "npm run test:unit && npm run test:e2e:withdata",
     "typecheck": "tsc --noEmit",
     "format": "prettier --check .",

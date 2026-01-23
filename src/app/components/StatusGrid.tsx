@@ -25,6 +25,18 @@ interface StatusGridProps {
   originalSectionOrder: string[];
 }
 
+// Helper to display MCQ answer as "A) Option 1."
+export function getUserAnswerDisplay(userAnswer: string, options?: string[]): string {
+  if (!userAnswer) return '';
+  if (options) {
+    const index = options.findIndex((option) => option === userAnswer);
+    const letter = index >= 0 ? String.fromCharCode(65 + index) : userAnswer.toUpperCase();
+    const optionText = index >= 0 ? options[index] : userAnswer;
+    return `${letter}) ${optionText}.`;
+  }
+  return userAnswer;
+}
+
 export function StatusGrid({
   selectedArea,
   questions,
@@ -211,17 +223,13 @@ export function StatusGrid({
                 <div>
                   <h3 className="font-semibold text-gray-700 mb-2">Tu respuesta:</h3>
                   <div className="bg-red-50 p-3 rounded border-l-4 border-red-500">
-                    <span className="text-red-800 font-medium">
+                    <span data-testid="failed-answer-text" className="text-red-800 font-medium">
                       ❌{' '}
                       {currentQuizType === 'Multiple Choice' && selectedQuestion.options
-                        ? (() => {
-                            const userAnswer = userAnswers[selectedQuestion.index];
-                            // Convert letter answer (a, b, c...) to index (0, 1, 2...)
-                            const optionIndex = userAnswer.toLowerCase().charCodeAt(0) - 97;
-                            const optionLetter = userAnswer.toUpperCase();
-                            const optionText = selectedQuestion.options[optionIndex] || userAnswer;
-                            return `${optionLetter}) ${optionText}`;
-                          })()
+                        ? getUserAnswerDisplay(
+                            userAnswers[selectedQuestion.index],
+                            selectedQuestion.options
+                          )
                         : userAnswers[selectedQuestion.index]}
                     </span>
                   </div>

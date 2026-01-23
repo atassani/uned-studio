@@ -19,14 +19,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### BUG-007 — When showing detailed answer on the Grid of MCQ questions, the question letter is shown as the full answer text, callcaps, instead of just the letter
-
-- **Status:** backlog
-- **Priority:** [P1/P2/P3]
-- **Reported:** YYYY-MM-DD
-- **Reporter:** TT
-- **Notes:** Using better the screen, it could be a cross on the wrong answer instead
-
 ### TECH-002 — Consolidate localStorage keys under a single root key
 
 - **Status:** backlog
@@ -130,9 +122,19 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Done
 
+### ✅ BUG-007 — When showing detailed answer on the Grid of MCQ questions, the question letter is shown as the full answer text, allcaps, instead of just the letter
+
+- **Status:** done
+- **Priority:** P2
+- **Reported:** 2025-01-22
+- **Completed:** 2026-01-23
+- **PR:** [fix: Implement correct answer display in status grid for MCQs (BUG-007) #16](https://github.com/atassani/uned-studio/pull/16)
+- **Reporter:** TT
+- **Notes:** Using better the screen, it could be a cross on the wrong answer instead
+
 ### ❌ BUG-005 — When working on T/F and sequential, after interrupting with options, when resuming it goes to a random question
 
-- **Status:** backlog
+- **Status:** done
 - **Priority:** P1
 - **Reported:** 2025-01-20
 - **Reporter:** TT
@@ -140,7 +142,7 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ### ✅ BUG-006 — The greyed area behind the modal does not cover the full screen on desktop
 
-- **Status:** backlog
+- **Status:** done
 - **Priority:** P2
 - **Reported:** 2025-01-22
 - **Completed:** 2026-01-22
@@ -150,7 +152,7 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ### ✅ FEAT-007 — Move options out to a cogwheel menu
 
-- **Status:** backlog
+- **Status:** done
 - **Priority:** P3
 - **Reported:** 2025-01-22
 - **Reporter:** TT

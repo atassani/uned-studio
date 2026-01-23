@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- fix: Implement correct answer display in status grid for MCQs
+
 ## [1.4.4] - 2026-01-22
 
 - ui: move Options button to a cogwheel menu to improve mobile layout (FEAT-007)
