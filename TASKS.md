@@ -19,11 +19,11 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### BUG-007 — When showing detailed answer on the Grid of MCQ questions, the question letter is shown as the full answer text, callcaps, instead of just the letter
+### BUG-007 — When showing detailed answer on the Grid of MCQ questions, the question letter is shown as the full answer text, allcaps, instead of just the letter
 
 - **Status:** backlog
-- **Priority:** [P1/P2/P3]
-- **Reported:** YYYY-MM-DD
+- **Priority:** P2
+- **Reported:** 2025-01-22
 - **Reporter:** TT
 - **Notes:** Using better the screen, it could be a cross on the wrong answer instead
 
