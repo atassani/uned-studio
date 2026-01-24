@@ -1,5 +1,13 @@
 import { test, expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { setupFreshTest, waitForAppReady } from './helpers';
+
+async function getCurrentAreaFromLocalStorage(page: Page) {
+  const unedStudio = await page.evaluate(() => localStorage.getItem('unedStudio'));
+  const currentArea = unedStudio ? JSON.parse(unedStudio).currentArea : null;
+  return currentArea;
+}
+
 // Clear localStorage before each test to ensure a clean state
 test.beforeEach(async ({ page }) => {
   await setupFreshTest(page);
@@ -397,7 +405,7 @@ test('remembers last studied area in localStorage', async ({ page }) => {
   await page.getByRole('button', { name: 'Todas las preguntas' }).click();
 
   // Check that currentArea is stored in localStorage (now shortName)
-  const currentArea = await page.evaluate(() => localStorage.getItem('currentArea'));
+  const currentArea = await getCurrentAreaFromLocalStorage(page);
   expect(currentArea).toBe('log1');
 
   // Go to different area
@@ -406,7 +414,7 @@ test('remembers last studied area in localStorage', async ({ page }) => {
   await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
 
   // Check that currentArea is updated (now shortName)
-  const newCurrentArea = await page.evaluate(() => localStorage.getItem('currentArea'));
+  const newCurrentArea = await getCurrentAreaFromLocalStorage(page);
   expect(newCurrentArea).toBe('ipc');
 });
 

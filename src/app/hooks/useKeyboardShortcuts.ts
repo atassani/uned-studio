@@ -1,6 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { AreaType, QuestionType } from '../types';
+import { storage } from '../storage';
 
 interface UseKeyboardShortcutsProps {
   showAreaSelection: boolean;
@@ -81,7 +82,7 @@ export function useKeyboardShortcuts(props: UseKeyboardShortcutsProps) {
           setShowSelectionMenu(true);
           loadQuestionsForArea(area);
           // Track area for persistence
-          localStorage.setItem('currentArea', area.shortName);
+          storage.setCurrentArea(area.shortName);
         }
       }
 

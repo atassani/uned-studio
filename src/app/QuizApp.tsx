@@ -14,6 +14,7 @@ import { ResultDisplay } from './components/ResultDisplay';
 import { useQuizPersistence } from './hooks/useQuizPersistence';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useQuizLogic } from './hooks/useQuizLogic';
+import { storage } from './storage';
 
 export default function QuizApp() {
   // Track user answers for each question (index -> answer string)
@@ -132,7 +133,7 @@ export default function QuizApp() {
           localStorage.removeItem('quizStatus');
         }
         // Only show area selection if no area is selected
-        const currentAreaShortName = localStorage.getItem('currentArea');
+        const currentAreaShortName = storage.getCurrentArea();
         if (currentAreaShortName) {
           const areaToRestore = areasData.find((area) => area.shortName === currentAreaShortName);
           if (areaToRestore) {
@@ -186,7 +187,7 @@ export default function QuizApp() {
     setCurrentQuizType(area.type);
     setShowAreaSelection(false);
     // Track area for persistence
-    localStorage.setItem('currentArea', area.shortName);
+    storage.setCurrentArea(area.shortName);
 
     // Always load questions and restore progress if available
     const areaKey = area.shortName;

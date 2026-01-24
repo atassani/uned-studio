@@ -1,6 +1,22 @@
 // moved from tests/e2e/tests
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForAppReady, startQuiz } from './helpers';
+import type { Page } from '@playwright/test';
+import { setupFreshTest, waitForAppReady } from './helpers';
+
+async function getCurrentAreaFromLocalStorage(page: Page) {
+  const unedStudio = await page.evaluate(() => localStorage.getItem('unedStudio'));
+  const currentArea = unedStudio ? JSON.parse(unedStudio).currentArea : null;
+  return currentArea;
+}
+
+async function clearCurrentArea(page: Page) {
+  const state = await page.evaluate(() => localStorage.getItem('unedStudio'));
+  const stateObj = state ? JSON.parse(state) : {};
+  stateObj.currentArea = undefined;
+  await page.evaluate((newState) => {
+    localStorage.setItem('unedStudio', JSON.stringify(newState));
+  }, stateObj);
+}
 
 // Clear localStorage before each test to ensure a clean state
 test.beforeEach(async ({ page }) => {
@@ -21,7 +37,7 @@ test('remembers last studied area in localStorage', async ({ page }) => {
     .click({ timeout: 10000 });
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
   // Check that currentArea is updated
-  const currentArea = await page.evaluate(() => localStorage.getItem('currentArea'));
+  const currentArea = await getCurrentAreaFromLocalStorage(page);
   expect(currentArea).toBe('ipc');
 }, 25000);
 
@@ -36,7 +52,7 @@ test('remembers last studied area in localStorage going throu Options', async ({
   await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
   await page.getByRole('button', { name: 'Todas las preguntas' }).click();
   // Check that currentArea is updated
-  const currentArea = await page.evaluate(() => localStorage.getItem('currentArea'));
+  const currentArea = await getCurrentAreaFromLocalStorage(page);
   expect(currentArea).toBe('ipc');
 }, 20000);
 
@@ -60,7 +76,7 @@ test('automatically returns to last studied area on app reload', async ({ page }
 }, 40000);
 
 test('restores to area selection if no previous area stored', async ({ page }) => {
-  await page.evaluate(() => localStorage.removeItem('currentArea'));
+  await clearCurrentArea(page);
   await page.reload();
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
 });

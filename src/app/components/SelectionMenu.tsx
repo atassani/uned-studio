@@ -1,4 +1,5 @@
 import { AreaType } from '../types';
+import { storage } from '../storage';
 
 interface SelectionMenuProps {
   selectedArea: AreaType | null;
@@ -143,7 +144,7 @@ export function SelectionMenu({
         onClick={() => {
           setShowAreaSelection(true);
           setShowSelectionMenu(false);
-          localStorage.removeItem('currentArea');
+          storage.setCurrentArea(undefined);
         }}
         aria-label="Cambiar área"
       >
