@@ -1,6 +1,7 @@
 'use client';
 import { useCallback } from 'react';
 import { QuestionType, AreaType } from '../types';
+import { storage } from '../storage';
 
 interface UseQuizLogicProps {
   allQuestions: QuestionType[];
@@ -64,10 +65,10 @@ export function useQuizLogic({
     setQuestions(orderedQuestions);
 
     // Load or initialize status
-    const savedStatus = localStorage.getItem(`quizStatus_${areaKey}`);
+    const savedStatus = storage.getAreaQuizStatus(areaKey);
     let newStatus: Record<number, 'correct' | 'fail' | 'pending'>;
     if (savedStatus) {
-      const parsedStatus = JSON.parse(savedStatus);
+      const parsedStatus = savedStatus;
       newStatus = orderedQuestions.reduce(
         (acc: Record<number, 'correct' | 'fail' | 'pending'>, q: QuestionType) => {
           acc[q.index] = parsedStatus[q.index] || 'pending';
@@ -85,12 +86,12 @@ export function useQuizLogic({
       );
     }
     setStatus(newStatus);
-    localStorage.setItem(`quizStatus_${areaKey}`, JSON.stringify(newStatus));
+    storage.setAreaQuizStatus(areaKey, newStatus);
 
     // Store selected questions for session restoration
-    localStorage.setItem(
-      `selectedQuestions_${areaKey}`,
-      JSON.stringify(orderedQuestions.map((q) => q.index))
+    storage.setAreaSelectedQuestions(
+      areaKey,
+      orderedQuestions.map((q) => q.index)
     );
 
     // Always start at the beginning when starting all questions
@@ -148,10 +149,10 @@ export function useQuizLogic({
     setQuestions(orderedQuestions);
 
     // Load or initialize status
-    const savedStatus = localStorage.getItem(`quizStatus_${areaKey}`);
+    const savedStatus = storage.getAreaQuizStatus(areaKey);
     let newStatus: Record<number, 'correct' | 'fail' | 'pending'>;
     if (savedStatus) {
-      const parsedStatus = JSON.parse(savedStatus);
+      const parsedStatus = savedStatus;
       newStatus = orderedQuestions.reduce(
         (acc: Record<number, 'correct' | 'fail' | 'pending'>, q: QuestionType) => {
           acc[q.index] = parsedStatus[q.index] || 'pending';
@@ -169,12 +170,12 @@ export function useQuizLogic({
       );
     }
     setStatus(newStatus);
-    localStorage.setItem(`quizStatus_${areaKey}`, JSON.stringify(newStatus));
+    storage.setAreaQuizStatus(areaKey, newStatus);
 
     // Store selected questions for session restoration
-    localStorage.setItem(
-      `selectedQuestions_${areaKey}`,
-      JSON.stringify(orderedQuestions.map((q) => q.index))
+    storage.setAreaSelectedQuestions(
+      areaKey,
+      orderedQuestions.map((q) => q.index)
     );
 
     // Always start at the beginning when starting a new section selection
@@ -233,10 +234,10 @@ export function useQuizLogic({
     setQuestions(orderedQuestions);
 
     // Load or initialize status
-    const savedStatus = localStorage.getItem(`quizStatus_${areaKey}`);
+    const savedStatus = storage.getAreaQuizStatus(areaKey);
     let newStatus: Record<number, 'correct' | 'fail' | 'pending'>;
     if (savedStatus) {
-      const parsedStatus = JSON.parse(savedStatus);
+      const parsedStatus = savedStatus;
       newStatus = orderedQuestions.reduce(
         (acc: Record<number, 'correct' | 'fail' | 'pending'>, q: QuestionType) => {
           acc[q.index] = parsedStatus[q.index] || 'pending';
@@ -254,12 +255,12 @@ export function useQuizLogic({
       );
     }
     setStatus(newStatus);
-    localStorage.setItem(`quizStatus_${areaKey}`, JSON.stringify(newStatus));
+    storage.setAreaQuizStatus(areaKey, newStatus);
 
     // Store selected questions for session restoration
-    localStorage.setItem(
-      `selectedQuestions_${areaKey}`,
-      JSON.stringify(orderedQuestions.map((q) => q.index))
+    storage.setAreaSelectedQuestions(
+      areaKey,
+      orderedQuestions.map((q) => q.index)
     );
 
     // Always start at the beginning when starting a new question selection
@@ -292,10 +293,10 @@ export function useQuizLogic({
     // Clear any persisted state to ensure fresh randomization
     if (selectedArea) {
       const areaKey = selectedArea.shortName;
-      localStorage.removeItem(`quizStatus_${areaKey}`);
-      localStorage.removeItem(`currentQuestion_${areaKey}`);
-      localStorage.removeItem(`selectedSections_${areaKey}`);
-      localStorage.removeItem(`selectedQuestions_${areaKey}`);
+      storage.setAreaQuizStatus(areaKey, undefined);
+      storage.setAreaCurrentQuestion(areaKey, undefined);
+      storage.setAreaSelectedSections(areaKey, undefined);
+      storage.setAreaSelectedQuestions(areaKey, undefined);
     }
 
     setShowSelectionMenu(true);

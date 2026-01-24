@@ -138,27 +138,6 @@ test('shows area name in question selection menu', async ({ page }) => {
   await expect(page.getByText('🎓 Área: Lógica I')).toBeVisible();
 });
 
-test('migrates old quizStatus to area-specific storage without .json suffix', async ({ page }) => {
-  // Set up old localStorage data
-  await page.evaluate(() => {
-    localStorage.setItem('quizStatus', '{"0": "correct", "1": "fail"}');
-  });
-
-  // Reload page to trigger migration
-  await page.reload();
-
-  // Wait for areas to load (which triggers migration)
-  await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Lógica I/ })).toBeVisible();
-
-  // Check that data was migrated and old data removed (now uses shortName only)
-  const newData = await page.evaluate(() => localStorage.getItem('quizStatus_log1'));
-  const oldData = await page.evaluate(() => localStorage.getItem('quizStatus'));
-
-  expect(newData).toBe('{"0": "correct", "1": "fail"}');
-  expect(oldData).toBeNull();
-});
-
 test('Multiple Choice quiz works for IPC area', async ({ page }) => {
   // Ensure we're in area selection
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 5000 });

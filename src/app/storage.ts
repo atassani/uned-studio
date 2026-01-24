@@ -25,6 +25,60 @@ export const storage = {
     const state = getStoredState();
     setStoredState({ ...state, currentArea: areaKey });
   },
+
+  setAreaCurrentQuestion(areaKey: string, questionIndex?: number) {
+    updateAreaState(areaKey, { currentQuestion: questionIndex });
+  },
+
+  getAreaCurrentQuestion(areaKey: string): number | undefined {
+    const areaState = getAreaState(areaKey);
+    return areaState.currentQuestion;
+  },
+
+  setAreaShuffleQuestions(areaKey: string, shuffle: boolean) {
+    updateAreaState(areaKey, { shuffleQuestions: shuffle });
+  },
+
+  getAreaShuffleQuestions(areaKey: string): boolean | undefined {
+    const areaState = getAreaState(areaKey);
+    return areaState.shuffleQuestions;
+  },
+
+  setAreaShuffleAnswers(areaKey: string, shuffle: boolean) {
+    updateAreaState(areaKey, { shuffleAnswers: shuffle });
+  },
+
+  getAreaShuffleAnswers(areaKey: string): boolean | undefined {
+    const areaState = getAreaState(areaKey);
+    return areaState.shuffleAnswers;
+  },
+
+  setAreaQuizStatus(areaKey: string, status?: QuizStatus) {
+    updateAreaState(areaKey, { quizStatus: status });
+  },
+
+  getAreaQuizStatus(areaKey: string): QuizStatus | undefined {
+    const areaState = getAreaState(areaKey);
+    return areaState.quizStatus;
+  },
+
+  setAreaSelectedSections(areaKey: string, sections?: string[]) {
+    updateAreaState(areaKey, { selectedSections: sections });
+  },
+
+  getAreaSelectedSections(areaKey: string): string[] | undefined {
+    const areaState = getAreaState(areaKey);
+    return areaState.selectedSections;
+  },
+
+  setAreaSelectedQuestions(areaKey: string, questions?: number[]) {
+    updateAreaState(areaKey, { selectedQuestions: questions });
+  },
+
+  getAreaSelectedQuestions(areaKey: string): number[] | undefined {
+    const areaState = getAreaState(areaKey);
+    return areaState.selectedQuestions;
+  },
 };
 
 function getStoredState(): AppState {

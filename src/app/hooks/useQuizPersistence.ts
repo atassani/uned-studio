@@ -1,6 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { AreaType } from '../types';
+import { storage } from '../storage';
 
 // Custom hook for persisting and loading quiz preferences
 export function useQuizPersistence(
@@ -17,7 +18,7 @@ export function useQuizPersistence(
   useEffect(() => {
     if (selectedArea && current !== null) {
       const areaKey = selectedArea.shortName;
-      localStorage.setItem(`currentQuestion_${areaKey}`, String(current));
+      storage.setAreaCurrentQuestion(areaKey, Number(current));
     }
   }, [selectedArea, current]);
 
@@ -25,7 +26,7 @@ export function useQuizPersistence(
   useEffect(() => {
     if (selectedArea && shuffleQuestions !== undefined) {
       const areaKey = selectedArea.shortName;
-      localStorage.setItem(`shuffleQuestions_${areaKey}`, JSON.stringify(shuffleQuestions));
+      storage.setAreaShuffleQuestions(areaKey, shuffleQuestions);
     }
   }, [shuffleQuestions]); // Only run when shuffleQuestions changes, not when selectedArea changes
 
@@ -33,9 +34,9 @@ export function useQuizPersistence(
   useEffect(() => {
     if (selectedArea) {
       const areaKey = selectedArea.shortName;
-      const saved = localStorage.getItem(`shuffleQuestions_${areaKey}`);
-      if (saved !== null) {
-        setShuffleQuestions(JSON.parse(saved));
+      const saved = storage.getAreaShuffleQuestions(areaKey);
+      if (saved !== undefined) {
+        setShuffleQuestions(saved);
       } else {
         // Default to true (random/shuffled) for new areas
         setShuffleQuestions(true);
@@ -47,7 +48,7 @@ export function useQuizPersistence(
   useEffect(() => {
     if (selectedArea && shuffleAnswers !== undefined) {
       const areaKey = selectedArea.shortName;
-      localStorage.setItem(`shuffleAnswers_${areaKey}`, JSON.stringify(shuffleAnswers));
+      storage.setAreaShuffleAnswers(areaKey, shuffleAnswers);
     }
   }, [shuffleAnswers]); // Only run when shuffleAnswers changes, not when selectedArea changes
 
@@ -55,9 +56,9 @@ export function useQuizPersistence(
   useEffect(() => {
     if (selectedArea) {
       const areaKey = selectedArea.shortName;
-      const saved = localStorage.getItem(`shuffleAnswers_${areaKey}`);
-      if (saved !== null) {
-        setShuffleAnswers(JSON.parse(saved));
+      const saved = storage.getAreaShuffleAnswers(areaKey);
+      if (saved !== undefined) {
+        setShuffleAnswers(saved);
       } else {
         // Default to false (no shuffle) for new areas
         setShuffleAnswers(false);
@@ -76,7 +77,7 @@ export function useQuizPersistence(
       const statusMatchesCurrentArea = statusKeys.length === expectedLength;
 
       if (statusMatchesCurrentArea) {
-        localStorage.setItem(`quizStatus_${areaKey}`, JSON.stringify(status));
+        storage.setAreaQuizStatus(areaKey, status);
       }
     }
   }, [status, questionsLength, selectedArea]);
