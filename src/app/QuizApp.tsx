@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { QuestionType, AreaType } from './types';
-import { shuffleOptionsWithMemory, createSeededRng } from './utils';
+import { shuffleOptionsWithMemory, createSeededRng, getUserDisplayName } from './utils';
 import packageJson from '../../package.json';
 import { AreaSelection } from './components/AreaSelection';
 import { SelectionMenu } from './components/SelectionMenu';
@@ -746,7 +746,7 @@ export default function QuizApp() {
           <button
             onClick={logout}
             className="absolute top-4 right-4 px-3 py-2 text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors z-30"
-            title={`Sign out (${user?.username || user?.attributes?.email || 'User'})`}
+            title={`Sign out (${getUserDisplayName(user)})`}
           >
             Sign out
           </button>

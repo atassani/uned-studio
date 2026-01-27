@@ -98,3 +98,49 @@ export function createSeededRng(seed: number): () => number {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+
+/**
+ * Utility function to get the user's display name from authentication data.
+ * Returns the best available name in the following order of preference:
+ * 1. Full name from 'name' attribute (Google OAuth provides this)
+ * 2. Combined given_name + family_name
+ * 3. Email address
+ * 4. Username
+ * 5. 'User' as final fallback
+ */
+export function getUserDisplayName(user: any): string {
+  if (!user) return 'User';
+  
+  // Try the 'name' attribute first (Google OAuth provides this)
+  if (user.attributes?.name) {
+    return user.attributes.name;
+  }
+  
+  // Try combining given_name and family_name
+  const firstName = user.attributes?.given_name;
+  const lastName = user.attributes?.family_name;
+  if (firstName && lastName) {
+    return `${firstName} ${lastName}`;
+  }
+  
+  // If only one name part is available, use it
+  if (firstName) {
+    return firstName;
+  }
+  if (lastName) {
+    return lastName;
+  }
+  
+  // Fallback to email
+  if (user.attributes?.email) {
+    return user.attributes.email;
+  }
+  
+  // Fallback to username
+  if (user.username) {
+    return user.username;
+  }
+  
+  // Final fallback
+  return 'User';
+}

@@ -1,5 +1,9 @@
 # PLAN
 
+## Validate credentials are not in git
+
+## Validate a hacker cannot get rid of authentication by modifying the client
+
 ## Separate data from code
 
 ## Protect data/API
