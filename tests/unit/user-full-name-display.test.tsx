@@ -36,7 +36,7 @@ describe('User Full Name Display', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock fetch for areas data
     global.fetch = jest.fn(() =>
       Promise.resolve({

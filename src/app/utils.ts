@@ -105,24 +105,24 @@ export function createSeededRng(seed: number): () => number {
  * 1. Full name from 'name' attribute (Google OAuth provides this)
  * 2. Combined given_name + family_name
  * 3. Email address
- * 4. Username
+ * 4. Username (only if it doesn't look like a Google ID)
  * 5. 'User' as final fallback
  */
 export function getUserDisplayName(user: any): string {
   if (!user) return 'User';
-  
+
   // Try the 'name' attribute first (Google OAuth provides this)
   if (user.attributes?.name) {
     return user.attributes.name;
   }
-  
+
   // Try combining given_name and family_name
   const firstName = user.attributes?.given_name;
   const lastName = user.attributes?.family_name;
   if (firstName && lastName) {
     return `${firstName} ${lastName}`;
   }
-  
+
   // If only one name part is available, use it
   if (firstName) {
     return firstName;
@@ -130,17 +130,25 @@ export function getUserDisplayName(user: any): string {
   if (lastName) {
     return lastName;
   }
-  
+
+  // Try alternative attribute names that Cognito might use
+  if (user.attributes?.['custom:name']) {
+    return user.attributes['custom:name'];
+  }
+  if (user.attributes?.['cognito:name']) {
+    return user.attributes['cognito:name'];
+  }
+
   // Fallback to email
   if (user.attributes?.email) {
     return user.attributes.email;
   }
-  
-  // Fallback to username
-  if (user.username) {
+
+  // Only use username if it doesn't look like a Google ID (which starts with "Google_")
+  if (user.username && !user.username.startsWith('Google_')) {
     return user.username;
   }
-  
+
   // Final fallback
   return 'User';
 }

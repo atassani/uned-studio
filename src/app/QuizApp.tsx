@@ -741,15 +741,21 @@ export default function QuizApp() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
       <div className="w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8 relative">
-        {/* Logout button in top-right (only show if auth is enabled) */}
+        {/* User name and logout button in top-right (only show if auth is enabled) */}
         {process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true' && (
-          <button
-            onClick={logout}
-            className="absolute top-4 right-4 px-3 py-2 text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors z-30"
-            title={`Sign out (${getUserDisplayName(user)})`}
-          >
-            Sign out
-          </button>
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-30">
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              {getUserDisplayName(user)}
+            </span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
+            <button
+              onClick={logout}
+              className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
+              title="Sign out"
+            >
+              Sign out
+            </button>
+          </div>
         )}
         {renderContent()}
         {/* Version link only on main menu (no selection in progress) */}

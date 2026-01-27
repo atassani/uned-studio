@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- feat: display user's full name from Google OAuth in logout button
+- feat: add support for Google OAuth login/logout functionality
 - fix: Implement correct answer display in status grid for MCQs
 - tech: consolidate keys in local storage to a single object, unedStudio, for better management
 
