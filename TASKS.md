@@ -55,9 +55,37 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reporter:** TT
 - **Notes:**
 
+### Track Google Analytics
+
+Add Google Analytics 4 tracking with ID "***REMOVED***" to this Next.js project. The project appears to be deployed at /uned/studio path.
+
+Requirements:
+
+1. Add the Google Analytics script to the main layout or \_app file using Next.js Script component
+2. Track both initial page loads and SPA route changes
+3. Use strategy="afterInteractive" for the GA scripts
+4. Create a utility file for tracking functions
+5. Ensure tracking works with the /uned/studio base path
+6. Include both the gtag.js script and the configuration script
+
+The tracking ID is: ***REMOVED***
+The site will be deployed at: https://humblyproud.com/uned/studio
+
+Make sure to:
+
+- Use Next.js Script component for proper loading
+- Track route changes for SPA navigation
+- Handle the base path correctly
+- Add TypeScript types if this is a TypeScript project
+- Include utility functions for custom event tracking
+
+Show me the complete implementation for both App Router and Pages Router approaches.
+
+### Remove references to UNED and make it only /studio
+
 ### Separate data from code, and version data?
 
-## Protect data/API
+### Protect data/API
 
 - **If protecting S3/API:**
   - Add Cognito authorizer to API Gateway.
@@ -71,10 +99,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ### Make individual answers clickable
 
 ### Lógica I Exams as individual sections
-
-### Allow anonimous access
-
-### Restrict who can access authenticated?
 
 ### Preserve data in the server
 

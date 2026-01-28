@@ -2,9 +2,12 @@
 
 ## [Unreleased]
 
-- feat: display user's full name from Google OAuth in logout button
 - feat: add support for Google OAuth login/logout functionality
+- feat: allows anonymous users to log in
+- feat: display user's full name from Google OAuth in logout button
+- feat: sign out disconnects user from Google OAuth session
 - fix: Implement correct answer display in status grid for MCQs
+- fix: Shows error message if area file cannot be loaded
 - tech: consolidate keys in local storage to a single object, unedStudio, for better management
 
 ## [1.4.4] - 2026-01-22

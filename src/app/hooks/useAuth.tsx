@@ -50,6 +50,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthDisabled ? { username: 'test-user' } : null
   );
 
+  // Check localStorage for previous Google logout state
+  const [hasLoggedOutFromGoogle, setHasLoggedOutFromGoogle] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('hasLoggedOutFromGoogle') === 'true';
+    }
+    return false;
+  });
+
   useEffect(() => {
     if (!isAuthDisabled) {
       checkAuth();
@@ -98,6 +106,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userWithAttributes);
       console.log('Final user object:', userWithAttributes);
       setIsAuthenticated(!!session.tokens);
+
+      // Clear the Google logout flag since user has successfully logged in
+      if (session.tokens && hasLoggedOutFromGoogle) {
+        setHasLoggedOutFromGoogle(false);
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('hasLoggedOutFromGoogle');
+        }
+      }
     } catch (error) {
       setIsAuthenticated(false);
       setUser(null);
@@ -108,7 +124,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = () => {
     if (isAuthDisabled) return;
-    signInWithRedirect({ provider: 'Google' });
+
+    // If user has previously logged out from Google, force account selection
+    if (hasLoggedOutFromGoogle) {
+      // Use Cognito's OAuth URL with prompt=select_account to show Google account picker
+      const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+      const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+      const redirectUri = encodeURIComponent(
+        process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN || window.location.origin
+      );
+      const state = encodeURIComponent(Math.random().toString(36).substring(2, 15));
+
+      const oauthUrl =
+        `https://${domain}/oauth2/authorize?` +
+        `identity_provider=Google&` +
+        `redirect_uri=${redirectUri}&` +
+        `response_type=code&` +
+        `client_id=${clientId}&` +
+        `scope=openid+email+profile&` +
+        `state=${state}&` +
+        `prompt=select_account`;
+
+      if (typeof window !== 'undefined') {
+        window.location.href = oauthUrl;
+      }
+    } else {
+      signInWithRedirect({ provider: 'Google' });
+    }
   };
 
   const loginAnonymously = () => {
@@ -134,6 +176,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      // Mark that user has logged out from Google to force account selection next time
+      if (user && !user.isAnonymous) {
+        setHasLoggedOutFromGoogle(true);
+
+        // Persist the logout state to localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('hasLoggedOutFromGoogle', 'true');
+        }
+      }
+
       await signOut({
         global: true, // This ensures a full logout from Cognito
       });
