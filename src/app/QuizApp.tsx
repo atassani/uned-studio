@@ -11,6 +11,13 @@ import { StatusGrid } from './components/StatusGrid';
 import { QuestionDisplay } from './components/QuestionDisplay';
 import { ResultDisplay } from './components/ResultDisplay';
 import { useAuth } from './hooks/useAuth';
+import {
+  trackAreaSelection,
+  trackQuizStart,
+  trackQuizComplete,
+  trackAnswerSubmit,
+  trackAuth,
+} from './lib/analytics';
 
 import { useQuizPersistence } from './hooks/useQuizPersistence';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -190,6 +197,9 @@ export default function QuizApp() {
     // Track area for persistence
     storage.setCurrentArea(area.shortName);
 
+    // Track area selection in Google Analytics
+    trackAreaSelection(area.shortName);
+
     // Always load questions and restore progress if available
     const areaKey = area.shortName;
     const savedStatus = storage.getAreaQuizStatus(areaKey);
@@ -357,17 +367,32 @@ export default function QuizApp() {
   const startQuizAll = useCallback(() => {
     prepareNewRun();
     baseStartQuizAll();
-  }, [prepareNewRun, baseStartQuizAll]);
+
+    // Track quiz start in Google Analytics
+    if (selectedArea) {
+      trackQuizStart(selectedArea.shortName, 'all_questions');
+    }
+  }, [prepareNewRun, baseStartQuizAll, selectedArea]);
 
   const startQuizSections = useCallback(() => {
     prepareNewRun();
     baseStartQuizSections();
-  }, [prepareNewRun, baseStartQuizSections]);
+
+    // Track quiz start in Google Analytics
+    if (selectedArea) {
+      trackQuizStart(selectedArea.shortName, 'sections');
+    }
+  }, [prepareNewRun, baseStartQuizSections, selectedArea]);
 
   const startQuizQuestions = useCallback(() => {
     prepareNewRun();
     baseStartQuizQuestions();
-  }, [prepareNewRun, baseStartQuizQuestions]);
+
+    // Track quiz start in Google Analytics
+    if (selectedArea) {
+      trackQuizStart(selectedArea.shortName, 'questions');
+    }
+  }, [prepareNewRun, baseStartQuizQuestions, selectedArea]);
 
   // Load questions for selected area on every area change
   useEffect(() => {
@@ -569,6 +594,11 @@ export default function QuizApp() {
       const areaKey = selectedArea.shortName;
       storage.setAreaQuizStatus(areaKey, newStatus);
       setShowResult({ correct, explanation: q.explanation });
+
+      // Track answer submission in Google Analytics
+      if (currentQuizType) {
+        trackAnswerSubmit(selectedArea.shortName, currentQuizType, correct);
+      }
     },
     [current, questions, status, selectedArea, currentQuizType, displayOptions]
   );
@@ -576,6 +606,15 @@ export default function QuizApp() {
   const nextQuestion = useCallback(() => {
     const pending = pendingQuestions();
     if (pending.length === 0) {
+      // Quiz completed - track completion in Google Analytics
+      if (selectedArea && status) {
+        const totalQuestions = questions.length;
+        const correctAnswers = Object.values(status).filter((s) => s === 'correct').length;
+        const quizType = selectionMode || 'unknown';
+
+        trackQuizComplete(selectedArea.shortName, String(quizType), correctAnswers, totalQuestions);
+      }
+
       setShowStatus(false);
       setCurrent(null);
       setShowResult(null);
@@ -616,7 +655,7 @@ export default function QuizApp() {
     setCurrent(nextIdx ?? null);
     setShowStatus(false);
     setShowResult(null);
-  }, [pendingQuestions, current, questions, shuffleQuestions]);
+  }, [pendingQuestions, current, questions, shuffleQuestions, selectedArea, status, selectionMode]);
 
   const handleContinue = useCallback(
     (action: string) => {
@@ -794,7 +833,10 @@ export default function QuizApp() {
             </span>
             <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
             <button
-              onClick={logout}
+              onClick={() => {
+                trackAuth('logout', user?.isAnonymous ? 'anonymous' : 'google');
+                logout();
+              }}
               className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
               title="Sign out"
             >
