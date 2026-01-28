@@ -19,14 +19,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### FEAT-010 - Authenticate users
-
-- **Status:** backlog
-- **Priority:** P1
-- **Reported:** 2025-01-24
-- **Reporter:** TT
-- **Notes:** Add authentication via OAuth using Google accounts.
-
 ### TECH-003 — Separate application from data, and version data
 
 - **Status:** backlog
@@ -96,6 +88,10 @@ Show me the complete implementation for both App Router and Pages Router approac
 
 ### Make tests independent of text content
 
+### Move tests to unit tests where possible
+
+### Make e2e tests use anonymous login to avoid to set of tests
+
 ### Make individual answers clickable
 
 ### Lógica I Exams as individual sections
@@ -161,6 +157,16 @@ Show me the complete implementation for both App Router and Pages Router approac
 ---
 
 ## Done
+
+### ✅ FEAT-010 - Authenticate users
+
+- **Status:** done
+- **Priority:** P1
+- **Reported:** 2025-01-24
+- **Completed:** 2026-01-28
+- **PR:** [feat: add Google OAuth login/logout functionality (FEAT-010) #20](https://github.com/atassani/uned-studio/pull/20)
+- **Reporter:** TT
+- **Notes:** Add authentication via OAuth using Google accounts.
 
 ### ✅ TECH-007 — Decide what to add to finished Tasks, PR, branch, commit…
 
