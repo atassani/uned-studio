@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '../hooks/useAuth';
+import { trackAuth } from '../lib/analytics';
 import packageJson from '../../../package.json';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -43,7 +44,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
           </div>
           <div className="space-y-3">
             <button
-              onClick={login}
+              onClick={() => {
+                trackAuth('login', 'google');
+                login();
+              }}
               className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -68,7 +72,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
             </button>
 
             <button
-              onClick={loginAnonymously}
+              onClick={() => {
+                trackAuth('login', 'anonymous');
+                loginAnonymously();
+              }}
               className="w-full px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-colors duration-200"
             >
               Continuar como Anónimo
