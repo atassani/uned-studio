@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.4.5] - 2026-01-28
+
 - feat: add Google user switching capability after logout
 - feat: add support for Google OAuth login/logout functionality
 - feat: allows anonymous users to log in
