@@ -53,3 +53,5 @@ tests/e2e/tempCodeRunnerFile.ts
 scripts/tag.sh
 .gitignore
 scripts/deploy.sh
+
+PLAN*.md
