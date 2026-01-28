@@ -11,13 +11,29 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Last number
 
-- FEAT: 9
+- FEAT: 11
 - BUG: 7
-- TECH: 7
+- TECH: 8
 
 ---
 
 ## Now
+
+### TECH-003 — Separate application from data, and version data
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-17
+- **Reporter:** TT
+- **Notes:** Find a solution to separate app code from question data (e.g., JSON files). This would allow updating questions without redeploying the app.
+
+### FEAT-011 - Use authentication to save progress per user
+
+- **Status:** backlog
+- **Priority:** P1
+- **Reported:** 2025-01-24
+- **Reporter:** TT
+- **Notes:** Once users are authenticated, save their quiz progress and settings in a database (e.g., DynamoDB) instead of localStorage, allowing them to resume on any device.
 
 ---
 
@@ -28,6 +44,65 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Status:** backlog
 - **Priority:** [P1/P2/P3]
 - **Reported:** YYYY-MM-DD
+- **Reporter:** TT
+- **Notes:**
+
+### Track Google Analytics
+
+Add Google Analytics 4 tracking with ID "***REMOVED***" to this Next.js project. The project appears to be deployed at /uned/studio path.
+
+Requirements:
+
+1. Add the Google Analytics script to the main layout or \_app file using Next.js Script component
+2. Track both initial page loads and SPA route changes
+3. Use strategy="afterInteractive" for the GA scripts
+4. Create a utility file for tracking functions
+5. Ensure tracking works with the /uned/studio base path
+6. Include both the gtag.js script and the configuration script
+
+The tracking ID is: ***REMOVED***
+The site will be deployed at: https://humblyproud.com/uned/studio
+
+Make sure to:
+
+- Use Next.js Script component for proper loading
+- Track route changes for SPA navigation
+- Handle the base path correctly
+- Add TypeScript types if this is a TypeScript project
+- Include utility functions for custom event tracking
+
+Show me the complete implementation for both App Router and Pages Router approaches.
+
+### Remove references to UNED and make it only /studio
+
+### Separate data from code, and version data?
+
+### Protect data/API
+
+- **If protecting S3/API:**
+  - Add Cognito authorizer to API Gateway.
+  - Update S3 bucket policy to allow only authenticated users if needed.
+- **Document all changes in IaC and update README.**
+
+### Internationalisation
+
+### Make tests independent of text content
+
+### Move tests to unit tests where possible
+
+### Make e2e tests use anonymous login to avoid to set of tests
+
+### Make individual answers clickable
+
+### Lógica I Exams as individual sections
+
+### Preserve data in the server
+
+### TECH-008 — Make e2e test independent of text on the screen
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-25
 - **Reporter:** TT
 - **Notes:**
 
@@ -46,13 +121,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reported:** 2025-01-22
 - **Reporter:** TT
 - **Notes:**
-
-### FEAT-004 — Show the question in the grid when clicking
-
-- **Status:** Backlog
-- **Priority:** P3
-- **Reported:** 2025-01-19
-- **Notes:** When the status grid is shown, at the end of que quiz or when reviewing, clicking a question box should show that question immediately as information, not to answer it. If the question has been answered, it will also show the valid answer. In particular, I want to see in the final page after the test, when reviewing solutions, the question I got wrong, and go to their detail.
 
 ### TECH-004 — Move E2E tests to unit tests where possible
 
@@ -78,30 +146,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reporter:** TT
 - **Notes:** Will prevent mistakes and make it easier for agents to contribute. And not making a mess with the file.
 
-### TECH-007 — Decide what to add to finished Tasks, PR, branch, commit…
-
-- **Status:** backlog
-- **Priority:** P3
-- **Reported:** 2025-01-20
-- **Reporter:** TT
-- **Notes:** To document done features and to be able to track and revert, we need to record when things were done. But what is the best way? PR link, branch name, commit hash…?
-
-### TECH-003 — Separate application from data
-
-- **Status:** backlog
-- **Priority:** P3
-- **Reported:** 2025-01-17
-- **Reporter:** TT
-- **Notes:** Find a solution to separate app code from question data (e.g., JSON files). This would allow updating questions without redeploying the app.
-
-### BUG-001 — Trailing slash required for /uned/studio route
-
-- **Status:** backlog
-- **Priority:** P1
-- **Reported:** 2025-01-16
-- **Reporter:** TT
-- **Notes:** `/uned/studio` fails without trailing slash, but `/uned/studio/` works. Might be AWS/S3/CloudFront routing or Vercel rewrites.
-
 ### FEAT-006 — Sections in Section selection can have sub-sections, so I can click all exams, for instance, and see all their sections inside
 
 - **Status:** backlog
@@ -113,6 +157,47 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ---
 
 ## Done
+
+### ✅ FEAT-010 - Authenticate users
+
+- **Status:** done
+- **Priority:** P1
+- **Reported:** 2025-01-24
+- **Completed:** 2026-01-28
+- **PR:** [feat: add Google OAuth login/logout functionality (FEAT-010) #18](https://github.com/atassani/uned-studio/pull/18)
+- **Reporter:** TT
+- **Notes:** Added Google OAuth authentication via AWS Cognito with anonymous mode fallback. Users can now:
+  - Sign in with Google to sync progress across devices
+  - Use anonymous mode for local-only usage
+  - Full authentication state management with proper session handling
+  - Removed non-working account switching functionality to keep the interface clean
+
+### ✅ TECH-007 — Decide what to add to finished Tasks, PR, branch, commit…
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-20
+- **Reporter:** TT
+- **Notes:** To document done features and to be able to track and revert, we need to record when things were done. But what is the best way? PR link, branch name, commit hash…?
+  - Decided to add PR/commit and date to each done item.
+
+### ✅ FEAT-004 — Show the question in the grid when clicking
+
+- **Status:** Backlog
+- **Priority:** P3
+- **Reported:** 2025-01-19
+- **Notes:** When the status grid is shown, at the end of que quiz or when reviewing, clicking a question box should show that question immediately as information, not to answer it. If the question has been answered, it will also show the valid answer. In particular, I want to see in the final page after the test, when reviewing solutions, the question I got wrong, and go to their detail.
+  - Already solved in v1.4.2.
+
+### ✅ BUG-001 — Trailing slash required for /uned/studio route
+
+- **Status:** done
+- **Priority:** P1
+- **Reported:** 2025-01-16
+- **Completed:** 2026-01-26
+- **Reporter:** TT
+- **Notes:** `/uned/studio` fails without trailing slash, but `/uned/studio/` works. Might be AWS/S3/CloudFront routing or Vercel rewrites.
+  - Fixed when moving `humblyproud.com` to CDK.
 
 ### ✅ TECH-002 — Consolidate localStorage keys under a single root key
 

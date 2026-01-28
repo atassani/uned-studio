@@ -6,7 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Load environment files with proper precedence (.env.test overrides .env)
 dotenv.config({ path: path.resolve(__dirname, '.env') });
-dotenv.config({ path: path.resolve(__dirname, '.env.test') });
+dotenv.config({ path: path.resolve(__dirname, '.env.test.auth') });
 
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || '').replace(/\/$/, '');
 const baseSuffix = basePath ? `${basePath}/` : '/';
@@ -17,7 +17,7 @@ const baseUrl = `${localOrigin}${baseSuffix}`;
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests/e2e-auth',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -38,9 +38,9 @@ export default defineConfig({
     navigationTimeout: 15000, // Page navigation timeout
   },
   webServer: {
-    command: 'npm run dev:playwright',
+    command: 'npm run dev:playwright-auth',
     url: baseUrl.replace(/\/$/, ''),
-    reuseExistingServer: true, // Always reuse existing server to avoid port conflicts
+    reuseExistingServer: false, // Always reuse existing server to avoid port conflicts
     timeout: 120000, // Increase timeout for server startup
   },
   projects: [

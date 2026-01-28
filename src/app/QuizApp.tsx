@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { QuestionType, AreaType } from './types';
-import { shuffleOptionsWithMemory, createSeededRng } from './utils';
+import { shuffleOptionsWithMemory, createSeededRng, getUserDisplayName } from './utils';
 import packageJson from '../../package.json';
 import { AreaSelection } from './components/AreaSelection';
 import { SelectionMenu } from './components/SelectionMenu';
@@ -10,6 +10,7 @@ import { QuestionSelection } from './components/QuestionSelection';
 import { StatusGrid } from './components/StatusGrid';
 import { QuestionDisplay } from './components/QuestionDisplay';
 import { ResultDisplay } from './components/ResultDisplay';
+import { useAuth } from './hooks/useAuth';
 
 import { useQuizPersistence } from './hooks/useQuizPersistence';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -17,6 +18,9 @@ import { useQuizLogic } from './hooks/useQuizLogic';
 import { storage } from './storage';
 
 export default function QuizApp() {
+  // Auth hook
+  const { user, logout } = useAuth();
+
   // Track user answers for each question (index -> answer string)
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
   const canResumeRef = useRef(false);
@@ -47,6 +51,7 @@ export default function QuizApp() {
 
   // New area-related state
   const [areas, setAreas] = useState<AreaType[]>([]);
+  const [areasError, setAreasError] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState<AreaType | null>(null);
   const [showAreaSelection, setShowAreaSelection] = useState<boolean>(true);
   const [currentQuizType, setCurrentQuizType] = useState<'True False' | 'Multiple Choice' | null>(
@@ -103,6 +108,12 @@ export default function QuizApp() {
 
   // Load areas on component mount and migrate any old global quizStatus to per-area keys
   useEffect(() => {
+    loadAreas();
+  }, []);
+
+  const loadAreas = () => {
+    setAreasError(null); // Clear any previous errors
+
     // Support custom areas file via env var or ?areas= query param
     let areasFile = process.env.NEXT_PUBLIC_AREAS_FILE || 'areas.json';
     if (typeof window !== 'undefined') {
@@ -114,12 +125,13 @@ export default function QuizApp() {
     fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${areasFile}`)
       .then((r) => {
         if (!r.ok) {
-          throw new Error(`HTTP error! status: ${r.status}`);
+          throw new Error(`Error ${r.status}: ${r.statusText}`);
         }
         return r.json();
       })
       .then((areasData: AreaType[]) => {
         setAreas(areasData);
+        setAreasError(null);
         // Only show area selection if no area is selected
         const currentAreaShortName = storage.getCurrentArea();
         if (currentAreaShortName) {
@@ -147,8 +159,13 @@ export default function QuizApp() {
         }
         setShowAreaSelection(true);
       })
-      .catch((err) => console.error('Failed to load areas:', err));
-  }, []);
+      .catch((err) => {
+        console.error('Failed to load areas:', err);
+        setAreasError(
+          err.message || 'Failed to load study areas. Please check your connection and try again.'
+        );
+      });
+  };
 
   useEffect(() => {
     previousAnswerOrderRef.current = {};
@@ -435,6 +452,38 @@ export default function QuizApp() {
   }, []);
   // Area selection UI
   function renderAreaSelection() {
+    if (areasError) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen p-4">
+          <div className="max-w-md w-full bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center">
+            <div className="text-red-600 dark:text-red-400 mb-4">
+              <svg
+                className="w-12 h-12 mx-auto mb-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <h2 className="text-lg font-semibold mb-2">Error al cargar las áreas</h2>
+              <p className="text-sm text-red-600 dark:text-red-300 mb-4">{areasError}</p>
+              <button
+                onClick={loadAreas}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
+              >
+                Reintentar
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return <AreaSelection areas={areas} loadAreaAndQuestions={loadAreaAndQuestions} />;
   }
 
@@ -737,16 +786,29 @@ export default function QuizApp() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
       <div className="w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8 relative">
+        {/* User name and logout button in top-right (only show if auth is enabled) */}
+        {process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true' && (
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-30">
+            <span className="text-xs text-gray-600 dark:text-gray-400">
+              {getUserDisplayName(user)}
+            </span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
+            <button
+              onClick={logout}
+              className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
+              title="Sign out"
+            >
+              Sign out
+            </button>
+          </div>
+        )}
         {renderContent()}
-        {/* Version link only on main menu (no selection in progress) */}
-        {showAreaSelection ? (
-          <span
-            className="absolute right-4 bottom-4 text-xs text-gray-500 hover:underline z-20"
-            style={{ fontSize: '0.75rem' }}
-          >
-            v{packageJson.version}
-          </span>
-        ) : null}
+        <span
+          className="absolute right-4 bottom-4 text-xs text-gray-500 hover:underline z-20"
+          style={{ fontSize: '0.75rem' }}
+        >
+          v{packageJson.version}
+        </span>
       </div>
     </div>
   );

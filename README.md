@@ -12,7 +12,13 @@ Se han incluido tests de:
 
 Se trata de una aplicación "vibe coded" que usa [Next.js](https://nextjs.org) con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Los resultados se almacenan en el `LocalStorage` del navegador y se recuperan al iniciar la aplicación.
+La aplicación incluye:
+
+- **Autenticación con Google OAuth** para sincronizar progreso entre dispositivos
+- **Modo anónimo** para uso local sin registro
+- **Almacenamiento persistente** del progreso del usuario
+
+Los resultados se almacenan en el `LocalStorage` del navegador (modo anónimo) o se sincronizan en la nube (usuarios autenticados).
 
 Para arrancarla:
 
@@ -64,7 +70,9 @@ package.json, package-lock.json, tsconfig.json, README.md, etc.
 
 ## Configuración de variables de entorno (.env)
 
-El archivo `.env` debe contener la siguiente variable para definir la ruta base de la aplicación (útil para despliegues en subcarpetas):
+El archivo `.env` debe contener las siguientes variables:
+
+### Variables básicas de la aplicación
 
 ```bash
 NEXT_PUBLIC_BASE_PATH=/uned/studio
@@ -77,6 +85,44 @@ NEXT_PUBLIC_BASE_PATH=/uned/studio
   ```bash
   NEXT_PUBLIC_BASE_PATH=
   ```
+
+### Variables de autenticación (AWS Cognito)
+
+Para la funcionalidad de autenticación con Google OAuth, necesitas configurar AWS Cognito:
+
+```bash
+# AWS Cognito configuration
+NEXT_PUBLIC_AWS_REGION=us-east-1
+NEXT_PUBLIC_USER_POOL_ID=us-east-1_XXXXXXXXX
+NEXT_PUBLIC_USER_POOL_WEB_CLIENT_ID=XXXXXXXXXXXXXXXXXXXXXXXXXX
+NEXT_PUBLIC_OAUTH_DOMAIN=your-cognito-domain.auth.us-east-1.amazoncognito.com
+NEXT_PUBLIC_REDIRECT_SIGN_IN=http://localhost:3000
+NEXT_PUBLIC_REDIRECT_SIGN_OUT=http://localhost:3000
+
+# Disable authentication for development/testing
+NEXT_PUBLIC_DISABLE_AUTH=false
+```
+
+### Configuración de AWS Cognito
+
+1. **Crear User Pool** en AWS Cognito
+2. **Configurar Google como proveedor OAuth**:
+   - Añadir Google en "Identity providers"
+   - Configurar Google Client ID y Secret
+3. **Configurar dominios** para hosted UI
+4. **Configurar URLs de callback**:
+   - Sign in: `https://tu-dominio.com/`
+   - Sign out: `https://tu-dominio.com/`
+
+### Modo de desarrollo sin autenticación
+
+Para desarrollo o testing puedes deshabilitar la autenticación:
+
+```bash
+NEXT_PUBLIC_DISABLE_AUTH=true
+```
+
+Esto permite usar la aplicación sin configurar AWS Cognito.
 
 ## After installing Playwright
 
