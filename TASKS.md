@@ -164,9 +164,13 @@ Show me the complete implementation for both App Router and Pages Router approac
 - **Priority:** P1
 - **Reported:** 2025-01-24
 - **Completed:** 2026-01-28
-- **PR:** [feat: add Google OAuth login/logout functionality (FEAT-010) #20](https://github.com/atassani/uned-studio/pull/20)
+- **PR:** [feat: add Google OAuth login/logout functionality (FEAT-010) #18](https://github.com/atassani/uned-studio/pull/18)
 - **Reporter:** TT
-- **Notes:** Add authentication via OAuth using Google accounts.
+- **Notes:** Added Google OAuth authentication via AWS Cognito with anonymous mode fallback. Users can now:
+  - Sign in with Google to sync progress across devices
+  - Use anonymous mode for local-only usage
+  - Full authentication state management with proper session handling
+  - Removed non-working account switching functionality to keep the interface clean
 
 ### ✅ TECH-007 — Decide what to add to finished Tasks, PR, branch, commit…
 
