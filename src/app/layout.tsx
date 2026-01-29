@@ -5,6 +5,7 @@ import './globals.css';
 import { AuthProvider } from './hooks/useAuth';
 import { AuthGuard } from './components/AuthGuard';
 import { AnalyticsProvider } from './components/AnalyticsProvider';
+import { Suspense } from 'react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -56,7 +57,9 @@ export default function RootLayout({
 
         <AuthProvider>
           <AuthGuard>
-            <AnalyticsProvider>{children}</AnalyticsProvider>
+            <Suspense fallback={null}>
+              <AnalyticsProvider>{children}</AnalyticsProvider>
+            </Suspense>
           </AuthGuard>
         </AuthProvider>
       </body>

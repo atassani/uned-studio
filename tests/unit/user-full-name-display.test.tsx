@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { act } from 'react';
 import QuizApp from '../../src/app/QuizApp';
 import { useAuth } from '../../src/app/hooks/useAuth';
 
@@ -27,9 +28,8 @@ jest.mock('../../src/app/hooks/useQuizPersistence', () => ({
   })),
 }));
 
-// Mock window.location
-delete (window as any).location;
-window.location = { search: '' } as any;
+// Mock window.location.search only (jsdom limitation)
+window.location.search = '';
 
 describe('User Full Name Display', () => {
   const mockLogout = jest.fn();
@@ -73,7 +73,9 @@ describe('User Full Name Display', () => {
     const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
     process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
 
-    render(<QuizApp />);
+    await act(async () => {
+      render(<QuizApp />);
+    });
 
     // Check that user name is displayed next to the logout button
     const userName = screen.getByText('John Smith');
@@ -108,7 +110,9 @@ describe('User Full Name Display', () => {
     const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
     process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
 
-    render(<QuizApp />);
+    await act(async () => {
+      render(<QuizApp />);
+    });
 
     // Check that user name is displayed next to the logout button
     const userName = screen.getByText('Jane Doe');
@@ -140,7 +144,9 @@ describe('User Full Name Display', () => {
     const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
     process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
 
-    render(<QuizApp />);
+    await act(async () => {
+      render(<QuizApp />);
+    });
 
     // Check that user name is displayed next to the logout button
     const userName = screen.getByText('fallback@example.com');
@@ -172,7 +178,9 @@ describe('User Full Name Display', () => {
     const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
     process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
 
-    render(<QuizApp />);
+    await act(async () => {
+      render(<QuizApp />);
+    });
 
     // Check that anonymous name is displayed next to the logout button
     const userName = screen.getByText('Anónimo');
