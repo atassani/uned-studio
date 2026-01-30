@@ -47,6 +47,18 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reporter:** TT
 - **Notes:**
 
+### Remove secrets from code and history with bfg
+
+```
+bfg --replace-text passwords.txt
+git show 5659eb6ee406c67d3f76590cdf68fc27cfd8c3c0:infra/lib/infra-stack.ts
+aws configure get region
+aws cognito-idp list-user-pools --max-results 20
+aws cognito-idp describe-user-pool --user-pool-id ***REMOVED***
+```
+
+### Change texts Anonymous → Guest and Anónimo → Invitado
+
 ### Track Google Analytics
 
 ### Remove references to UNED and make it only /studio
