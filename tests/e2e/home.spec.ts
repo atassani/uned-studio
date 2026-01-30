@@ -12,54 +12,29 @@ async function getCurrentAreaFromLocalStorage(page: Page) {
 test.beforeEach(async ({ page }) => {
   await setupFreshTest(page);
   await waitForAppReady(page);
+  await page.getByTestId('guest-login-btn').click();
   // Wait for initial page load to complete
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
 });
 
 test('True/False quiz works for Lógica I area', async ({ page }) => {
-  // Wait for area button and click
-  const areaBtn = page.getByRole('button', { name: /Lógica I/ });
-  await expect(areaBtn).toBeVisible();
-  await areaBtn.click();
-
-  // Wait for "Todas las preguntas" button and click
-  const todasBtn = page.getByRole('button', { name: 'Todas las preguntas' });
-  await expect(todasBtn).toBeVisible();
-  await todasBtn.click();
-
-  // Wait for quiz to load completely
-  await page.waitForLoadState('networkidle');
-
-  // Wait for quiz interface to be ready with multiple fallback strategies
-  try {
-    // First try: wait for question text
-    await expect(page.locator('.question-text')).toBeVisible({ timeout: 3000 });
-  } catch {
-    try {
-      // Second try: wait for any quiz content to be visible
-      await page.waitForSelector('text=/Lógica/', { timeout: 3000 });
-    } catch {
-      // Third try: wait for the V button specifically
-      await page.waitForSelector('button:has-text("V")', { timeout: 5000 });
-    }
-  }
-
+  await page.getByRole('button', { name: /Lógica I/ }).click();
+  await page.getByRole('button', { name: 'Todas las preguntas' }).click();
   // Wait specifically for True/False buttons to be interactive
-  await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
-    timeout: 10000,
-  });
+  await page.screenshot({ path: 'debug-true-false-v.png' });
+  try {
+    await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+      timeout: 10000,
+    });
+  } catch (e) {
+    const content = await page.content();
+    console.error('V button not found. Page content:', content);
+    throw e;
+  }
   await expect(page.getByRole('button', { name: 'F', exact: true })).toBeVisible({ timeout: 5000 });
-
-  // Should see True/False question interface
-  const vBtn = page.getByRole('button', { name: 'V', exact: true });
-  const fBtn = page.getByRole('button', { name: 'F', exact: true });
-  await expect(vBtn).toBeVisible();
-  await expect(fBtn).toBeVisible();
-
-  // Answer a question
-  await vBtn.click();
-  const continuarBtn = page.getByRole('button', { name: 'Continuar' });
-  await expect(continuarBtn).toBeVisible();
+  await page.getByRole('button', { name: 'V', exact: true }).click();
+  await page.getByRole('button', { name: 'Continuar' }).click();
+  await expect(page.getByText(/📊\s*\d+\s*\|\s*✅\s*\d+/)).toBeVisible();
 });
 
 test('Multiple Choice quiz shows question text with A/B/C buttons (consistent with True/False)', async ({
@@ -119,9 +94,16 @@ test('shows area name in status view ("Options")', async ({ page }) => {
       .isVisible()
       .catch(() => false);
     if (!vButtonVisible && !aButtonVisible) {
-      await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
-        timeout: 8000,
-      });
+      await page.screenshot({ path: 'debug-true-false-v-status.png' });
+      try {
+        await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+          timeout: 10000,
+        });
+      } catch (e) {
+        const content = await page.content();
+        console.error('V button not found in status view. Page content:', content);
+        throw e;
+      }
     }
   }
 
@@ -197,8 +179,11 @@ test('keyboard shortcuts work for Multiple Choice questions', async ({ page }) =
     .click({ timeout: 15000 });
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 15000 });
 
-  // Wait for quiz to load completely
-  await page.waitForLoadState('networkidle');
+  // Wait for loading spinner to disappear
+  await page.waitForSelector('[data-testid="loading-spinner"]', {
+    state: 'detached',
+    timeout: 15000,
+  });
 
   // Wait for quiz interface to be ready - try question text first, fallback to answer buttons
   try {
@@ -456,6 +441,7 @@ test('automatically returns to last studied area on app reload', async ({ page }
 test('restores to area selection if no previous area stored', async ({ page }) => {
   // Reload page
   await page.reload();
+  await page.getByTestId('guest-login-btn').click();
 
   // Should show area selection screen since no area was stored
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();

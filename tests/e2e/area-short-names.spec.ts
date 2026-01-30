@@ -3,6 +3,7 @@ import { setupFreshTest } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await setupFreshTest(page);
+  await page.getByTestId('guest-login-btn').click();
 });
 
 test('Area selection shows short names prominently and full names below', async ({ page }) => {

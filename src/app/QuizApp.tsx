@@ -4,6 +4,7 @@ import { QuestionType, AreaType } from './types';
 import { shuffleOptionsWithMemory, createSeededRng, getUserDisplayName } from './utils';
 import packageJson from '../../package.json';
 import { AreaSelection } from './components/AreaSelection';
+import { LoadingSpinner } from './components/LoadingSpinner';
 import { SelectionMenu } from './components/SelectionMenu';
 import { SectionSelection } from './components/SectionSelection';
 import { QuestionSelection } from './components/QuestionSelection';
@@ -785,6 +786,22 @@ export default function QuizApp() {
   const allAnswered =
     questions.length > 0 && Object.values(status).filter((s) => s === 'pending').length === 0;
   const renderContent = () => {
+    // Show spinner if areas are not loaded yet
+    if (!areas.length && !areasError) {
+      return <LoadingSpinner />;
+    }
+    // Show spinner if questions are loading after area selection
+    if (
+      !showAreaSelection &&
+      selectedArea &&
+      !questions.length &&
+      !showSelectionMenu &&
+      !showResult &&
+      !showStatus &&
+      !allAnswered
+    ) {
+      return <LoadingSpinner />;
+    }
     if (showAreaSelection) {
       return renderAreaSelection();
     }

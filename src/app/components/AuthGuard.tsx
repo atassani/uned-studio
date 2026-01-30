@@ -57,6 +57,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
           </div>
           <div className="space-y-3">
             <button
+              data-testid="google-login-btn"
               onClick={() => {
                 trackAuth('login', 'google');
                 loginWithGoogle();

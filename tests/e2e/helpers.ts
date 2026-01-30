@@ -40,7 +40,8 @@ export async function setupSuperFreshTest(page: Page, seed?: string) {
     }
 
     // Go to the URL (with or without seed)
-    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    //await page.goto(url, { waitUntil: 'domcontentloaded' });
+    await page.goto(url, { waitUntil: 'networkidle' });
 
     // Clear localStorage, sessionStorage, and cookies if accessible
     await page.evaluate(() => {
@@ -55,6 +56,7 @@ export async function setupSuperFreshTest(page: Page, seed?: string) {
 
     // Reload the page to reset the app state, with the seed param if provided
     await page.goto(url, { waitUntil: 'networkidle' });
+    await page.getByTestId('guest-login-btn').click();
 
     // Verify the app is in the initial state (area selection screen)
     await page.waitForSelector('text=¿Qué quieres estudiar?', { timeout: 10000 });

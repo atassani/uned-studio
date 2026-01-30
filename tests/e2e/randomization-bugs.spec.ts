@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { setupSuperFreshTest, waitForQuizReady } from './helpers';
+import { setupFreshTest, setupSuperFreshTest, waitForQuizReady } from './helpers';
 
 test.describe('Randomization Bugs', () => {
   test.beforeEach(async ({ page }) => {
-    await setupSuperFreshTest(page);
+    await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
   });
 
   test('random question order should randomize first question', async ({ page }) => {

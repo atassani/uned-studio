@@ -5,6 +5,7 @@ test.describe('StatusGrid overlay CSS layering verification', () => {
   test('should verify that overlay CSS properties are correctly configured', async ({ page }) => {
     await setupFreshTest(page);
     await waitForAppReady(page);
+    await page.getByTestId('guest-login-btn').click();
 
     // Start a quiz
     await page.getByRole('button', { name: /MCQ/i }).click();

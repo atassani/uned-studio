@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:playwright": "dotenv -e .env -e .env.test -- next dev",
+    "dev:playwright": "NODE_ENV=test next dev",
     "dev:playwright-auth": "dotenv -e .env -e .env.test.auth -- next dev",
     "build": "next build",
     "start": "next start",

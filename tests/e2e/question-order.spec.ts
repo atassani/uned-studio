@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { setupFreshTest } from './helpers';
+
 test.describe('Question Order Control', () => {
   test.beforeEach(async ({ page }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
   });
 
   test('sequential order shows questions by number order', async ({ page }) => {
@@ -67,11 +69,13 @@ test.describe('Question Order Control', () => {
     await page.waitForLoadState('networkidle');
 
     // Wait for sections to be visible with multiple strategies
+    await page.screenshot({ path: 'debug-question-order-tema.png' });
     try {
-      await page.waitForSelector('text=Tema 1. Ciencia, hechos y evidencia', { timeout: 10000 });
-    } catch {
-      // Fallback: wait for any section text to appear
       await page.waitForSelector('text=/Tema/', { timeout: 5000 });
+    } catch (e) {
+      const content = await page.content();
+      console.error('Tema not found. Page content:', content);
+      throw e;
     }
 
     // Select a section and verify order

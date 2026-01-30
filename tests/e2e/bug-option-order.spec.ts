@@ -4,6 +4,7 @@ import { setupFreshTest, waitForQuizReady } from './helpers';
 test.describe('bug-006: options are always in the same order, even with shuffle enabled', () => {
   test('options appear in different order when restarting a quiz', async ({ page }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
     await page.getByRole('button', { name: /Introducción al Pensamiento Científico/i }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Aleatorizar respuestas' }).click();
@@ -42,6 +43,7 @@ test.describe('bug-006: options are always in the same order, even with shuffle 
 
   test('options appear in same order if Secuencial', async ({ page }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
     await page.getByRole('button', { name: /Introducción al Pensamiento Científico/i }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
     await page.getByRole('button', { name: 'Respuestas secuenciales' }).click();

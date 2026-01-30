@@ -4,6 +4,7 @@ import { setupFreshTest, waitForQuizReady } from './helpers';
 test.describe('Resume Quiz Fresh Experience', () => {
   test.beforeEach(async ({ page }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
   });
 
   test('Clicking area resumes at last question if progress exists', async ({ page }) => {
@@ -17,7 +18,14 @@ test.describe('Resume Quiz Fresh Experience', () => {
     // Wait for quiz to load and answer 2 questions
     await page.waitForSelector('text=A');
     for (let i = 0; i < 2; i++) {
-      await page.getByRole('button', { name: 'A', exact: true }).click();
+      await page.screenshot({ path: `debug-mcq-a-resume-fresh-${i}.png` });
+      try {
+        await page.getByRole('button', { name: 'A', exact: true }).click();
+      } catch (e) {
+        const content = await page.content();
+        console.error('A button not found. Page content:', content);
+        throw e;
+      }
       await page.getByRole('button', { name: 'Continuar' }).click();
       if (i < 1) await page.waitForSelector('text=A');
     }
@@ -49,7 +57,14 @@ test.describe('Resume Quiz Fresh Experience', () => {
     await page.getByRole('button', { name: 'Todas las preguntas' }).click();
     await waitForQuizReady(page);
     for (let i = 0; i < 2; i++) {
-      await page.getByRole('button', { name: 'A', exact: true }).click();
+      await page.screenshot({ path: `debug-mcq-a-resume-fresh-${i}.png` });
+      try {
+        await page.getByRole('button', { name: 'A', exact: true }).click();
+      } catch (e) {
+        const content = await page.content();
+        console.error('A button not found. Page content:', content);
+        throw e;
+      }
       await page.getByRole('button', { name: 'Continuar' }).click();
     }
     // Go back to menu

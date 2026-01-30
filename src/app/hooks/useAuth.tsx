@@ -171,7 +171,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const loginAsGuest = () => {
-    // Optionally implement guest login if needed
+    setUser({
+      username: 'Invitado',
+      attributes: { name: 'Invitado' },
+      isGuest: true,
+    });
+    setIsAuthenticated(true);
+    localStorage.removeItem('jwt');
   };
 
   const logout = () => {

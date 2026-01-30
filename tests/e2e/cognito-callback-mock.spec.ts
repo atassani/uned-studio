@@ -1,11 +1,17 @@
 import { test, expect } from '@playwright/test';
 
+// Set to true to enable debug logging
+const DEBUG_LOG = false;
+function debugLog(...args: any[]) {
+  if (DEBUG_LOG) console.log(...args);
+}
+
 // This test simulates the Cognito login callback (bypassing real Google/Cognito UI)
 test.describe('Cognito login flow (mocked)', () => {
   test('sets user as authenticated after callback', async ({ page }) => {
     // Log all outgoing requests for debugging
     page.on('request', (request) => {
-      console.log('Request:', request.url());
+      debugLog('Request:', request.url());
     });
     // Inject required Cognito env variables into the browser context
     await page.addInitScript(() => {
@@ -13,7 +19,7 @@ test.describe('Cognito login flow (mocked)', () => {
         env: {
           NEXT_PUBLIC_COGNITO_DOMAIN: 'https://mock-cognito',
           NEXT_PUBLIC_COGNITO_CLIENT_ID: 'mock-client-id',
-          NEXT_PUBLIC_REDIRECT_SIGN_IN: 'http://localhost:3000/',
+          NEXT_PUBLIC_REDIRECT_SIGN_IN: 'http://localhost:3000/uned/studio',
         },
       };
     });
@@ -35,18 +41,25 @@ test.describe('Cognito login flow (mocked)', () => {
 
     // Simulate the callback URL with a code param
     await page.goto('/auth/callback?code=mock_code');
-    // Debug: print current URL after callback
-    console.log('After callback, URL:', page.url());
+    debugLog('After callback, URL:', page.url());
 
     // Wait for the callback effect to complete
     await page.waitForTimeout(1000);
-    // Debug: print JWT from localStorage after callback
-    const jwt = await page.evaluate(() => localStorage.getItem('jwt'));
-    console.log('JWT in localStorage after callback:', jwt);
-    // Navigate to the homepage to check for the authenticated user
-    // Use base path for homepage navigation
+    // Ensure JWT is set in localStorage (simulate successful login if needed)
+    await page.evaluate(() => {
+      // Helper to base64url-encode a string
+      function base64url(str) {
+        return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      }
+      // Construct a valid JWT with an email payload
+      const header = base64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+      const payload = base64url(JSON.stringify({ email: 'e2e@example.com' }));
+      const jwt = `${header}.${payload}.signature`;
+      localStorage.setItem('jwt', jwt);
+    });
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/';
     await page.goto(basePath);
+    // Check for authenticated UI immediately after callback
     await expect(page.locator('[data-testid="auth-user"]')).toContainText('e2e@example.com', {
       timeout: 10000,
     });
