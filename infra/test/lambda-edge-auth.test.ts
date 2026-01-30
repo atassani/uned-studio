@@ -1,9 +1,21 @@
+// Mock jose imports to avoid Jest ES module parse error
+jest.mock('jose', () => ({
+  jwtVerify: jest.fn(),
+  createRemoteJWKSet: jest.fn(),
+}));
 // infra/test/lambda-edge-auth.test.ts
 // Jest test scaffold for Lambda@Edge authentication handler
 
-import { handler } from '../main/lambda-edge-auth';
+import * as authModule from '../main/lambda-edge-auth';
 
 describe('Lambda@Edge Auth Handler', () => {
+  beforeAll(() => {
+    // Mock isValidJWT to avoid real JWT validation/network
+    jest.spyOn(authModule, 'isValidJWT').mockImplementation(async (cookie) => {
+      // Simulate valid JWT only if cookie is 'jwt=valid'
+      return cookie === 'jwt=valid';
+    });
+  });
   function makeEvent({ uri, cookie }: { uri: string; cookie?: string }) {
     return {
       Records: [
@@ -21,7 +33,7 @@ describe('Lambda@Edge Auth Handler', () => {
 
   it('should redirect unauthenticated requests to OAuth login', async () => {
     const event = makeEvent({ uri: '/uned/studio/app', cookie: undefined });
-    const result = await handler(event as any);
+    const result = await authModule.handler(event as any);
     // Type guard for CloudFrontResultResponse
     if (result && 'status' in result) {
       expect(result.status).toBe('302');
@@ -33,7 +45,7 @@ describe('Lambda@Edge Auth Handler', () => {
 
   it('should allow access with valid JWT/cookie', async () => {
     const event = makeEvent({ uri: '/uned/studio/secure', cookie: 'jwt=valid' });
-    const result = await handler(event as any);
+    const result = await authModule.handler(event as any);
     // Type guard for CloudFrontRequest
     if (result && 'uri' in result) {
       expect(result.uri).toBe('/uned/studio/secure');
@@ -44,7 +56,7 @@ describe('Lambda@Edge Auth Handler', () => {
 
   it('should allow guest access for /uned/studio/guest', async () => {
     const event = makeEvent({ uri: '/uned/studio/guest', cookie: undefined });
-    const result = await handler(event as any);
+    const result = await authModule.handler(event as any);
     if (result && 'uri' in result) {
       expect(result.uri).toBe('/uned/studio/guest');
     } else {
