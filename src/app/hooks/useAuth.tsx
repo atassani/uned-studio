@@ -18,7 +18,7 @@ interface UserWithAttributes {
   isGuest?: boolean;
 }
 
-const isAuthDisabled = true; // Auth always disabled; backend handles auth
+// Auth is always enabled; backend handles auth
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -28,38 +28,150 @@ interface AuthContextType {
   loginWithGoogle: () => void;
   loginAsGuest: () => void;
   logout: () => void;
+  setUser?: (user: UserWithAttributes | null) => void;
+  setIsAuthenticated?: (auth: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(isAuthDisabled ? true : false);
-  const [isLoading, setIsLoading] = useState(isAuthDisabled ? false : true);
-  const [user, setUser] = useState<UserWithAttributes | null>(
-    isAuthDisabled ? { username: 'test-user' } : null
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<UserWithAttributes | null>(null);
   const [hasLoggedOutFromGoogle, setHasLoggedOutFromGoogle] = useState(false);
 
-  // No backend auth check; always anonymous or test user
+  // Restore auth state from localStorage JWT on load, or handle OAuth code
+  useEffect(() => {
+    const jwt = typeof window !== 'undefined' ? localStorage.getItem('jwt') : null;
+    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+    if (!domain || !clientId || !redirectUri) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Helper: parse JWT and extract user info
+    const parseJwt = (token: string) => {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map(function (c) {
+              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join('')
+        );
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
+      }
+    };
+
+    // 1. If JWT exists, restore user
+    if (jwt) {
+      const userInfo = parseJwt(jwt);
+      if (userInfo) {
+        setUser({
+          username: userInfo.email || userInfo.sub || 'google-user',
+          attributes: userInfo,
+          isGuest: false,
+        });
+        setIsAuthenticated(true);
+        setIsLoading(false);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    // 2. If code param exists, exchange for tokens
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      if (code) {
+        setIsLoading(true);
+        // Exchange code for tokens
+        const tokenUrl = `${domain}/oauth2/token`;
+        const body = new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: clientId,
+          code,
+          redirect_uri: redirectUri,
+        });
+        fetch(tokenUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.id_token) {
+              localStorage.setItem('jwt', data.id_token);
+              const userInfo = parseJwt(data.id_token);
+              if (userInfo) {
+                setUser({
+                  username: userInfo.email || userInfo.sub || 'google-user',
+                  attributes: userInfo,
+                  isGuest: false,
+                });
+                setIsAuthenticated(true);
+                setIsLoading(false);
+              } else {
+                setIsAuthenticated(false);
+                setUser(null);
+                setIsLoading(false);
+              }
+              // Remove code param from URL
+              urlParams.delete('code');
+              const newUrl =
+                window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+              window.history.replaceState({}, '', newUrl);
+            } else {
+              setIsAuthenticated(false);
+              setUser(null);
+              setIsLoading(false);
+            }
+          })
+          .catch(() => {
+            setIsAuthenticated(false);
+            setUser(null);
+            setIsLoading(false);
+          });
+        return;
+      }
+    }
+    setIsLoading(false);
+  }, []);
 
   const login = () => {
     // No-op: handled by backend
   };
 
   const loginWithGoogle = () => {
-    // TODO: Implement Cognito OAuth redirect
-    window.location.href = '/api/auth/google';
+    // Redirect to Cognito Hosted UI for Google login
+    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+    if (!domain || !clientId || !redirectUri) {
+      alert('Cognito config missing.');
+      return;
+    }
+    const url =
+      `${domain}/oauth2/authorize?response_type=code&client_id=${clientId}` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `&identity_provider=Google&scope=openid+email+profile`;
+    window.location.href = url;
   };
 
   const loginAsGuest = () => {
-    setUser({
-      username: 'guest',
-      isGuest: true,
-      attributes: {
-        name: 'Invitado',
-      },
-    });
-    setIsAuthenticated(true);
+    // Optionally implement guest login if needed
   };
 
   const logout = () => {
@@ -69,7 +181,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, isLoading, user, login, loginWithGoogle, loginAsGuest, logout }}
+      value={{
+        isAuthenticated,
+        isLoading,
+        user,
+        login,
+        loginWithGoogle,
+        loginAsGuest,
+        logout,
+        setUser,
+        setIsAuthenticated,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,3 +1,14 @@
+/**
+ * Log selected environment variables to the console for debugging.
+ * Pass an array of variable names, or log all NEXT_PUBLIC_ and NODE_ENV by default.
+ */
+export function logEnvVars(vars: string[] = []) {
+  const allVars = vars.length
+    ? vars
+    : Object.keys(process.env).filter((k) => k.startsWith('NEXT_PUBLIC_') || k === 'NODE_ENV');
+  // eslint-disable-next-line no-console
+  console.log('Env vars:', Object.fromEntries(allVars.map((k) => [k, process.env[k]])));
+}
 import { Page, expect } from '@playwright/test';
 const homePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 

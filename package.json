@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:playwright": "NEXT_PUBLIC_AREAS_FILE=areas-mcq-tests.json NEXT_PUBLIC_DISABLE_AUTH=true next dev",
-    "dev:playwright-auth": "NEXT_PUBLIC_AREAS_FILE=areas-mcq-tests.json NEXT_PUBLIC_DISABLE_AUTH=false next dev",
+    "dev:playwright": "dotenv -e .env -e .env.test -- next dev",
+    "dev:playwright-auth": "dotenv -e .env -e .env.test.auth -- next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
@@ -55,6 +55,7 @@
     "serve": "^14.2.5",
     "tailwindcss": "^4.0.7",
     "ts-jest": "^29.4.6",
-    "typescript": "^5"
+    "typescript": "^5",
+    "whatwg-fetch": "^3.6.20"
   }
 }

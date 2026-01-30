@@ -1,7 +1,7 @@
 // moved from tests/e2e/tests
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { setupFreshTest, waitForAppReady } from './helpers';
+import { setupFreshTest, waitForAppReady, logEnvVars } from './helpers';
 
 async function getCurrentAreaFromLocalStorage(page: Page) {
   const unedStudio = await page.evaluate(() => localStorage.getItem('unedStudio'));
@@ -22,9 +22,12 @@ async function clearCurrentArea(page: Page) {
 test.beforeEach(async ({ page }) => {
   await setupFreshTest(page);
   await waitForAppReady(page);
+  await page.waitForLoadState('networkidle');
+  await page.getByTestId('guest-login-btn').click();
 });
 
 test('remembers last studied area in localStorage', async ({ page }) => {
+  logEnvVars();
   await page.waitForLoadState('networkidle');
   await page.getByRole('button', { name: /Lógica I/ }).waitFor({ timeout: 15000 });
   await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
