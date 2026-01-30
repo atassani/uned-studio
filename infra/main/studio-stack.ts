@@ -7,7 +7,8 @@ export class StudioStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Cognito User Pool for //studio authentication
+    // Cognito User Pool for /uned/studio authentication
+    // Required for Google OAuth login and JWT validation at Lambda@Edge
     const userPool = new cognito.UserPool(this, 'StudioUserPool', {
       userPoolName: 'studio-users',
       selfSignUpEnabled: false, // No manual sign-up, only Google OAuth
@@ -43,8 +44,8 @@ export class StudioStack extends cdk.Stack {
     });
 
     // Google Identity Provider (must be created before User Pool Client)
+    // Requires SSM parameter /studio/google-oauth/client-id and env GOOGLE_OAUTH_CLIENT_SECRET
     const googleClientId = StringParameter.valueFromLookup(this, '/studio/google-oauth/client-id');
-
     const googleClientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
     if (!googleClientSecret) {
       throw new Error(
@@ -64,6 +65,7 @@ export class StudioStack extends cdk.Stack {
     });
 
     // User Pool Client for SPA (created after Google IdP)
+    // Used by frontend for Cognito Hosted UI login
     const userPoolClient = new cognito.UserPoolClient(this, 'StudioUserPoolClient', {
       userPool,
       userPoolClientName: 'studio-spa-client',
@@ -91,25 +93,25 @@ export class StudioStack extends cdk.Stack {
 
     userPoolClient.node.addDependency(googleIdp);
 
-    // Cognito outputs for SPA configuration
+    // Cognito outputs for frontend and Lambda@Edge configuration
     new cdk.CfnOutput(this, 'CognitoUserPoolId', {
       value: userPool.userPoolId,
-      description: 'Cognito User Pool ID for Studio',
+      description: 'Cognito User Pool ID for Studio (used for JWT validation at Lambda@Edge)',
     });
 
     new cdk.CfnOutput(this, 'CognitoUserPoolClientId', {
       value: userPoolClient.userPoolClientId,
-      description: 'Cognito User Pool Client ID for Studio SPA',
+      description: 'Cognito User Pool Client ID for Studio SPA (used by frontend for OAuth login)',
     });
 
     new cdk.CfnOutput(this, 'CognitoHostedUIUrl', {
       value: `https://${userPoolDomain.domainName}.auth.${this.region}.amazoncognito.com`,
-      description: 'Cognito Hosted UI URL for Google authentication',
+      description: 'Cognito Hosted UI URL for Google authentication (frontend login URL)',
     });
 
     new cdk.CfnOutput(this, 'CognitoRegion', {
       value: this.region,
-      description: 'AWS Region for Cognito configuration',
+      description: 'AWS Region for Cognito configuration (used by frontend and Lambda@Edge)',
     });
   }
 }

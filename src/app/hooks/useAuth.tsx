@@ -46,7 +46,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // No-op: handled by backend
   };
 
-
   const loginWithGoogle = () => {
     // TODO: Implement Cognito OAuth redirect
     window.location.href = '/api/auth/google';
@@ -69,7 +68,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, loginWithGoogle, loginAsGuest, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, isLoading, user, login, loginWithGoogle, loginAsGuest, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

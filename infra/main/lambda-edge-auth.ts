@@ -22,9 +22,10 @@ export async function isValidJWT(cookie: string | undefined): Promise<boolean> {
   try {
     const { payload } = await jwtVerify(token, jwks, {
       issuer: COGNITO_ISSUER,
-      // audience: 'your-client-id', // optionally check audience
+      // Accept tokens from Google federated users (sub claim is a Google subject)
+      // Optionally check audience: e.g. audience: 'your-client-id',
     });
-    // Optionally check claims here
+    // Accept if token is valid and issued by Cognito (including federated Google users)
     return true;
   } catch (err) {
     return false;

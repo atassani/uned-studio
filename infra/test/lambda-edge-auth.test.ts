@@ -1,3 +1,21 @@
+describe('Cognito JWT validation', () => {
+  beforeAll(() => {
+    // Patch jose mock to accept the simulated Cognito JWT
+    const jose = require('jose');
+    jose.jwtVerify.mockImplementation(async (token: any, jwks: any, options: any) => {
+      if (token === 'eyJraWQiOiJr...validtoken...') {
+        return { payload: { sub: 'google-user', iss: options.issuer } };
+      }
+      throw new Error('Invalid token');
+    });
+  });
+  it('should validate a Cognito JWT (simulated)', async () => {
+    // Simulate a Cognito JWT cookie
+    const validCognitoJwt = 'jwt=eyJraWQiOiJr...validtoken...';
+    const result = await authModule.isValidJWT(validCognitoJwt);
+    expect(result).toBe(true);
+  });
+});
 // Mock jose imports to avoid Jest ES module parse error
 jest.mock('jose', () => ({
   jwtVerify: jest.fn(),
