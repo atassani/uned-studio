@@ -834,7 +834,7 @@ export default function QuizApp() {
             <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
             <button
               onClick={() => {
-                trackAuth('logout', user?.isAnonymous ? 'anonymous' : 'google');
+                trackAuth('logout', user?.isGuest ? 'guest' : 'google');
                 logout();
               }}
               className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors"

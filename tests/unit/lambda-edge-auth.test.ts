@@ -1,3 +1,8 @@
+// Mock jose imports to avoid Jest ES module parse error
+jest.mock('jose', () => ({
+  jwtVerify: jest.fn(),
+  createRemoteJWKSet: jest.fn(),
+}));
 import { handler } from '../../infra/main/lambda-edge-auth';
 import { CloudFrontResultResponse } from 'aws-lambda';
 

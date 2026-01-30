@@ -5,7 +5,7 @@ import { trackAuth } from '../lib/analytics';
 import packageJson from '../../../package.json';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, login, loginAnonymously } = useAuth();
+  const { isAuthenticated, isLoading, login, loginAsGuest } = useAuth();
 
   // Bypass auth guard if auth is disabled (for testing)
   const isAuthDisabled = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
@@ -39,7 +39,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
               asignaturas.
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Inicia sesión para guardar tu progreso, o úsalo de forma anónima.
+              Inicia sesión para guardar tu progreso, o úsalo como invitado.
             </p>
           </div>
           <div className="space-y-3">
@@ -73,12 +73,12 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
             <button
               onClick={() => {
-                trackAuth('login', 'anonymous');
-                loginAnonymously();
+                trackAuth('login', 'guest');
+                loginAsGuest();
               }}
               className="w-full px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-colors duration-200"
             >
-              Continuar como Anónimo
+              Continuar como Invitado
             </button>
           </div>
           <div className="mt-4 space-y-2 text-xs text-gray-500 dark:text-gray-400">
@@ -86,7 +86,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
               <strong>Con Google:</strong> Progreso guardado entre dispositivos
             </p>
             <p>
-              <strong>Anónimo:</strong> Progreso solo en este navegador
+              <strong>Invitado:</strong> Progreso solo en este navegador
             </p>
           </div>
 

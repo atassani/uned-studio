@@ -2,17 +2,19 @@
 // Supports: OAuth redirect, JWT/cookie validation, guest access
 
 import { CloudFrontRequestEvent, CloudFrontRequestResult, CloudFrontRequest } from 'aws-lambda';
-import { jwtVerify, createRemoteJWKSet } from 'jose';
 
 // Minimal Cognito JWT validation
 const COGNITO_REGION = 'eu-west-2';
 const COGNITO_USER_POOL_ID = '***REMOVED***';
 const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`;
 const JWKS_URL = `${COGNITO_ISSUER}/.well-known/jwks.json`;
-const jwks = createRemoteJWKSet(new URL(JWKS_URL));
 
 export async function isValidJWT(cookie: string | undefined): Promise<boolean> {
   if (!cookie) return false;
+  // Import jose only when needed (avoids ESM parse errors in Jest)
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { jwtVerify, createRemoteJWKSet } = require('jose');
+  const jwks = createRemoteJWKSet(new URL(JWKS_URL));
   // Extract JWT from cookie (assume cookie is 'jwt=<token>' or similar)
   const match = cookie.match(/jwt=([^;]+)/);
   if (!match) return false;

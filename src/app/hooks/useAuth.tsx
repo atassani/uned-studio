@@ -15,7 +15,7 @@ interface UserWithAttributes {
     email?: string;
     [key: string]: any;
   };
-  isAnonymous?: boolean;
+  isGuest?: boolean;
 }
 
 const isAuthDisabled = true; // Auth always disabled; backend handles auth
@@ -25,7 +25,7 @@ interface AuthContextType {
   isLoading: boolean;
   user: UserWithAttributes | null;
   login: () => void;
-  loginAnonymously: () => void;
+  loginAsGuest: () => void;
   logout: () => void;
 }
 
@@ -45,12 +45,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // No-op: handled by backend
   };
 
-  const loginAnonymously = () => {
+  const loginAsGuest = () => {
     setUser({
-      username: 'anonymous',
-      isAnonymous: true,
+      username: 'guest',
+      isGuest: true,
       attributes: {
-        name: 'Anónimo',
+        name: 'Invitado',
       },
     });
     setIsAuthenticated(true);
@@ -62,9 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, isLoading, user, login, loginAnonymously, logout }}
-    >
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, loginAsGuest, logout }}>
       {children}
     </AuthContext.Provider>
   );

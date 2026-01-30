@@ -97,7 +97,7 @@ export const trackAreaSelection = (area: string): void => {
   });
 };
 
-export const trackAuth = (action: 'login' | 'logout', method: 'google' | 'anonymous'): void => {
+export const trackAuth = (action: 'login' | 'logout', method: 'google' | 'guest'): void => {
   trackEvent({
     action: `user_${action}`,
     category: 'authentication',
@@ -123,7 +123,7 @@ export const setUserProperties = (properties: Record<string, string>): void => {
 // Set user authentication state
 export const setAuthState = (isAuthenticated: boolean, method?: string): void => {
   setUserProperties({
-    user_auth_state: isAuthenticated ? 'authenticated' : 'anonymous',
+    user_auth_state: isAuthenticated ? 'authenticated' : 'guest',
     auth_method: method || 'unknown',
   });
 };

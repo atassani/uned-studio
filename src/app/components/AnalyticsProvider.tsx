@@ -20,7 +20,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (user !== null) {
       // Only track when user state is resolved
-      const authMethod = user?.isAnonymous ? 'anonymous' : 'google';
+      const authMethod = user?.isGuest ? 'guest' : 'google';
       setAuthState(isAuthenticated, authMethod);
     }
   }, [isAuthenticated, user]);
