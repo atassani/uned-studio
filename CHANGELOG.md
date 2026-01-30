@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- feat: integrate /uned/studio/login page with Google OAuth (Cognito) and guest login options
+
 ## [1.4.5] - 2026-01-28
 
 - feat: add Google user switching capability after logout

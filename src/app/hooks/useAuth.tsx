@@ -25,6 +25,7 @@ interface AuthContextType {
   isLoading: boolean;
   user: UserWithAttributes | null;
   login: () => void;
+  loginWithGoogle: () => void;
   loginAsGuest: () => void;
   logout: () => void;
 }
@@ -45,6 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // No-op: handled by backend
   };
 
+
+  const loginWithGoogle = () => {
+    // TODO: Implement Cognito OAuth redirect
+    window.location.href = '/api/auth/google';
+  };
+
   const loginAsGuest = () => {
     setUser({
       username: 'guest',
@@ -62,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, loginAsGuest, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, loginWithGoogle, loginAsGuest, logout }}>
       {children}
     </AuthContext.Provider>
   );
