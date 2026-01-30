@@ -1,17 +1,30 @@
 'use client';
+import { useEffect } from 'react';
 
 import { useAuth } from '../hooks/useAuth';
 import { trackAuth } from '../lib/analytics';
 import packageJson from '../../../package.json';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, login, loginAsGuest } = useAuth();
+  const { isAuthenticated, isLoading, loginWithGoogle, loginAsGuest } = useAuth();
 
-  // Bypass auth guard if auth is disabled (for testing)
-  const isAuthDisabled = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
-  if (isAuthDisabled) {
-    return <>{children}</>;
-  }
+  useEffect(() => {
+    // Only log in development
+    if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('Runtime env:', {
+        NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
+        NEXT_PUBLIC_AREAS_FILE: process.env.NEXT_PUBLIC_AREAS_FILE,
+        NEXT_PUBLIC_COGNITO_USER_POOL_ID: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID,
+        NEXT_PUBLIC_COGNITO_CLIENT_ID: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID,
+        NEXT_PUBLIC_COGNITO_DOMAIN: process.env.NEXT_PUBLIC_COGNITO_DOMAIN,
+        NEXT_PUBLIC_GA_TRACKING_ID: process.env.NEXT_PUBLIC_GA_TRACKING_ID,
+        NEXT_PUBLIC_REDIRECT_SIGN_IN: process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN,
+        NEXT_PUBLIC_REDIRECT_SIGN_OUT: process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT,
+        NODE_ENV: process.env.NODE_ENV,
+      });
+    }
+  }, []);
 
   if (isLoading) {
     return (
@@ -46,7 +59,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
             <button
               onClick={() => {
                 trackAuth('login', 'google');
-                login();
+                loginWithGoogle();
               }}
               className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
             >
@@ -72,6 +85,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
             </button>
 
             <button
+              data-testid="guest-login-btn"
               onClick={() => {
                 trackAuth('login', 'guest');
                 loginAsGuest();

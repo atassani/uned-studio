@@ -1,6 +1,4 @@
 {
   "ssm:account=046802786202:parameterName=/studio/google-oauth/client-id:region=eu-west-2": "AQICAHiIGUwX0efhP2aV/2jZVwNfdCW9eILVXczhNxxdyWtVdwGeGUgiMvaVnz91lPoAb4puAAAAqjCBpwYJKoZIhvcNAQcGoIGZMIGWAgEAMIGQBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDFFIY+Kn+dw57sBtdgIBEIBj+3O8zl7/uiAahJAL9ZJHL1jb6wGtqKAwyl2Bhs3/y20dUTkE/9wj+5xtakniTR2CJmmIjm6HncDZphJToYMxoi7daqSf2uQxDrp5klj21r2pCHgEd6LFiCzpBEihaHpcRSFg",
-  "acknowledged-issue-numbers": [
-    34892
-  ]
+  "acknowledged-issue-numbers": [34892]
 }

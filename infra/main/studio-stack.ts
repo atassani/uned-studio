@@ -44,9 +44,14 @@ export class StudioStack extends cdk.Stack {
     });
 
     // Google Identity Provider (must be created before User Pool Client)
-    // Requires SSM parameter /studio/google-oauth/client-id and env GOOGLE_OAUTH_CLIENT_SECRET
-    const googleClientId = StringParameter.valueFromLookup(this, '/studio/google-oauth/client-id');
+    // Requires envd GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET, obtained from SSM Parameter Store /studio/google-oauth/client-id and /studio/google-oauth/client-secret
+    const googleClientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
     const googleClientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
+    if (!googleClientId) {
+      throw new Error(
+        'GOOGLE_OAUTH_CLIENT_ID environment variable must be set to the Google OAuth client ID.'
+      );
+    }
     if (!googleClientSecret) {
       throw new Error(
         'GOOGLE_OAUTH_CLIENT_SECRET environment variable must be set to the Google OAuth client secret.'

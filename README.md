@@ -98,9 +98,6 @@ NEXT_PUBLIC_USER_POOL_WEB_CLIENT_ID=XXXXXXXXXXXXXXXXXXXXXXXXXX
 NEXT_PUBLIC_OAUTH_DOMAIN=your-cognito-domain.auth.us-east-1.amazoncognito.com
 NEXT_PUBLIC_REDIRECT_SIGN_IN=http://localhost:3000
 NEXT_PUBLIC_REDIRECT_SIGN_OUT=http://localhost:3000
-
-# Disable authentication for development/testing
-NEXT_PUBLIC_DISABLE_AUTH=false
 ```
 
 ### Variables de Google Analytics 4
@@ -133,16 +130,6 @@ NEXT_PUBLIC_GA_TRACKING_ID=disabled
 4. **Configurar URLs de callback**:
    - Sign in: `https://tu-dominio.com/`
    - Sign out: `https://tu-dominio.com/`
-
-### Modo de desarrollo sin autenticación
-
-Para desarrollo o testing puedes deshabilitar la autenticación:
-
-```bash
-NEXT_PUBLIC_DISABLE_AUTH=true
-```
-
-Esto permite usar la aplicación sin configurar AWS Cognito.
 
 ## Google Analytics 4
 

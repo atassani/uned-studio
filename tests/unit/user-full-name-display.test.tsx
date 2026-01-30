@@ -69,10 +69,6 @@ describe('User Full Name Display', () => {
       isLoading: false,
     });
 
-    // Set environment to enable auth (not disabled)
-    const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
-
     await act(async () => {
       render(<QuizApp />);
     });
@@ -84,9 +80,6 @@ describe('User Full Name Display', () => {
     // Check that logout button has "Sign out" title
     const logoutButton = screen.getByTitle('Sign out');
     expect(logoutButton).toBeInTheDocument();
-
-    // Clean up
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = originalEnv;
   });
 
   it('should display combined given_name and family_name if name attribute is not available', async () => {
@@ -107,9 +100,6 @@ describe('User Full Name Display', () => {
       isLoading: false,
     });
 
-    const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
-
     await act(async () => {
       render(<QuizApp />);
     });
@@ -121,8 +111,6 @@ describe('User Full Name Display', () => {
     // Check that logout button has "Sign out" title
     const logoutButton = screen.getByTitle('Sign out');
     expect(logoutButton).toBeInTheDocument();
-
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = originalEnv;
   });
 
   it('should fallback to email if no name information is available', async () => {
@@ -141,9 +129,6 @@ describe('User Full Name Display', () => {
       isLoading: false,
     });
 
-    const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
-
     await act(async () => {
       render(<QuizApp />);
     });
@@ -155,8 +140,6 @@ describe('User Full Name Display', () => {
     // Check that logout button has "Sign out" title
     const logoutButton = screen.getByTitle('Sign out');
     expect(logoutButton).toBeInTheDocument();
-
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = originalEnv;
   });
 
   it('should display "Anónimo" for anonymous users', async () => {
@@ -174,10 +157,6 @@ describe('User Full Name Display', () => {
       isLoading: false,
     });
 
-    // Set environment to enable auth
-    const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
-
     await act(async () => {
       render(<QuizApp />);
     });
@@ -189,7 +168,5 @@ describe('User Full Name Display', () => {
     // Check that logout button has "Sign out" title
     const logoutButton = screen.getByTitle('Sign out');
     expect(logoutButton).toBeInTheDocument();
-
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = originalEnv;
   });
 });

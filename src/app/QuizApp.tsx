@@ -81,6 +81,17 @@ export default function QuizApp() {
       return [];
     }
 
+    // Helper to get user display name (full name, fallback to email, username, or 'Anónimo')
+    function getUserDisplayName(user: any) {
+      if (!user) return '';
+      const attr = user.attributes || {};
+      if (attr.name) return attr.name;
+      if (attr.given_name && attr.family_name) return `${attr.given_name} ${attr.family_name}`;
+      if (attr.email) return attr.email;
+      if (user.username) return user.username;
+      return 'Anónimo';
+    }
+
     const q = questions[current];
     const baseOptions = q.options ?? [];
 
@@ -826,11 +837,15 @@ export default function QuizApp() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
       <div className="w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8 relative">
         {/* User name and logout button in top-right (only show if auth is enabled) */}
-        {process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true' && (
-          <div className="absolute top-4 right-4 flex items-center gap-2 z-30">
-            <span className="text-xs text-gray-600 dark:text-gray-400">
+        {getUserDisplayName(user) && (
+          <div
+            className="absolute top-4 right-4 flex items-center gap-2 z-30"
+            data-testid="auth-user"
+          >
+            <span className="text-xs text-gray-600 px-2 py-1 rounded">
               {getUserDisplayName(user)}
             </span>
+
             <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
             <button
               onClick={() => {
