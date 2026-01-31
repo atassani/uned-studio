@@ -79,6 +79,8 @@ export const storage = {
     const areaState = getAreaState(areaKey);
     return areaState.selectedQuestions;
   },
+  clearState,
+  clearAreaState,
 };
 
 function getStoredState(): AppState {

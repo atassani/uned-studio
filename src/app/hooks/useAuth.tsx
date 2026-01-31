@@ -1,6 +1,8 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { storage } from '../storage';
+
 // OAuth logic removed: Amplify/Cognito imports and config
 
 // Extended user type that includes attributes
@@ -178,11 +180,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     setIsAuthenticated(true);
     localStorage.removeItem('jwt');
+    storage.clearState();
   };
 
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
+    storage.clearState();
   };
 
   return (

@@ -15,17 +15,10 @@ const homePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 /**
  * Common test setup - navigate to home and clear state for fresh start
  */
-export async function setupFreshTest(page: Page, seed?: string) {
-  // Build the URL with seed if provided
-  let url = homePath;
-  if (seed) {
-    url += (url.includes('?') ? '&' : '?') + `seed=${encodeURIComponent(seed)}`;
-  }
-  await page.goto(url);
+export async function setupFreshTest(page: Page) {
+  await page.goto(homePath);
   // Clear localStorage for clean state
   await page.evaluate(() => localStorage.clear());
-  // Reload the page to ensure clean state and seed param
-  await page.goto(url);
 }
 
 /**
