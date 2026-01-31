@@ -1,16 +1,30 @@
 'use client';
+import { useEffect } from 'react';
 
 import { useAuth } from '../hooks/useAuth';
+import { trackAuth } from '../lib/analytics';
 import packageJson from '../../../package.json';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, login, loginAnonymously } = useAuth();
+  const { isAuthenticated, isLoading, loginWithGoogle, loginAsGuest } = useAuth();
 
-  // Bypass auth guard if auth is disabled (for testing)
-  const isAuthDisabled = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
-  if (isAuthDisabled) {
-    return <>{children}</>;
-  }
+  useEffect(() => {
+    // Only log in development
+    if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.log('Runtime env:', {
+        NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
+        NEXT_PUBLIC_AREAS_FILE: process.env.NEXT_PUBLIC_AREAS_FILE,
+        NEXT_PUBLIC_COGNITO_USER_POOL_ID: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID,
+        NEXT_PUBLIC_COGNITO_CLIENT_ID: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID,
+        NEXT_PUBLIC_COGNITO_DOMAIN: process.env.NEXT_PUBLIC_COGNITO_DOMAIN,
+        NEXT_PUBLIC_GA_TRACKING_ID: process.env.NEXT_PUBLIC_GA_TRACKING_ID,
+        NEXT_PUBLIC_REDIRECT_SIGN_IN: process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN,
+        NEXT_PUBLIC_REDIRECT_SIGN_OUT: process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT,
+        NODE_ENV: process.env.NODE_ENV,
+      });
+    }
+  }, []);
 
   if (isLoading) {
     return (
@@ -38,12 +52,16 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
               asignaturas.
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Inicia sesión para guardar tu progreso, o úsalo de forma anónima.
+              Inicia sesión para guardar tu progreso, o úsalo como invitado.
             </p>
           </div>
           <div className="space-y-3">
             <button
-              onClick={login}
+              data-testid="google-login-btn"
+              onClick={() => {
+                trackAuth('login', 'google');
+                loginWithGoogle();
+              }}
               className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -68,10 +86,14 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
             </button>
 
             <button
-              onClick={loginAnonymously}
+              data-testid="guest-login-btn"
+              onClick={() => {
+                trackAuth('login', 'guest');
+                loginAsGuest();
+              }}
               className="w-full px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-colors duration-200"
             >
-              Continuar como Anónimo
+              Continuar como Invitado
             </button>
           </div>
           <div className="mt-4 space-y-2 text-xs text-gray-500 dark:text-gray-400">
@@ -79,7 +101,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
               <strong>Con Google:</strong> Progreso guardado entre dispositivos
             </p>
             <p>
-              <strong>Anónimo:</strong> Progreso solo en este navegador
+              <strong>Invitado:</strong> Progreso solo en este navegador
             </p>
           </div>
 

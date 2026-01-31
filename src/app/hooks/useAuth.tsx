@@ -1,15 +1,9 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Amplify } from 'aws-amplify';
-import {
-  signInWithRedirect,
-  signOut,
-  getCurrentUser,
-  fetchAuthSession,
-  fetchUserAttributes,
-} from 'aws-amplify/auth';
-import { authConfig } from '../auth-config';
+import { storage } from '../storage';
+
+// OAuth logic removed: Amplify/Cognito imports and config
 
 // Extended user type that includes attributes
 interface UserWithAttributes {
@@ -23,141 +17,191 @@ interface UserWithAttributes {
     email?: string;
     [key: string]: any;
   };
-  isAnonymous?: boolean;
+  isGuest?: boolean;
 }
 
-// Only configure Amplify if auth is not disabled
-const isAuthDisabled = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
-if (!isAuthDisabled) {
-  Amplify.configure(authConfig, { ssr: true });
-}
+// Auth is always enabled; backend handles auth
 
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   user: UserWithAttributes | null;
   login: () => void;
-  loginAnonymously: () => void;
+  loginWithGoogle: () => void;
+  loginAsGuest: () => void;
   logout: () => void;
+  setUser?: (user: UserWithAttributes | null) => void;
+  setIsAuthenticated?: (auth: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(isAuthDisabled ? true : false);
-  const [isLoading, setIsLoading] = useState(isAuthDisabled ? false : true);
-  const [user, setUser] = useState<UserWithAttributes | null>(
-    isAuthDisabled ? { username: 'test-user' } : null
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<UserWithAttributes | null>(null);
   const [hasLoggedOutFromGoogle, setHasLoggedOutFromGoogle] = useState(false);
 
+  // Restore auth state from localStorage JWT on load, or handle OAuth code
   useEffect(() => {
-    if (!isAuthDisabled) {
-      checkAuth();
-    }
-  }, []);
-
-  async function checkAuth() {
-    if (isAuthDisabled) return;
-
-    try {
-      const currentUser = await getCurrentUser();
-      const session = await fetchAuthSession();
-
-      // Try to extract user info from the JWT tokens
-      let userWithAttributes: UserWithAttributes = { ...currentUser };
-
-      if (session.tokens?.idToken) {
-        try {
-          // Parse the JWT token to get user info
-          const payload = JSON.parse(atob(session.tokens.idToken.toString().split('.')[1]));
-          console.log('ID Token payload:', payload);
-
-          // Extract name information from token
-          const attributes: any = {};
-          if (payload.name) attributes.name = payload.name;
-          if (payload.given_name) attributes.given_name = payload.given_name;
-          if (payload.family_name) attributes.family_name = payload.family_name;
-          if (payload.email) attributes.email = payload.email;
-
-          userWithAttributes = { ...currentUser, attributes } as UserWithAttributes;
-        } catch (tokenError) {
-          console.warn('Could not parse ID token:', tokenError);
-        }
-      }
-
-      // Fallback: try fetchUserAttributes if JWT parsing failed
-      if (!userWithAttributes.attributes?.name && !userWithAttributes.attributes?.email) {
-        try {
-          const attributes = await fetchUserAttributes();
-          userWithAttributes = { ...currentUser, attributes } as UserWithAttributes;
-        } catch (attrError) {
-          console.warn('Could not fetch user attributes:', attrError);
-        }
-      }
-
-      setUser(userWithAttributes);
-      console.log('Final user object:', userWithAttributes);
-      setIsAuthenticated(!!session.tokens);
-    } catch (error) {
-      setIsAuthenticated(false);
-      setUser(null);
-    } finally {
+    const jwt = typeof window !== 'undefined' ? localStorage.getItem('jwt') : null;
+    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+    if (!domain || !clientId || !redirectUri) {
       setIsLoading(false);
-    }
-  }
-
-  const login = () => {
-    if (isAuthDisabled) return;
-    signInWithRedirect({ provider: 'Google' });
-  };
-
-  const loginAnonymously = () => {
-    // Set anonymous user state
-    setUser({
-      username: 'anonymous',
-      isAnonymous: true,
-      attributes: {
-        name: 'Anónimo',
-      },
-    });
-    setIsAuthenticated(true);
-  };
-
-  const logout = async () => {
-    if (isAuthDisabled) return;
-
-    // If user is anonymous, just clear state without going through Cognito
-    if (user?.isAnonymous) {
-      setIsAuthenticated(false);
-      setUser(null);
       return;
     }
 
-    try {
-      await signOut({
-        global: true, // This ensures a full logout from Cognito
-      });
-      setIsAuthenticated(false);
-      setUser(null);
-      // Force redirect to avoid any caching issues
-      if (typeof window !== 'undefined') {
-        window.location.href = process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT || '/';
+    // Helper: parse JWT and extract user info
+    const parseJwt = (token: string) => {
+      try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map(function (c) {
+              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join('')
+        );
+        return JSON.parse(jsonPayload);
+      } catch (e) {
+        return null;
       }
-    } catch (error) {
-      console.error('Error signing out:', error);
-      // Even if signOut fails, clean up local state and redirect
-      setIsAuthenticated(false);
-      setUser(null);
-      if (typeof window !== 'undefined') {
-        window.location.href = process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT || '/';
+    };
+
+    // 1. If JWT exists, restore user
+    if (jwt) {
+      const userInfo = parseJwt(jwt);
+      if (userInfo) {
+        setUser({
+          username: userInfo.email || userInfo.sub || 'google-user',
+          attributes: userInfo,
+          isGuest: false,
+        });
+        setIsAuthenticated(true);
+        setIsLoading(false);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    // 2. If code param exists, exchange for tokens
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      if (code) {
+        setIsLoading(true);
+        // Exchange code for tokens
+        const tokenUrl = `${domain}/oauth2/token`;
+        const body = new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: clientId,
+          code,
+          redirect_uri: redirectUri,
+        });
+        fetch(tokenUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.id_token) {
+              localStorage.setItem('jwt', data.id_token);
+              const userInfo = parseJwt(data.id_token);
+              if (userInfo) {
+                setUser({
+                  username: userInfo.email || userInfo.sub || 'google-user',
+                  attributes: userInfo,
+                  isGuest: false,
+                });
+                setIsAuthenticated(true);
+                setIsLoading(false);
+              } else {
+                setIsAuthenticated(false);
+                setUser(null);
+                setIsLoading(false);
+              }
+              // Remove code param from URL
+              urlParams.delete('code');
+              const newUrl =
+                window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+              window.history.replaceState({}, '', newUrl);
+            } else {
+              setIsAuthenticated(false);
+              setUser(null);
+              setIsLoading(false);
+            }
+          })
+          .catch(() => {
+            setIsAuthenticated(false);
+            setUser(null);
+            setIsLoading(false);
+          });
+        return;
       }
     }
+    setIsLoading(false);
+  }, []);
+
+  const login = () => {
+    // No-op: handled by backend
+  };
+
+  const loginWithGoogle = () => {
+    // Redirect to Cognito Hosted UI for Google login
+    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+    if (!domain || !clientId || !redirectUri) {
+      alert('Cognito config missing.');
+      return;
+    }
+    const url =
+      `${domain}/oauth2/authorize?response_type=code&client_id=${clientId}` +
+      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+      `&identity_provider=Google&scope=openid+email+profile`;
+    window.location.href = url;
+  };
+
+  const loginAsGuest = () => {
+    setUser({
+      username: 'Invitado',
+      attributes: { name: 'Invitado' },
+      isGuest: true,
+    });
+    setIsAuthenticated(true);
+    localStorage.removeItem('jwt');
+    storage.clearState();
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUser(null);
+    storage.clearState();
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, isLoading, user, login, loginAnonymously, logout }}
+      value={{
+        isAuthenticated,
+        isLoading,
+        user,
+        login,
+        loginWithGoogle,
+        loginAsGuest,
+        logout,
+        setUser,
+        setIsAuthenticated,
+      }}
     >
       {children}
     </AuthContext.Provider>

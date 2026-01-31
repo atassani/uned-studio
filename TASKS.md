@@ -47,31 +47,44 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reporter:** TT
 - **Notes:**
 
+### Remove secrets from code and history with bfg
+
+```
+bfg --replace-text passwords.txt
+git show 5659eb6ee406c67d3f76590cdf68fc27cfd8c3c0:infra/lib/infra-stack.ts
+aws configure get region
+aws cognito-idp list-user-pools --max-results 20
+aws cognito-idp describe-user-pool --user-pool-id ***REMOVED***
+aws cognito-idp list-user-pool-clients --user-pool-id ***REMOVED***
+aws cognito-idp describe-user-pool-domain --domain humblyproud-studio
+aws cognito-idp list-identity-providers --user-pool-id ***REMOVED*** --region eu-west-2
+aws cognito-idp describe-identity-provider --user-pool-id ***REMOVED*** --provider-name Google --region eu-west-2
+
+https://console.cloud.google.com/apis/credentials
+
+aws ssm get-parameter --name /studio/google-oauth/client-id --with-decryption --region eu-west-2
+aws ssm get-parameter --name /studio/google-oauth/client-id --with-decryption --region eu-west-2 --query 'Parameter.Value' --output text
+
+--no-cli-pager
+export AWS_PAGER=""
+```
+
+```
+
+Authorised JavaScript origins
+https://humblyproud.com
+http://localhost:3000
+***REMOVED***
+
+Authorised redirect URIs
+***REMOVED***/oauth2/idpresponse
+http://localhost:3000/uned/studio
+https://humblyproud.com/uned/studio
+```
+
+### Change texts Anonymous → Guest and Anónimo → Invitado
+
 ### Track Google Analytics
-
-Add Google Analytics 4 tracking with ID "***REMOVED***" to this Next.js project. The project appears to be deployed at /uned/studio path.
-
-Requirements:
-
-1. Add the Google Analytics script to the main layout or \_app file using Next.js Script component
-2. Track both initial page loads and SPA route changes
-3. Use strategy="afterInteractive" for the GA scripts
-4. Create a utility file for tracking functions
-5. Ensure tracking works with the /uned/studio base path
-6. Include both the gtag.js script and the configuration script
-
-The tracking ID is: ***REMOVED***
-The site will be deployed at: https://humblyproud.com/uned/studio
-
-Make sure to:
-
-- Use Next.js Script component for proper loading
-- Track route changes for SPA navigation
-- Handle the base path correctly
-- Add TypeScript types if this is a TypeScript project
-- Include utility functions for custom event tracking
-
-Show me the complete implementation for both App Router and Pages Router approaches.
 
 ### Remove references to UNED and make it only /studio
 

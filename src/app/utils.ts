@@ -149,13 +149,7 @@ export function getUserDisplayName(user: UserForDisplay | null | undefined): str
     return lastName;
   }
 
-  // Try alternative attribute names that Cognito might use
-  if (user.attributes?.['custom:name']) {
-    return user.attributes['custom:name'];
-  }
-  if (user.attributes?.['cognito:name']) {
-    return user.attributes['cognito:name'];
-  }
+  // Try alternative attribute names (legacy support only)
 
   // Fallback to email
   if (user.attributes?.email) {

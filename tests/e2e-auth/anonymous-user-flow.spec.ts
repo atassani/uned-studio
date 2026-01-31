@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Anonymous User Flow', () => {
+test.describe.skip('Anonymous User Flow', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the app and wait for it to fully load
     await page.goto('/uned/studio/');

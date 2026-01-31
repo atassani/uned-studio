@@ -98,9 +98,26 @@ NEXT_PUBLIC_USER_POOL_WEB_CLIENT_ID=XXXXXXXXXXXXXXXXXXXXXXXXXX
 NEXT_PUBLIC_OAUTH_DOMAIN=your-cognito-domain.auth.us-east-1.amazoncognito.com
 NEXT_PUBLIC_REDIRECT_SIGN_IN=http://localhost:3000
 NEXT_PUBLIC_REDIRECT_SIGN_OUT=http://localhost:3000
+```
 
-# Disable authentication for development/testing
-NEXT_PUBLIC_DISABLE_AUTH=false
+### Variables de Google Analytics 4
+
+Para el seguimiento de uso y análisis:
+
+```bash
+# Google Analytics 4 tracking
+NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXX
+```
+
+**Comportamiento por entorno:**
+
+- **Producción**: GA4 se habilita automáticamente cuando `NEXT_PUBLIC_GA_TRACKING_ID` contiene un ID válido
+- **Desarrollo/Testing**: GA4 está **deshabilitado** cuando `NEXT_PUBLIC_GA_TRACKING_ID=disabled`
+
+**Para deshabilitar completamente el tracking:**
+
+```bash
+NEXT_PUBLIC_GA_TRACKING_ID=disabled
 ```
 
 ### Configuración de AWS Cognito
@@ -114,15 +131,29 @@ NEXT_PUBLIC_DISABLE_AUTH=false
    - Sign in: `https://tu-dominio.com/`
    - Sign out: `https://tu-dominio.com/`
 
-### Modo de desarrollo sin autenticación
+## Google Analytics 4
 
-Para desarrollo o testing puedes deshabilitar la autenticación:
+La aplicación incluye tracking con Google Analytics 4 para analizar el uso y comportamiento de los usuarios:
 
-```bash
-NEXT_PUBLIC_DISABLE_AUTH=true
-```
+### Eventos rastreados
 
-Esto permite usar la aplicación sin configurar AWS Cognito.
+- **Visualizaciones de página**: Automático para todas las rutas, incluyendo cambios de SPA
+- **Selección de área**: Cuando el usuario selecciona un área de estudio
+- **Inicio de quiz**: Al comenzar cualquier tipo de quiz (todas las preguntas, secciones, preguntas específicas)
+- **Finalización de quiz**: Al completar un quiz con puntuación
+- **Envío de respuestas**: Cada respuesta enviada (correcta/incorrecta)
+- **Autenticación**: Login/logout con Google o anónimo
+
+### Propiedades de usuario rastreadas
+
+- **Estado de autenticación**: Si el usuario está autenticado o es anónimo
+- **Método de autenticación**: Google OAuth o modo anónimo
+
+### Consideraciones de privacidad
+
+- El tracking respeta la privacidad del usuario
+- No se almacena información personal identificable
+- Se puede deshabilitar estableciendo `NEXT_PUBLIC_GA_TRACKING_ID=disabled`
 
 ## After installing Playwright
 

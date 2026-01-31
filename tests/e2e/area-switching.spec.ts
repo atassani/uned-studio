@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { setupFreshTest } from './helpers';
+
 test.beforeEach(async ({ page }) => {
   await setupFreshTest(page);
+  await page.getByTestId('guest-login-btn').click();
 });
 
 test('Test area switching preserves progress', async ({ page }) => {

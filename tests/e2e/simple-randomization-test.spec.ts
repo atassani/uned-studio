@@ -4,6 +4,7 @@ import { setupFreshTest } from './helpers';
 test.describe('Simple Randomization Test', () => {
   test.beforeEach(async ({ page }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
   });
 
   test('question order demonstrates the bug', async ({ page }) => {

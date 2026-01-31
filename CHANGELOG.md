@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- feat: integrate /uned/studio/login page with Google OAuth (Cognito) and guest login options
+- feat: add Cognito User Pool, Google IdP, and SPA client to infra (CDK)
+- feat: Lambda@Edge handler validates Cognito JWTs (including Google federated users)
+
+## [1.4.5] - 2026-01-28
+
 - feat: add Google user switching capability after logout
 - feat: add support for Google OAuth login/logout functionality
 - feat: allows anonymous users to log in

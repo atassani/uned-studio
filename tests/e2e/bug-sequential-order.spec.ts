@@ -5,6 +5,7 @@ test.describe('Question Order Bugs', () => {
   test.beforeEach(async ({ page }) => {
     await setupFreshTest(page);
     await waitForAppReady(page);
+    await page.getByTestId('guest-login-btn').click();
     await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
   });
 

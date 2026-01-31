@@ -1,20 +1,24 @@
+/**
+ * Log selected environment variables to the console for debugging.
+ * Pass an array of variable names, or log all NEXT_PUBLIC_ and NODE_ENV by default.
+ */
+export function logEnvVars(vars: string[] = []) {
+  const allVars = vars.length
+    ? vars
+    : Object.keys(process.env).filter((k) => k.startsWith('NEXT_PUBLIC_') || k === 'NODE_ENV');
+  // eslint-disable-next-line no-console
+  console.log('Env vars:', Object.fromEntries(allVars.map((k) => [k, process.env[k]])));
+}
 import { Page, expect } from '@playwright/test';
 const homePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 /**
  * Common test setup - navigate to home and clear state for fresh start
  */
-export async function setupFreshTest(page: Page, seed?: string) {
-  // Build the URL with seed if provided
-  let url = homePath;
-  if (seed) {
-    url += (url.includes('?') ? '&' : '?') + `seed=${encodeURIComponent(seed)}`;
-  }
-  await page.goto(url);
+export async function setupFreshTest(page: Page) {
+  await page.goto(homePath);
   // Clear localStorage for clean state
   await page.evaluate(() => localStorage.clear());
-  // Reload the page to ensure clean state and seed param
-  await page.goto(url);
 }
 
 /**
@@ -29,7 +33,8 @@ export async function setupSuperFreshTest(page: Page, seed?: string) {
     }
 
     // Go to the URL (with or without seed)
-    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    //await page.goto(url, { waitUntil: 'domcontentloaded' });
+    await page.goto(url, { waitUntil: 'networkidle' });
 
     // Clear localStorage, sessionStorage, and cookies if accessible
     await page.evaluate(() => {
@@ -44,6 +49,7 @@ export async function setupSuperFreshTest(page: Page, seed?: string) {
 
     // Reload the page to reset the app state, with the seed param if provided
     await page.goto(url, { waitUntil: 'networkidle' });
+    await page.getByTestId('guest-login-btn').click();
 
     // Verify the app is in the initial state (area selection screen)
     await page.waitForSelector('text=¿Qué quieres estudiar?', { timeout: 10000 });

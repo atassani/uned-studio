@@ -4,6 +4,7 @@ import { setupFreshTest, waitForQuizReady } from './helpers';
 test.describe('MCQ review mode', () => {
   test('can view question details from results grid after quiz', async ({ page }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
     // Go to MCQ area and start quiz
     await page.getByRole('button', { name: /MCQ/i }).click();
     await page.getByRole('button', { name: 'Orden secuencial' }).click();
