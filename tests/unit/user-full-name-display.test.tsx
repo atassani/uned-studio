@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { act } from 'react';
 import QuizApp from '../../src/app/QuizApp';
 import { useAuth } from '../../src/app/hooks/useAuth';
 
@@ -27,9 +28,8 @@ jest.mock('../../src/app/hooks/useQuizPersistence', () => ({
   })),
 }));
 
-// Mock window.location
-delete (window as any).location;
-window.location = { search: '' } as any;
+// Mock window.location.search only (jsdom limitation)
+window.location.search = '';
 
 describe('User Full Name Display', () => {
   const mockLogout = jest.fn();
@@ -69,11 +69,9 @@ describe('User Full Name Display', () => {
       isLoading: false,
     });
 
-    // Set environment to enable auth (not disabled)
-    const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
-
-    render(<QuizApp />);
+    await act(async () => {
+      render(<QuizApp />);
+    });
 
     // Check that user name is displayed next to the logout button
     const userName = screen.getByText('John Smith');
@@ -82,9 +80,6 @@ describe('User Full Name Display', () => {
     // Check that logout button has "Sign out" title
     const logoutButton = screen.getByTitle('Sign out');
     expect(logoutButton).toBeInTheDocument();
-
-    // Clean up
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = originalEnv;
   });
 
   it('should display combined given_name and family_name if name attribute is not available', async () => {
@@ -105,10 +100,9 @@ describe('User Full Name Display', () => {
       isLoading: false,
     });
 
-    const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
-
-    render(<QuizApp />);
+    await act(async () => {
+      render(<QuizApp />);
+    });
 
     // Check that user name is displayed next to the logout button
     const userName = screen.getByText('Jane Doe');
@@ -117,8 +111,6 @@ describe('User Full Name Display', () => {
     // Check that logout button has "Sign out" title
     const logoutButton = screen.getByTitle('Sign out');
     expect(logoutButton).toBeInTheDocument();
-
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = originalEnv;
   });
 
   it('should fallback to email if no name information is available', async () => {
@@ -137,10 +129,9 @@ describe('User Full Name Display', () => {
       isLoading: false,
     });
 
-    const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
-
-    render(<QuizApp />);
+    await act(async () => {
+      render(<QuizApp />);
+    });
 
     // Check that user name is displayed next to the logout button
     const userName = screen.getByText('fallback@example.com');
@@ -149,8 +140,6 @@ describe('User Full Name Display', () => {
     // Check that logout button has "Sign out" title
     const logoutButton = screen.getByTitle('Sign out');
     expect(logoutButton).toBeInTheDocument();
-
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = originalEnv;
   });
 
   it('should display "Anónimo" for anonymous users', async () => {
@@ -168,11 +157,9 @@ describe('User Full Name Display', () => {
       isLoading: false,
     });
 
-    // Set environment to enable auth
-    const originalEnv = process.env.NEXT_PUBLIC_DISABLE_AUTH;
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = 'false';
-
-    render(<QuizApp />);
+    await act(async () => {
+      render(<QuizApp />);
+    });
 
     // Check that anonymous name is displayed next to the logout button
     const userName = screen.getByText('Anónimo');
@@ -181,7 +168,5 @@ describe('User Full Name Display', () => {
     // Check that logout button has "Sign out" title
     const logoutButton = screen.getByTitle('Sign out');
     expect(logoutButton).toBeInTheDocument();
-
-    process.env.NEXT_PUBLIC_DISABLE_AUTH = originalEnv;
   });
 });

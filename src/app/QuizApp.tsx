@@ -4,6 +4,7 @@ import { QuestionType, AreaType } from './types';
 import { shuffleOptionsWithMemory, createSeededRng, getUserDisplayName } from './utils';
 import packageJson from '../../package.json';
 import { AreaSelection } from './components/AreaSelection';
+import { LoadingSpinner } from './components/LoadingSpinner';
 import { SelectionMenu } from './components/SelectionMenu';
 import { SectionSelection } from './components/SectionSelection';
 import { QuestionSelection } from './components/QuestionSelection';
@@ -11,6 +12,13 @@ import { StatusGrid } from './components/StatusGrid';
 import { QuestionDisplay } from './components/QuestionDisplay';
 import { ResultDisplay } from './components/ResultDisplay';
 import { useAuth } from './hooks/useAuth';
+import {
+  trackAreaSelection,
+  trackQuizStart,
+  trackQuizComplete,
+  trackAnswerSubmit,
+  trackAuth,
+} from './lib/analytics';
 
 import { useQuizPersistence } from './hooks/useQuizPersistence';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -72,6 +80,17 @@ export default function QuizApp() {
       !Array.isArray(questions[current].options)
     ) {
       return [];
+    }
+
+    // Helper to get user display name (full name, fallback to email, username, or 'Anónimo')
+    function getUserDisplayName(user: any) {
+      if (!user) return '';
+      const attr = user.attributes || {};
+      if (attr.name) return attr.name;
+      if (attr.given_name && attr.family_name) return `${attr.given_name} ${attr.family_name}`;
+      if (attr.email) return attr.email;
+      if (user.username) return user.username;
+      return 'Anónimo';
     }
 
     const q = questions[current];
@@ -189,6 +208,9 @@ export default function QuizApp() {
     setShowAreaSelection(false);
     // Track area for persistence
     storage.setCurrentArea(area.shortName);
+
+    // Track area selection in Google Analytics
+    trackAreaSelection(area.shortName);
 
     // Always load questions and restore progress if available
     const areaKey = area.shortName;
@@ -357,17 +379,32 @@ export default function QuizApp() {
   const startQuizAll = useCallback(() => {
     prepareNewRun();
     baseStartQuizAll();
-  }, [prepareNewRun, baseStartQuizAll]);
+
+    // Track quiz start in Google Analytics
+    if (selectedArea) {
+      trackQuizStart(selectedArea.shortName, 'all_questions');
+    }
+  }, [prepareNewRun, baseStartQuizAll, selectedArea]);
 
   const startQuizSections = useCallback(() => {
     prepareNewRun();
     baseStartQuizSections();
-  }, [prepareNewRun, baseStartQuizSections]);
+
+    // Track quiz start in Google Analytics
+    if (selectedArea) {
+      trackQuizStart(selectedArea.shortName, 'sections');
+    }
+  }, [prepareNewRun, baseStartQuizSections, selectedArea]);
 
   const startQuizQuestions = useCallback(() => {
     prepareNewRun();
     baseStartQuizQuestions();
-  }, [prepareNewRun, baseStartQuizQuestions]);
+
+    // Track quiz start in Google Analytics
+    if (selectedArea) {
+      trackQuizStart(selectedArea.shortName, 'questions');
+    }
+  }, [prepareNewRun, baseStartQuizQuestions, selectedArea]);
 
   // Load questions for selected area on every area change
   useEffect(() => {
@@ -569,6 +606,11 @@ export default function QuizApp() {
       const areaKey = selectedArea.shortName;
       storage.setAreaQuizStatus(areaKey, newStatus);
       setShowResult({ correct, explanation: q.explanation });
+
+      // Track answer submission in Google Analytics
+      if (currentQuizType) {
+        trackAnswerSubmit(selectedArea.shortName, currentQuizType, correct);
+      }
     },
     [current, questions, status, selectedArea, currentQuizType, displayOptions]
   );
@@ -576,6 +618,15 @@ export default function QuizApp() {
   const nextQuestion = useCallback(() => {
     const pending = pendingQuestions();
     if (pending.length === 0) {
+      // Quiz completed - track completion in Google Analytics
+      if (selectedArea && status) {
+        const totalQuestions = questions.length;
+        const correctAnswers = Object.values(status).filter((s) => s === 'correct').length;
+        const quizType = selectionMode || 'unknown';
+
+        trackQuizComplete(selectedArea.shortName, String(quizType), correctAnswers, totalQuestions);
+      }
+
       setShowStatus(false);
       setCurrent(null);
       setShowResult(null);
@@ -616,7 +667,7 @@ export default function QuizApp() {
     setCurrent(nextIdx ?? null);
     setShowStatus(false);
     setShowResult(null);
-  }, [pendingQuestions, current, questions, shuffleQuestions]);
+  }, [pendingQuestions, current, questions, shuffleQuestions, selectedArea, status, selectionMode]);
 
   const handleContinue = useCallback(
     (action: string) => {
@@ -735,6 +786,22 @@ export default function QuizApp() {
   const allAnswered =
     questions.length > 0 && Object.values(status).filter((s) => s === 'pending').length === 0;
   const renderContent = () => {
+    // Show spinner if areas are not loaded yet
+    if (!areas.length && !areasError) {
+      return <LoadingSpinner />;
+    }
+    // Show spinner if questions are loading after area selection
+    if (
+      !showAreaSelection &&
+      selectedArea &&
+      !questions.length &&
+      !showSelectionMenu &&
+      !showResult &&
+      !showStatus &&
+      !allAnswered
+    ) {
+      return <LoadingSpinner />;
+    }
     if (showAreaSelection) {
       return renderAreaSelection();
     }
@@ -787,14 +854,21 @@ export default function QuizApp() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
       <div className="w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8 relative">
         {/* User name and logout button in top-right (only show if auth is enabled) */}
-        {process.env.NEXT_PUBLIC_DISABLE_AUTH !== 'true' && (
-          <div className="absolute top-4 right-4 flex items-center gap-2 z-30">
-            <span className="text-xs text-gray-600 dark:text-gray-400">
+        {getUserDisplayName(user) && (
+          <div
+            className="absolute top-4 right-4 flex items-center gap-2 z-30"
+            data-testid="auth-user"
+          >
+            <span className="text-xs text-gray-600 px-2 py-1 rounded">
               {getUserDisplayName(user)}
             </span>
+
             <span className="text-xs text-gray-400 dark:text-gray-500">•</span>
             <button
-              onClick={logout}
+              onClick={() => {
+                trackAuth('logout', user?.isGuest ? 'guest' : 'google');
+                logout();
+              }}
               className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
               title="Sign out"
             >

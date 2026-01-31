@@ -6,6 +6,7 @@ test.describe('bug 004: Section order mismatch in IPC area', () => {
     page,
   }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
     // Select IPC area
     await page.getByRole('button', { name: /Introducción al Pensamiento Científico/i }).click();
     // Random order

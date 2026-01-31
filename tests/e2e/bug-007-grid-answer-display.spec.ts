@@ -4,6 +4,7 @@ import { setupFreshTest, waitForQuizReady } from './helpers';
 test.describe('BUG-007 Grid Answer Display', () => {
   test('shows user answer with letter in grid overlay', async ({ page }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
 
     // Go to MCQ area and start quiz
     await page.getByRole('button', { name: /MCQ/i }).click();

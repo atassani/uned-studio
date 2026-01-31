@@ -4,6 +4,7 @@ import { setupFreshTest, waitForQuizReady } from './helpers';
 test.describe('MCQ numeric keyboard shortcuts', () => {
   test.beforeEach(async ({ page }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
   });
 
   test('should select the correct answer when pressing 1/2/3', async ({ page }) => {

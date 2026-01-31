@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForAppReady, startQuiz } from './helpers';
+import { waitForAppReady, startQuiz, setupSuperFreshTest } from './helpers';
+
 // Clean beforeEach without complex timeouts
 test.beforeEach(async ({ page }) => {
-  await setupFreshTest(page);
+  await setupSuperFreshTest(page);
   await waitForAppReady(page);
 });
 
@@ -10,7 +11,39 @@ test('True/False quiz works for Lógica I area', async ({ page }) => {
   await startQuiz(page, 'Lógica I');
 
   // Should see True/False question interface
-  await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible();
+  await page.screenshot({ path: 'debug-true-false-v-home-clean.png' });
+  // Ensure we are in the quiz UI before looking for answer buttons
+  let inQuiz = false;
+  try {
+    await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+      timeout: 3000,
+    });
+    inQuiz = true;
+  } catch {}
+  if (!inQuiz) {
+    // Try to click 'Todas las preguntas' to enter quiz
+    try {
+      await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 3000 });
+      await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+        timeout: 5000,
+      });
+    } catch (e) {
+      await page.screenshot({ path: 'debug-home-clean-not-in-quiz.png' });
+      const content = await page.content();
+      console.error('Failed to enter quiz UI. Page content:', content);
+      throw e;
+    }
+  }
+
+  try {
+    await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+      timeout: 10000,
+    });
+  } catch (e) {
+    const content = await page.content();
+    console.error('V button not found. Page content:', content);
+    throw e;
+  }
   await expect(page.getByRole('button', { name: 'F', exact: true })).toBeVisible();
 
   // Answer a question

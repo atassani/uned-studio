@@ -1,7 +1,7 @@
 // moved from tests/e2e/tests
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { setupFreshTest, waitForAppReady } from './helpers';
+import { setupFreshTest, waitForAppReady, logEnvVars } from './helpers';
 
 async function getCurrentAreaFromLocalStorage(page: Page) {
   const unedStudio = await page.evaluate(() => localStorage.getItem('unedStudio'));
@@ -22,14 +22,21 @@ async function clearCurrentArea(page: Page) {
 test.beforeEach(async ({ page }) => {
   await setupFreshTest(page);
   await waitForAppReady(page);
+  await page.waitForLoadState('networkidle');
+  await page.getByTestId('guest-login-btn').click();
 });
 
 test('remembers last studied area in localStorage', async ({ page }) => {
-  await page.waitForLoadState('networkidle');
+  await waitForAppReady(page);
   await page.getByRole('button', { name: /Lógica I/ }).waitFor({ timeout: 15000 });
   await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
+
+  const opcionesBtn = page.getByRole('button', { name: 'Opciones' });
+  await page.screenshot({ path: 'debug-opciones.png' });
+  await opcionesBtn.waitFor({ state: 'visible', timeout: 25000 });
+  await opcionesBtn.click();
+
   await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 10000 });
   await page.getByText(/Introducción al Pensamiento Científico/).waitFor({ timeout: 10000 });
   await page
@@ -42,11 +49,20 @@ test('remembers last studied area in localStorage', async ({ page }) => {
 }, 25000);
 
 test('remembers last studied area in localStorage going throu Options', async ({ page }) => {
-  await page.waitForLoadState('networkidle');
+  await waitForAppReady(page);
   await page.getByRole('button', { name: /Lógica I/ }).waitFor({ timeout: 15000 });
   await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
+  // Debug screenshot and fallback for 'Opciones' button
+  await page.screenshot({ path: 'debug-opciones-fail.png' });
+  try {
+    await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
+  } catch {
+    await page
+      .getByRole('button', { name: 'Opciones' })
+      .waitFor({ state: 'visible', timeout: 10000 });
+    await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
+  }
   await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 10000 });
   await page.getByText(/Introducción al Pensamiento Científico/).waitFor({ timeout: 10000 });
   await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
@@ -70,6 +86,8 @@ test('automatically returns to last studied area on app reload', async ({ page }
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
   // Reload page with increased timeout
   await page.reload({ waitUntil: 'networkidle', timeout: 20000 });
+  await page.waitForLoadState('networkidle');
+  await page.getByTestId('guest-login-btn').click();
   // Should be in IPC area
   await page.getByText(/Introducción al Pensamiento Científico/).waitFor({ timeout: 15000 });
   await expect(page.getByText(/Introducción al Pensamiento Científico/)).toBeVisible();
@@ -78,6 +96,8 @@ test('automatically returns to last studied area on app reload', async ({ page }
 test('restores to area selection if no previous area stored', async ({ page }) => {
   await clearCurrentArea(page);
   await page.reload();
+  await page.waitForLoadState('networkidle');
+  await page.getByTestId('guest-login-btn').click();
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
 });
 

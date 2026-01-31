@@ -4,6 +4,7 @@ import { setupFreshTest, waitForQuizReady } from './helpers';
 test.describe('MCQ variable options (2–5)', () => {
   test.beforeEach(async ({ page }) => {
     await setupFreshTest(page);
+    await page.getByTestId('guest-login-btn').click();
   });
 
   test('should render and allow keyboard shortcuts for MCQ with 2 options', async ({ page }) => {
