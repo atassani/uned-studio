@@ -11,29 +11,59 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Last number
 
-- FEAT: 11
-- BUG: 7
-- TECH: 8
+- FEAT: 13
+- BUG: 9
+- TECH: 10
 
 ---
 
 ## Now
 
-### TECH-003 — Separate application from data, and version data
-
-- **Status:** backlog
-- **Priority:** P3
-- **Reported:** 2025-01-17
-- **Reporter:** TT
-- **Notes:** Find a solution to separate app code from question data (e.g., JSON files). This would allow updating questions without redeploying the app.
-
-### FEAT-011 - Use authentication to save progress per user
+### TECH-009 — Tidy project to make it presentable
 
 - **Status:** backlog
 - **Priority:** P1
-- **Reported:** 2025-01-24
+- **Reported:** 2025-02-01
 - **Reporter:** TT
-- **Notes:** Once users are authenticated, save their quiz progress and settings in a database (e.g., DynamoDB) instead of localStorage, allowing them to resume on any device.
+- **Notes:**
+  - Fix directory layout, moving project to frontend/ subfolder
+  - Remove secrets from code and history with bfg
+  - Remove authenticated tests
+  - Remove references to .env, and remove .env.example
+  - Remove references to UNED and make it only /studio
+  - Change texts Anonymous → Guest and Anónimo → Invitado
+  - Update README.md
+
+### TECH-010 - Fix tests
+
+- **Status:** backlog
+- **Priority:** P1
+- **Reported:** 2026-02-01
+- **Reporter:** TT
+- **Notes:**
+- Fix flaky tests
+- Make tests work as mocked authenticated users instead of guests
+- Remove screen captures
+- Remove console.logs
+- Remove secrets and setting variables in tests
+- Remove tests that do not test
+
+### BUG-008 — Sign out is not removing jwt from localStorage
+
+- **Status:** backlog
+- **Priority:** P1
+- **Reported:** 2026-02-01
+- **Reporter:** TT
+- **Notes:**
+
+### BUG-009 — Allow to log out and switch user
+
+- **Status:** backlog
+- **Priority:** P1
+- **Reported:** 2026-02-01
+- **Reporter:** TT
+- **Notes:**
+-
 
 ---
 
@@ -47,11 +77,10 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reporter:** TT
 - **Notes:**
 
-### Remove secrets from code and history with bfg
-
 ```
 bfg --replace-text passwords.txt
 git show 5659eb6ee406c67d3f76590cdf68fc27cfd8c3c0:infra/lib/infra-stack.ts
+
 aws configure get region
 aws cognito-idp list-user-pools --max-results 20
 aws cognito-idp describe-user-pool --user-pool-id eu-west-2_lGf1JmMyv
@@ -67,51 +96,40 @@ aws ssm get-parameter --name /studio/google-oauth/client-id --with-decryption --
 
 --no-cli-pager
 export AWS_PAGER=""
+
+curl -I https://humblyproud.com/uned/studio
+curl -s -D - -o /dev/null https://humblyproud.com/uned/studio
 ```
 
-```
+### FEAT-012 — Lógica I Exams as individual sections
 
-Authorised JavaScript origins
-https://humblyproud.com
-http://localhost:3000
-https://humblyproud-studio.auth.eu-west-2.amazoncognito.com
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2026-02-01
+- **Reporter:** TT
+- **Notes:**
 
-Authorised redirect URIs
-https://humblyproud-studio.auth.eu-west-2.amazoncognito.com/oauth2/idpresponse
-http://localhost:3000/uned/studio
-https://humblyproud.com/uned/studio
-```
+### TECH-003 — Separate application from data
 
-### Change texts Anonymous → Guest and Anónimo → Invitado
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-17
+- **Reporter:** TT
+- **Notes:**
+  - Find a solution to separate app code from question data (e.g., JSON files).
+  - This would allow updating questions without redeploying the app.
+  - Protect data in the server, with JWT validation
+  - Consider versioning data, even changing the JSON structure
 
-### Track Google Analytics
+### FEAT-011 - Use authentication to save progress per user
 
-### Remove references to UNED and make it only /studio
+- **Status:** backlog
+- **Priority:** P1
+- **Reported:** 2025-01-24
+- **Reporter:** TT
+- **Notes:** Once users are authenticated, save their quiz progress and settings in a database (e.g., DynamoDB) instead of localStorage, allowing them to resume on any device.
 
-### Separate data from code, and version data?
-
-### Protect data/API
-
-- **If protecting S3/API:**
-  - Add Cognito authorizer to API Gateway.
-  - Update S3 bucket policy to allow only authenticated users if needed.
-- **Document all changes in IaC and update README.**
-
-### Internationalisation
-
-### Make tests independent of text content
-
-### Move tests to unit tests where possible
-
-### Make e2e tests use anonymous login to avoid to set of tests
-
-### Make individual answers clickable
-
-### Lógica I Exams as individual sections
-
-### Preserve data in the server
-
-### TECH-008 — Make e2e test independent of text on the screen
+### TECH-008 — Make e2e test independent of text on the screen with data-testid
 
 - **Status:** backlog
 - **Priority:** P3
@@ -166,6 +184,14 @@ https://humblyproud.com/uned/studio
 - **Reported:** 2025-01-20
 - **Reporter:** TT
 - **Notes:** The could be named like "Section top name > Sub-section name", and clicking the top name would expand/collapse the list of sub-sections.
+
+### FEAT-013 — Add Internationalisation
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2026-02-01
+- **Reporter:** TT
+- **Notes:**
 
 ---
 
