@@ -22,5 +22,6 @@
     "typeRoots": ["./node_modules/@types"],
     "isolatedModules": true
   },
+  "include": ["main/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules", "cdk.out"]
 }

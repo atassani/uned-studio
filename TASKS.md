@@ -31,6 +31,7 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
   - Remove authenticated tests
   - Remove references to .env, and remove .env.example
   - Remove references to UNED and make it only /studio
+  - Make changes in infra and https://console.cloud.google.com/
   - Change texts Anonymous → Guest and Anónimo → Invitado
   - Update README.md
 
@@ -63,9 +64,7 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reported:** 2026-02-01
 - **Reporter:** TT
 - **Notes:**
--
-
----
+- ***
 
 ## Backlog
 
@@ -83,11 +82,11 @@ git show 5659eb6ee406c67d3f76590cdf68fc27cfd8c3c0:infra/lib/infra-stack.ts
 
 aws configure get region
 aws cognito-idp list-user-pools --max-results 20
-aws cognito-idp describe-user-pool --user-pool-id ***REMOVED***
-aws cognito-idp list-user-pool-clients --user-pool-id ***REMOVED***
+aws cognito-idp describe-user-pool --user-pool-id eu-west-2_lGf1JmMyv
+aws cognito-idp list-user-pool-clients --user-pool-id eu-west-2_lGf1JmMyv
 aws cognito-idp describe-user-pool-domain --domain humblyproud-studio
-aws cognito-idp list-identity-providers --user-pool-id ***REMOVED*** --region eu-west-2
-aws cognito-idp describe-identity-provider --user-pool-id ***REMOVED*** --provider-name Google --region eu-west-2
+aws cognito-idp list-identity-providers --user-pool-id eu-west-2_lGf1JmMyv --region eu-west-2
+aws cognito-idp describe-identity-provider --user-pool-id eu-west-2_lGf1JmMyv --provider-name Google --region eu-west-2
 
 https://console.cloud.google.com/apis/credentials
 

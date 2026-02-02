@@ -24,12 +24,12 @@ jest.mock('jose', () => ({
 // infra/test/lambda-edge-auth.test.ts
 // Jest test scaffold for Lambda@Edge authentication handler
 
-import * as authModule from '../main/lambda-edge-auth';
+import * as authModule from '../../main/lambda-edge-auth';
 
 describe('Lambda@Edge Auth Handler', () => {
   beforeAll(() => {
     // Mock isValidJWT to avoid real JWT validation/network
-    jest.spyOn(authModule, 'isValidJWT').mockImplementation(async (cookie) => {
+    jest.spyOn(authModule, 'isValidJWT').mockImplementation(async (cookie: string | undefined) => {
       // Simulate valid JWT only if cookie is 'jwt=valid'
       return cookie === 'jwt=valid';
     });

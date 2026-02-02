@@ -5,7 +5,7 @@ import { CloudFrontRequestEvent, CloudFrontRequestResult, CloudFrontRequest } fr
 
 // Minimal Cognito JWT validation
 const COGNITO_REGION = 'eu-west-2';
-const COGNITO_USER_POOL_ID = '***REMOVED***';
+const COGNITO_USER_POOL_ID = 'eu-west-2_lGf1JmMyv';
 const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`;
 const JWKS_URL = `${COGNITO_ISSUER}/.well-known/jwks.json`;
 
