@@ -26,9 +26,9 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reported:** 2025-02-01
 - **Reporter:** TT
 - **Notes:**
-  - Fix directory layout, moving project to frontend/ subfolder
-  - Remove secrets from code and history with bfg
-  - Remove authenticated tests
+  - ~~Fix directory layout, moving project to frontend/ subfolder~~
+  - ~~Remove secrets from code and history with bfg~~
+  - ~~Remove authenticated tests~~
   - Remove references to .env, and remove .env.example
   - Remove references to UNED and make it only /studio
   - Make changes in infra and https://console.cloud.google.com/
@@ -79,6 +79,7 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ```
 bfg --replace-text passwords.txt
 git show 5659eb6ee406c67d3f76590cdf68fc27cfd8c3c0:infra/lib/infra-stack.ts
+git reflog expire --expire=now --all && git gc --prune=now --aggressive
 
 aws configure get region
 aws cognito-idp list-user-pools --max-results 20

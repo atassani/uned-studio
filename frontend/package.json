@@ -6,17 +6,15 @@
   "scripts": {
     "dev": "next dev",
     "dev:playwright": "NODE_ENV=test next dev",
-    "dev:playwright-auth": "dotenv -e .env -e .env.test.auth -- next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "test:prepare-e2e": "cp tests/testdata/areas-mcq-tests.json public/areas-mcq-tests.json && cp tests/testdata/questions-mcq-tests.json public/questions-mcq-tests.json",
     "test:cleanup-e2e": "rm -f public/areas-mcq-tests.json public/questions-mcq-tests.json",
     "test:e2e:withdata": "npm run test:prepare-e2e && playwright test && npm run test:cleanup-e2e",
-    "test:e2e:auth": "npm run test:prepare-e2e && playwright test -c playwright.config.auth.ts && npm run test:cleanup-e2e",
     "test:unit": "jest",
     "test:e2e": "playwright test",
-    "test": "npm run test:unit && npm run test:e2e:withdata && npm run test:e2e:auth",
+    "test": "npm run test:unit && npm run test:e2e:withdata",
     "typecheck": "tsc --noEmit",
     "format": "prettier --check .",
     "check": "npm run typecheck && npm run format && npm run test"
