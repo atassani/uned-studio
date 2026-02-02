@@ -1,12 +1,6 @@
-# UNED Studio
+# Learning Studio
 
-Aplicación que muestra tests de asignaturas de Filosofía de la UNED en formato web.
-
-Se han incluido tests de:
-
-- Lógica I (2025). Verdadero-Falso.
-- Introducción al Pensamiento Científico (2025). Opción múltiple.
-- Filosofía del Lenguaje (2025). Opción múltiple.
+Aplicación que muestra tests para el estudio.
 
 ## Aplicación Web
 
@@ -15,10 +9,10 @@ Se trata de una aplicación "vibe coded" que usa [Next.js](https://nextjs.org) c
 La aplicación incluye:
 
 - **Autenticación con Google OAuth** para sincronizar progreso entre dispositivos
-- **Modo anónimo** para uso local sin registro
+- **Modo invitado** para uso local sin registro
 - **Almacenamiento persistente** del progreso del usuario
 
-Los resultados se almacenan en el `LocalStorage` del navegador (modo anónimo) o se sincronizan en la nube (usuarios autenticados).
+Los resultados se almacenan en el `LocalStorage` del navegador (modo invitado) o se sincronizan en la nube (usuarios autenticados).
 
 Para arrancarla:
 
@@ -75,7 +69,7 @@ El archivo `.env` debe contener las siguientes variables:
 ### Variables básicas de la aplicación
 
 ```bash
-NEXT_PUBLIC_BASE_PATH=/uned/studio
+NEXT_PUBLIC_BASE_PATH=/studio
 ```
 
 - Cambia el valor según la subcarpeta donde se sirva la app.
@@ -142,12 +136,12 @@ La aplicación incluye tracking con Google Analytics 4 para analizar el uso y co
 - **Inicio de quiz**: Al comenzar cualquier tipo de quiz (todas las preguntas, secciones, preguntas específicas)
 - **Finalización de quiz**: Al completar un quiz con puntuación
 - **Envío de respuestas**: Cada respuesta enviada (correcta/incorrecta)
-- **Autenticación**: Login/logout con Google o anónimo
+- **Autenticación**: Login/logout con Google o modo invitado
 
 ### Propiedades de usuario rastreadas
 
-- **Estado de autenticación**: Si el usuario está autenticado o es anónimo
-- **Método de autenticación**: Google OAuth o modo anónimo
+- **Estado de autenticación**: Si el usuario está autenticado o es invitado
+- **Método de autenticación**: Google OAuth o modo invitado
 
 ### Consideraciones de privacidad
 

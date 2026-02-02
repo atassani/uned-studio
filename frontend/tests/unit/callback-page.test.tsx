@@ -20,7 +20,7 @@ describe('CallbackPage', () => {
     // Set required env variables
     process.env.NEXT_PUBLIC_COGNITO_DOMAIN = 'https://example.com';
     process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID = 'clientid';
-    process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN = 'https://app.com/uned/studio';
+    process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN = 'https://app.com/studio';
   });
   afterAll(() => {
     // nothing to restore

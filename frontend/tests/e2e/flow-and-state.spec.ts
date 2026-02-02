@@ -3,8 +3,8 @@ import type { Page } from '@playwright/test';
 import { setupFreshTest, waitForAppReady } from './helpers';
 
 async function getCurrentAreaFromLocalStorage(page: Page) {
-  const unedStudio = await page.evaluate(() => localStorage.getItem('unedStudio'));
-  const currentArea = unedStudio ? JSON.parse(unedStudio).currentArea : null;
+  const learningStudio = await page.evaluate(() => localStorage.getItem('learningStudio'));
+  const currentArea = learningStudio ? JSON.parse(learningStudio).currentArea : null;
   return currentArea;
 }
 

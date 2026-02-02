@@ -20,8 +20,8 @@ const geistMono = Geist_Mono({
 const GA_TRACKING_ID = process.env.NEXT_PUBLIC_GA_TRACKING_ID;
 
 export const metadata: Metadata = {
-  title: 'UNED Studio',
-  description: 'Herramientas de estudio para asignaturas de la UNED',
+  title: 'Studio',
+  description: 'Herramientas de estudio para estudiantes.',
 };
 
 export default function RootLayout({

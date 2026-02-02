@@ -82,7 +82,7 @@ export default function QuizApp() {
       return [];
     }
 
-    // Helper to get user display name (full name, fallback to email, username, or 'Anónimo')
+    // Helper to get user display name (full name, fallback to email, username, or 'Invitado')
     function getUserDisplayName(user: any) {
       if (!user) return '';
       const attr = user.attributes || {};
@@ -90,7 +90,7 @@ export default function QuizApp() {
       if (attr.given_name && attr.family_name) return `${attr.given_name} ${attr.family_name}`;
       if (attr.email) return attr.email;
       if (user.username) return user.username;
-      return 'Anónimo';
+      return 'Invitado';
     }
 
     const q = questions[current];

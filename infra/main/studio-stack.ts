@@ -7,7 +7,7 @@ export class StudioStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // Cognito User Pool for /uned/studio authentication
+    // Cognito User Pool for /studio authentication
     // Required for Google OAuth login and JWT validation at Lambda@Edge
     const userPool = new cognito.UserPool(this, 'StudioUserPool', {
       userPoolName: 'studio-users',
@@ -85,12 +85,12 @@ export class StudioStack extends cdk.Stack {
         },
         scopes: [cognito.OAuthScope.EMAIL, cognito.OAuthScope.OPENID, cognito.OAuthScope.PROFILE],
         callbackUrls: [
-          'https://humblyproud.com/uned/studio',
-          'http://localhost:3000/uned/studio', // For local development
+          'https://humblyproud.com/studio',
+          'http://localhost:3000/studio', // For local development
         ],
         logoutUrls: [
-          'https://humblyproud.com/uned/studio',
-          'http://localhost:3000/uned/studio', // For local development
+          'https://humblyproud.com/studio',
+          'http://localhost:3000/studio', // For local development
         ],
       },
       supportedIdentityProviders: [cognito.UserPoolClientIdentityProvider.GOOGLE],

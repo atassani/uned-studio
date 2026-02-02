@@ -26,3 +26,5 @@ npm run build
 # Export the variable so it is available to the CDK process
 #export CERTIFICATE_ARN
 npx cdk deploy $STACK_INFRA
+
+#npx cdk diff $STACK_INFRA

@@ -19,7 +19,7 @@ test.describe('Cognito login flow (mocked)', () => {
         env: {
           NEXT_PUBLIC_COGNITO_DOMAIN: 'https://mock-cognito',
           NEXT_PUBLIC_COGNITO_CLIENT_ID: 'mock-client-id',
-          NEXT_PUBLIC_REDIRECT_SIGN_IN: 'http://localhost:3000/uned/studio',
+          NEXT_PUBLIC_REDIRECT_SIGN_IN: 'http://localhost:3000/studio',
         },
       };
     });

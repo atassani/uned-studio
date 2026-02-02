@@ -11,7 +11,7 @@ interface UserForDisplay {
     email?: string;
     [key: string]: any; // Allow for any additional attributes like 'custom:name', 'cognito:name'
   };
-  isAnonymous?: boolean;
+  isGuest?: boolean;
 }
 
 export function groupBySection(questions: QuestionType[]): Map<string, QuestionType[]> {
@@ -124,9 +124,9 @@ export function createSeededRng(seed: number): () => number {
 export function getUserDisplayName(user: UserForDisplay | null | undefined): string {
   if (!user) return 'User';
 
-  // Handle anonymous users
-  if (user.isAnonymous) {
-    return 'Anónimo';
+  // Handle guest users
+  if (user.isGuest) {
+    return 'Invitado';
   }
 
   // Try the 'name' attribute first (Google OAuth provides this)

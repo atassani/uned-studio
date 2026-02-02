@@ -1,4 +1,4 @@
-const LOCAL_STORAGE_KEY = 'unedStudio';
+const LOCAL_STORAGE_KEY = 'learningStudio';
 
 type QuizStatus = { [key: number]: 'correct' | 'fail' | 'pending' };
 interface AreaState {

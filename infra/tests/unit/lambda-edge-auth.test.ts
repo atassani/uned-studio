@@ -50,33 +50,33 @@ describe('Lambda@Edge Auth Handler', () => {
   }
 
   it('should redirect unauthenticated requests to OAuth login', async () => {
-    const event = makeEvent({ uri: '/uned/studio/app', cookie: undefined });
+    const event = makeEvent({ uri: '/studio/app', cookie: undefined });
     const result = await authModule.handler(event as any);
     // Type guard for CloudFrontResultResponse
     if (result && 'status' in result) {
       expect(result.status).toBe('302');
-      expect(result.headers?.location?.[0]?.value).toContain('/uned/studio/login');
+      expect(result.headers?.location?.[0]?.value).toContain('/studio/login');
     } else {
       throw new Error('Expected a redirect response');
     }
   });
 
   it('should allow access with valid JWT/cookie', async () => {
-    const event = makeEvent({ uri: '/uned/studio/secure', cookie: 'jwt=valid' });
+    const event = makeEvent({ uri: '/studio/secure', cookie: 'jwt=valid' });
     const result = await authModule.handler(event as any);
     // Type guard for CloudFrontRequest
     if (result && 'uri' in result) {
-      expect(result.uri).toBe('/uned/studio/secure');
+      expect(result.uri).toBe('/studio/secure');
     } else {
       throw new Error('Expected request to be allowed');
     }
   });
 
-  it('should allow guest access for /uned/studio/guest', async () => {
-    const event = makeEvent({ uri: '/uned/studio/guest', cookie: undefined });
+  it('should allow guest access for /studio/guest', async () => {
+    const event = makeEvent({ uri: '/studio/guest', cookie: undefined });
     const result = await authModule.handler(event as any);
     if (result && 'uri' in result) {
-      expect(result.uri).toBe('/uned/studio/guest');
+      expect(result.uri).toBe('/studio/guest');
     } else {
       throw new Error('Expected guest request to be allowed');
     }

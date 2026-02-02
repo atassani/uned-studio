@@ -39,11 +39,9 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
         <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8 text-center relative">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              🎓 UNED Studio
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">🎓 Studio</h1>
             <p className="text-gray-600 dark:text-gray-300">
-              Herramientas de estudio para asignaturas de la UNED
+              Herramientas de estudio para estudiantes.
             </p>
           </div>
           <div className="mb-6">

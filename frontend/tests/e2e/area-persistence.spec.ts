@@ -4,17 +4,17 @@ import type { Page } from '@playwright/test';
 import { setupFreshTest, waitForAppReady, logEnvVars } from './helpers';
 
 async function getCurrentAreaFromLocalStorage(page: Page) {
-  const unedStudio = await page.evaluate(() => localStorage.getItem('unedStudio'));
-  const currentArea = unedStudio ? JSON.parse(unedStudio).currentArea : null;
+  const learningStudio = await page.evaluate(() => localStorage.getItem('learningStudio'));
+  const currentArea = learningStudio ? JSON.parse(learningStudio).currentArea : null;
   return currentArea;
 }
 
 async function clearCurrentArea(page: Page) {
-  const state = await page.evaluate(() => localStorage.getItem('unedStudio'));
+  const state = await page.evaluate(() => localStorage.getItem('learningStudio'));
   const stateObj = state ? JSON.parse(state) : {};
   stateObj.currentArea = undefined;
   await page.evaluate((newState) => {
-    localStorage.setItem('unedStudio', JSON.stringify(newState));
+    localStorage.setItem('learningStudio', JSON.stringify(newState));
   }, stateObj);
 }
 

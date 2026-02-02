@@ -1,5 +1,5 @@
 {
-  "name": "uned-studio-monorepo",
+  "name": "learning-studio-monorepo",
   "private": true,
   "workspaces": [
     "frontend",

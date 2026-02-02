@@ -7,14 +7,14 @@ import { handler } from '../../main/lambda-edge-auth';
 import { CloudFrontResultResponse } from 'aws-lambda';
 
 describe('Lambda@Edge Auth Handler', () => {
-  it('should deny unauthenticated requests to /uned/studio/*', async () => {
+  it('should deny unauthenticated requests to /studio/*', async () => {
     // Simulate a CloudFront event with no auth cookie
     const event = {
       Records: [
         {
           cf: {
             request: {
-              uri: '/uned/studio/app',
+              uri: '/studio/app',
               headers: {},
             },
           },

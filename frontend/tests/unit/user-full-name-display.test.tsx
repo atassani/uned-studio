@@ -142,18 +142,18 @@ describe('User Full Name Display', () => {
     expect(logoutButton).toBeInTheDocument();
   });
 
-  it('should display "Anónimo" for anonymous users', async () => {
-    // Mock anonymous user
+  it('should display "Invitado" for guest users', async () => {
+    // Mock guest user
     const mockUser = {
-      username: 'anonymous_user',
-      isAnonymous: true,
+      username: 'guest_user',
+      isGuest: true,
     };
 
     (useAuth as jest.Mock).mockReturnValue({
       user: mockUser,
       logout: mockLogout,
       isAuthenticated: true,
-      isAnonymous: true,
+      isGuest: true,
       isLoading: false,
     });
 
@@ -161,8 +161,8 @@ describe('User Full Name Display', () => {
       render(<QuizApp />);
     });
 
-    // Check that anonymous name is displayed next to the logout button
-    const userName = screen.getByText('Anónimo');
+    // Check that guest name is displayed next to the logout button
+    const userName = screen.getByText('Invitado');
     expect(userName).toBeInTheDocument();
 
     // Check that logout button has "Sign out" title

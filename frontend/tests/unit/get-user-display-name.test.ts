@@ -96,12 +96,12 @@ describe('getUserDisplayName', () => {
     expect(getUserDisplayName(user)).toBe('User');
   });
 
-  it('should return "Anónimo" for anonymous users', () => {
+  it('should return "Invitado" for guest users', () => {
     const user = {
-      username: 'anonymous_user',
-      isAnonymous: true,
+      username: 'guest_user',
+      isGuest: true,
     };
 
-    expect(getUserDisplayName(user)).toBe('Anónimo');
+    expect(getUserDisplayName(user)).toBe('Invitado');
   });
 });

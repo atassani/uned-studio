@@ -47,8 +47,6 @@ frontend/blob-report/
 # misc frontend files
 frontend/public/areas-mcq-tests.json
 frontend/public/questions-mcq-tests.json
-frontend/scripts/tag.sh
-frontend/scripts/deploy.sh
 frontend/tonitassani-sites/**
 
 # infra
