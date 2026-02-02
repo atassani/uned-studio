@@ -4,8 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load environment files with proper precedence (.env.test overrides .env)
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Load environment files
 dotenv.config({ path: path.resolve(__dirname, '.env.test') });
 
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || '').replace(/\/$/, '');

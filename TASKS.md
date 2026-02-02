@@ -29,9 +29,9 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
   - ~~Fix directory layout, moving project to frontend/ subfolder~~
   - ~~Remove secrets from code and history with bfg~~
   - ~~Remove authenticated tests~~
-  - Remove references to .env, and remove .env.example
+  - ~~Remove references to .env~~
   - Remove references to UNED and make it only /studio
-  - Make changes in infra and https://console.cloud.google.com/
+    - Make changes in infra and https://console.cloud.google.com/
   - Change texts Anonymous → Guest and Anónimo → Invitado
   - Update README.md
 

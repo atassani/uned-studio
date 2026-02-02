@@ -21,7 +21,7 @@ jobs:
         run: npm run format
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Create .env for CI
+      - name: Create .env.test for CI
         run: |
           cat <<'EOF' > .env.test
           NEXT_PUBLIC_BASE_PATH=/uned/studio
