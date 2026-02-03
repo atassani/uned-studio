@@ -16,4 +16,6 @@ npm run build
 
 #(cd "$TARGET_BASE" && scripts/upload-humblyproud.sh)
 
-aws s3 sync "out" s3://humblyproud.com/studio --delete --exclude ".DS_Store"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+OUT_DIR="$SCRIPT_DIR/../out"
+aws s3 sync "$OUT_DIR" s3://humblyproud.com/studio --delete --exclude ".DS_Store"
