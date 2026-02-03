@@ -19,25 +19,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### TECH-009 — Tidy project to make it presentable
-
-- **Status:** backlog
-- **Priority:** P1
-- **Reported:** 2025-02-01
-- **Reporter:** TT
-- **Notes:**
-  - ~~Fix directory layout, moving project to frontend/ subfolder~~
-  - ~~Remove secrets from code and history with bfg~~
-  - ~~Remove authenticated tests~~
-  - ~~Remove references to .env~~
-  - Remove references to UNED and make it only /studio
-    - ~~Make changes in infra and https://console.cloud.google.com/~~
-    - Rename repository to learning-studio
-    - ~~Run infra/main/deploy-infra.sh to update CloudFront behavior~~
-    - ~~Deploy changes to production~~
-  - ~~Change texts Anonymous → Guest and Anónimo → Invitado~~
-  - Update README.md
-
 ### TECH-010 - Fix tests
 
 - **Status:** backlog
@@ -199,6 +180,27 @@ curl -s -D - -o /dev/null https://humblyproud.com/studio
 ---
 
 ## Done
+
+### ✅ TECH-009 — Tidy project to make it presentable
+
+- **Status:** done
+- **Priority:** P1
+- **Reported:** 2025-02-01
+- **Completed:** 2026-02.03
+- **PR:** [feat: moved from /uned/studio to /studio (TECH-009) #19](https://github.com/atassani/learning-studio/pull/19)
+- **Reporter:** TT
+- **Notes:**
+  - Fix directory layout, moving project to frontend/ subfolder
+  - Remove secrets from code and history with bfg
+  - Remove authenticated tests
+  - Remove references to .env
+  - Remove references to UNED and make it only /studio
+    - Make changes in infra and https://console.cloud.google.com/
+    - Run infra/main/deploy-infra.sh to update CloudFront behavior
+    - Deploy changes to production
+  - Change texts Anonymous → Guest and Anónimo → Invitado
+  - Rename repository to learning-studio
+  - Update README.md
 
 ### ✅ FEAT-010 - Authenticate users
 
