@@ -1,7 +1,6 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { aws_cognito as cognito } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 export class StudioStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {

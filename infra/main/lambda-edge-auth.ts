@@ -4,8 +4,8 @@
 import { CloudFrontRequestEvent, CloudFrontRequestResult, CloudFrontRequest } from 'aws-lambda';
 
 // Minimal Cognito JWT validation
-const COGNITO_REGION = 'eu-west-2';
-const COGNITO_USER_POOL_ID = 'eu-west-2_lGf1JmMyv';
+const COGNITO_REGION = process.env.NEXT_PUBLIC_AWS_REGION;
+const COGNITO_USER_POOL_ID = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
 const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`;
 const JWKS_URL = `${COGNITO_ISSUER}/.well-known/jwks.json`;
 
