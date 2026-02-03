@@ -187,7 +187,7 @@ curl -s -D - -o /dev/null https://humblyproud.com/studio
 - **Priority:** P1
 - **Reported:** 2025-02-01
 - **Completed:** 2026-02.03
-- **PR:** [feat: moved from /uned/studio to /studio (TECH-009) #19](https://github.com/atassani/learning-studio/pull/19)
+- **PR:** [tech: moved from /uned/studio to /studio (TECH-009) #20](https://github.com/atassani/learning-studio/pull/20)
 - **Reporter:** TT
 - **Notes:**
   - Fix directory layout, moving project to frontend/ subfolder
