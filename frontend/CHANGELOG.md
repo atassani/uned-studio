@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.4.7] - 2026-02-03
+- tech: move from /uned/studio to /studio path throughout the codebase and infra
+- feat: remove references to uned from code and presentation
+
 ## [1.4.6] - 2026-01-31
 
 - feat: integrate /uned/studio/login page with Google OAuth (Cognito) and guest login options
