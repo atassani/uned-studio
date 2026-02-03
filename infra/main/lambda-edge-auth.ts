@@ -1,11 +1,11 @@
-// Lambda@Edge authentication handler for /uned/studio/*
+// Lambda@Edge authentication handler for /studio/*
 // Supports: OAuth redirect, JWT/cookie validation, guest access
 
 import { CloudFrontRequestEvent, CloudFrontRequestResult, CloudFrontRequest } from 'aws-lambda';
 
 // Minimal Cognito JWT validation
-const COGNITO_REGION = 'eu-west-2';
-const COGNITO_USER_POOL_ID = 'eu-west-2_lGf1JmMyv';
+const COGNITO_REGION = process.env.NEXT_PUBLIC_AWS_REGION;
+const COGNITO_USER_POOL_ID = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
 const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`;
 const JWKS_URL = `${COGNITO_ISSUER}/.well-known/jwks.json`;
 
@@ -32,15 +32,15 @@ export async function isValidJWT(cookie: string | undefined): Promise<boolean> {
   }
 }
 
-const LOGIN_URL = '/uned/studio/login';
+const LOGIN_URL = '/studio/login';
 
 export async function handler(event: CloudFrontRequestEvent): Promise<CloudFrontRequestResult> {
   const request: CloudFrontRequest = event.Records[0].cf.request;
   const uri = request.uri;
   const cookieHeader = request.headers.cookie?.[0]?.value;
 
-  // Allow guest access for /uned/studio/guest
-  if (uri.startsWith('/uned/studio/guest')) {
+  // Allow guest access for /studio/guest
+  if (uri.startsWith('/studio/guest')) {
     return request;
   }
 
@@ -49,8 +49,8 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
     return request;
   }
 
-  // Redirect unauthenticated access to /uned/studio/app to /uned/studio/login (no query params)
-  if (uri.startsWith('/uned/studio/app')) {
+  // Redirect unauthenticated access to /studio/app to /studio/login (no query params)
+  if (uri.startsWith('/studio/app')) {
     return {
       status: '302',
       statusDescription: 'Found',
@@ -62,6 +62,6 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
     };
   }
 
-  // Allow public access to other /uned/studio paths
+  // Allow public access to other /studio paths
   return request;
 }

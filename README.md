@@ -1,55 +1,20 @@
-# UNED Studio
+# Learning Studio
 
-Aplicación que muestra tests de asignaturas de Filosofía de la UNED en formato web.
-
-Se han incluido tests de:
-
-- Lógica I (2025). Verdadero-Falso.
-- Introducción al Pensamiento Científico (2025). Opción múltiple.
-- Filosofía del Lenguaje (2025). Opción múltiple.
+Aplicación que muestra tests para el estudio, que pueden ser Verdadero/Falso u Opción Múltiple. Los ficheros de preguntas están en formato JSON y se pueden editar fácilmente.
 
 ## Aplicación Web
 
-Se trata de una aplicación "vibe coded" que usa [Next.js](https://nextjs.org) con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Usa [Next.js](https://nextjs.org) con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app) y TypeScript, y la infrastructura en AWS usando S3, CloudFront y Cognito para autenticación.
+
+La infrastructura contiene tests unitarios con [Jest](https://jestjs.io/), y el frontend también contiene tests end-to-end con [Playwright](https://playwright.dev/).
 
 La aplicación incluye:
 
 - **Autenticación con Google OAuth** para sincronizar progreso entre dispositivos
-- **Modo anónimo** para uso local sin registro
+- **Modo invitado** para uso local sin registro
 - **Almacenamiento persistente** del progreso del usuario
 
-Los resultados se almacenan en el `LocalStorage` del navegador (modo anónimo) o se sincronizan en la nube (usuarios autenticados).
-
-Para arrancarla:
-
-```bash
-npm run dev
-```
-
-Entonces abre en el navegador [http://localhost:3000](http://localhost:3000).
-
-Si editas `app/page.tsx` la pàgina se auto refrescará.
-
-## Publicando la aplicación web
-
-Necesitas Next.js instalado. Primero instala dependencias:
-
-```bash
-npm install next react react-dom
-```
-
-### Configuración para export estático (Next.js 13+)
-
-Asegúrate de que tu archivo `next.config.js` contiene:
-
-```js
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: 'export',
-  // ...otras opciones de configuración
-};
-module.exports = nextConfig;
-```
+Los resultados se almacenan en el `LocalStorage` del navegador (modo invitado) o se sincronizan en la nube (usuarios autenticados).
 
 ### Para construir y publicar la aplicación web
 
@@ -70,138 +35,31 @@ package.json, package-lock.json, tsconfig.json, README.md, etc.
 
 ## Configuración de variables de entorno (.env)
 
-El archivo `.env` debe contener las siguientes variables:
+Las variables de entorno para cada proyecto se esperan en ficheros `.env`. `env.development.local` para desarrollo local, `.env.production` para producción, y `.env.test` para tests, incluidos los end-to-end con Playwright. Se incluye un fichero `.env.example` como referencia.
 
 ### Variables básicas de la aplicación
 
-```bash
-NEXT_PUBLIC_BASE_PATH=/uned/studio
-```
+El contenido de los .env debería incluir al menos:
 
-- Cambia el valor según la subcarpeta donde se sirva la app.
-- Esta variable se usa tanto en la configuración de Next.js (`next.config.ts`) como en el código de la aplicación para rutas de recursos (por ejemplo, favicon).
-- Si despliegas en la raíz, puedes dejarla vacía:
+````bash
+# Subcarpeta desde donde se sirve la aplicación web
+NEXT_PUBLIC_BASE_PATH=/studio
 
-  ```bash
-  NEXT_PUBLIC_BASE_PATH=
-  ```
+# Nombre del fichero JSON con las áreas de estudio, el punto de partida de las preguntas de test.
+NEXT_PUBLIC_AREAS_FILE=areas.json
 
-### Variables de autenticación (AWS Cognito)
+# Variables de entrorno para AWS Cognito (autenticación)
+NEXT_PUBLIC_COGNITO_USER_POOL_ID=
+NEXT_PUBLIC_COGNITO_CLIENT_ID=
+NEXT_PUBLIC_COGNITO_DOMAIN=
+NEXT_PUBLIC_REDIRECT_SIGN_IN=https://domain.com/studio
+NEXT_PUBLIC_REDIRECT_SIGN_OUT=https://domain.com/studio
 
-Para la funcionalidad de autenticación con Google OAuth, necesitas configurar AWS Cognito:
-
-```bash
-# AWS Cognito configuration
-NEXT_PUBLIC_AWS_REGION=us-east-1
-NEXT_PUBLIC_USER_POOL_ID=us-east-1_XXXXXXXXX
-NEXT_PUBLIC_USER_POOL_WEB_CLIENT_ID=XXXXXXXXXXXXXXXXXXXXXXXXXX
-NEXT_PUBLIC_OAUTH_DOMAIN=your-cognito-domain.auth.us-east-1.amazoncognito.com
-NEXT_PUBLIC_REDIRECT_SIGN_IN=http://localhost:3000
-NEXT_PUBLIC_REDIRECT_SIGN_OUT=http://localhost:3000
-```
-
-### Variables de Google Analytics 4
-
-Para el seguimiento de uso y análisis:
-
-```bash
-# Google Analytics 4 tracking
-NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXX
-```
-
-**Comportamiento por entorno:**
-
-- **Producción**: GA4 se habilita automáticamente cuando `NEXT_PUBLIC_GA_TRACKING_ID` contiene un ID válido
-- **Desarrollo/Testing**: GA4 está **deshabilitado** cuando `NEXT_PUBLIC_GA_TRACKING_ID=disabled`
-
-**Para deshabilitar completamente el tracking:**
-
-```bash
-NEXT_PUBLIC_GA_TRACKING_ID=disabled
-```
-
-### Configuración de AWS Cognito
-
-1. **Crear User Pool** en AWS Cognito
-2. **Configurar Google como proveedor OAuth**:
-   - Añadir Google en "Identity providers"
-   - Configurar Google Client ID y Secret
-3. **Configurar dominios** para hosted UI
-4. **Configurar URLs de callback**:
-   - Sign in: `https://tu-dominio.com/`
-   - Sign out: `https://tu-dominio.com/`
-
-## Google Analytics 4
-
-La aplicación incluye tracking con Google Analytics 4 para analizar el uso y comportamiento de los usuarios:
-
-### Eventos rastreados
-
-- **Visualizaciones de página**: Automático para todas las rutas, incluyendo cambios de SPA
-- **Selección de área**: Cuando el usuario selecciona un área de estudio
-- **Inicio de quiz**: Al comenzar cualquier tipo de quiz (todas las preguntas, secciones, preguntas específicas)
-- **Finalización de quiz**: Al completar un quiz con puntuación
-- **Envío de respuestas**: Cada respuesta enviada (correcta/incorrecta)
-- **Autenticación**: Login/logout con Google o anónimo
-
-### Propiedades de usuario rastreadas
-
-- **Estado de autenticación**: Si el usuario está autenticado o es anónimo
-- **Método de autenticación**: Google OAuth o modo anónimo
+# El tracking ID de Google Analytics 4 o el texto 'disabled' para desactivar analytics
+NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX```
+````
 
 ### Consideraciones de privacidad
 
 - El tracking respeta la privacidad del usuario
 - No se almacena información personal identificable
-- Se puede deshabilitar estableciendo `NEXT_PUBLIC_GA_TRACKING_ID=disabled`
-
-## After installing Playwright
-
-Inside that directory, you can run several commands:
-
-- `npx playwright test`
-  - Runs the end-to-end tests.
-- `npx playwright test --ui`
-  - Starts the interactive UI mode.
-- `npx playwright test --project=chromium`
-  - Runs the tests only on Desktop Chrome.
-- `npx playwright test example`
-  - Runs the tests in a specific file.
-- `npx playwright test --debug`
-  - Runs the tests in debug mode.
-- `npx playwright codegen`
-- `npx playwright codegen http://localhost:3000/es/logica1`
-  - Auto generate tests with Codegen.
-
-We suggest that you begin by typing:
-
-`npx playwright test`
-
-And check out the following files:
-
-- `./tests/example.spec.ts` - Example end-to-end test
-- `./playwright.config.ts` - Playwright Test configuration
-
-# appearsIn field in IPC questions
-
-## ¿Qué es appearsIn?
-
-En `questions-ipc.json`, cada pregunta puede tener un campo opcional `appearsIn`, que es un array de strings. Este array indica en qué secciones (temas o exámenes) aparece la pregunta.
-
-- El campo `appearsIn` solo existe en `questions-ipc.json`.
-- Los valores de `appearsIn` siempre son nombres de sección o examen válidos, extraídos del propio archivo.
-- Si la explicación de una pregunta termina con referencias a secciones o exámenes (por ejemplo, "Examen 2024 Febrero 1; Tema 1."), esas referencias se extraen y se colocan en el array `appearsIn`, y se eliminan de la explicación.
-- Si no hay referencias, el campo puede estar ausente o ser un array vacío.
-
-## Visualización en la aplicación
-
-Cuando una pregunta tiene el campo `appearsIn`, la aplicación muestra una lista de viñetas (bullet list) debajo de la explicación, indicando en qué secciones o exámenes aparece esa pregunta.
-
-## Validación automática
-
-Existe un test unitario (`tests/unit/appears-in-field.test.ts`) que garantiza que:
-
-- Solo las preguntas de `questions-ipc.json` pueden tener el campo `appearsIn`.
-- Todos los valores de `appearsIn` son nombres de sección o examen válidos presentes en el archivo.
-
-Esto asegura la coherencia y mantenibilidad de los datos.

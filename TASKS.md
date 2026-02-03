@@ -19,21 +19,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### TECH-009 — Tidy project to make it presentable
-
-- **Status:** backlog
-- **Priority:** P1
-- **Reported:** 2025-02-01
-- **Reporter:** TT
-- **Notes:**
-  - Fix directory layout, moving project to frontend/ subfolder
-  - Remove secrets from code and history with bfg
-  - Remove authenticated tests
-  - Remove references to .env, and remove .env.example
-  - Remove references to UNED and make it only /studio
-  - Change texts Anonymous → Guest and Anónimo → Invitado
-  - Update README.md
-
 ### TECH-010 - Fix tests
 
 - **Status:** backlog
@@ -63,9 +48,7 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reported:** 2026-02-01
 - **Reporter:** TT
 - **Notes:**
--
-
----
+- ***
 
 ## Backlog
 
@@ -80,6 +63,7 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ```
 bfg --replace-text passwords.txt
 git show 5659eb6ee406c67d3f76590cdf68fc27cfd8c3c0:infra/lib/infra-stack.ts
+git reflog expire --expire=now --all && git gc --prune=now --aggressive
 
 aws configure get region
 aws cognito-idp list-user-pools --max-results 20
@@ -97,8 +81,8 @@ aws ssm get-parameter --name /studio/google-oauth/client-id --with-decryption --
 --no-cli-pager
 export AWS_PAGER=""
 
-curl -I https://humblyproud.com/uned/studio
-curl -s -D - -o /dev/null https://humblyproud.com/uned/studio
+curl -I https://humblyproud.com/studio
+curl -s -D - -o /dev/null https://humblyproud.com/studio
 ```
 
 ### FEAT-012 — Lógica I Exams as individual sections
@@ -197,13 +181,34 @@ curl -s -D - -o /dev/null https://humblyproud.com/uned/studio
 
 ## Done
 
+### ✅ TECH-009 — Tidy project to make it presentable
+
+- **Status:** done
+- **Priority:** P1
+- **Reported:** 2025-02-01
+- **Completed:** 2026-02.03
+- **PR:** [tech: moved from /uned/studio to /studio (TECH-009) #20](https://github.com/atassani/learning-studio/pull/20)
+- **Reporter:** TT
+- **Notes:**
+  - Fix directory layout, moving project to frontend/ subfolder
+  - Remove secrets from code and history with bfg
+  - Remove authenticated tests
+  - Remove references to .env
+  - Remove references to UNED and make it only /studio
+    - Make changes in infra and https://console.cloud.google.com/
+    - Run infra/main/deploy-infra.sh to update CloudFront behavior
+    - Deploy changes to production
+  - Change texts Anonymous → Guest and Anónimo → Invitado
+  - Rename repository to learning-studio
+  - Update README.md
+
 ### ✅ FEAT-010 - Authenticate users
 
 - **Status:** done
 - **Priority:** P1
 - **Reported:** 2025-01-24
 - **Completed:** 2026-01-28
-- **PR:** [feat: add Google OAuth login/logout functionality (FEAT-010) #18](https://github.com/atassani/uned-studio/pull/18)
+- **PR:** [feat: add Google OAuth login/logout functionality (FEAT-010) #18](https://github.com/atassani/learning-studio/pull/18)
 - **Reporter:** TT
 - **Notes:** Added Google OAuth authentication via AWS Cognito with anonymous mode fallback. Users can now:
   - Sign in with Google to sync progress across devices
@@ -244,7 +249,7 @@ curl -s -D - -o /dev/null https://humblyproud.com/uned/studio
 - **Priority:** P3
 - **Reported:** 2025-01-16
 - **Completed:** 2026-01-25
-- - **PR:** [tech: Consolidate keys in LocalStorage (TECH-002) #16](https://github.com/atassani/uned-studio/pull/17)
+- - **PR:** [tech: Consolidate keys in LocalStorage (TECH-002) #16](https://github.com/atassani/learning-studio/pull/17)
 - **Reporter:** TT
 - **Notes:** Today we store `currentArea`, `quizStatus_*`, `questionOrder_*`, `currentQuestion_*`. Consider one `unedTestsData` object.
 
@@ -254,7 +259,7 @@ curl -s -D - -o /dev/null https://humblyproud.com/uned/studio
 - **Priority:** P2
 - **Reported:** 2025-01-22
 - **Completed:** 2026-01-23
-- **PR:** [fix: Implement correct answer display in status grid for MCQs (BUG-007) #16](https://github.com/atassani/uned-studio/pull/16)
+- **PR:** [fix: Implement correct answer display in status grid for MCQs (BUG-007) #16](https://github.com/atassani/learning-studio/pull/16)
 - **Reporter:** TT
 - **Notes:** Using better the screen, it could be a cross on the wrong answer instead
 
@@ -283,7 +288,7 @@ curl -s -D - -o /dev/null https://humblyproud.com/uned/studio
 - **Reported:** 2025-01-22
 - **Reporter:** TT
 - **Completed:** 2026-01-22
-- **PR:** [ui: move Options button to a cogwheel menu to improve mobile layout (FEAT-007) #14](https://github.com/atassani/uned-studio/pull/14)
+- **PR:** [ui: move Options button to a cogwheel menu to improve mobile layout (FEAT-007) #14](https://github.com/atassani/learning-studio/pull/14)
 - **Notes:** To simplify the buttons and make them fit in mobile for MCQ questions, move the Options button in the questions and answers page to a cogwheel menu in the top-right corner.
 
 ### ✅ BUG-006 — Options are always in the same order, even with shuffle enabled
@@ -293,7 +298,7 @@ curl -s -D - -o /dev/null https://humblyproud.com/uned/studio
 - **Reported:** 2025-01-21
 - **Completed:** 2026-01-21
 - **Reporter:** TT
-- **PR:** [fix: answer shuffling now works between runs and is stable within a run (BUG-006) #13](https://github.com/atassani/uned-studio/pull/13)
+- **PR:** [fix: answer shuffling now works between runs and is stable within a run (BUG-006) #13](https://github.com/atassani/learning-studio/pull/13)
 - **Completed:** 2026-01-21
 - **Notes:** Fixed answer shuffling logic and made toggles consistent. See E2E test bug-option-order.spec.ts.
 
@@ -304,7 +309,7 @@ curl -s -D - -o /dev/null https://humblyproud.com/uned/studio
 - **Reported:** 2025-01-20
 - **Completed:** 2026-01-20
 - **Reporter:** TT
-- **PR:** [fix: ensure section order in status grid matches section selection (BUG-004) #12](https://github.com/atassani/uned-studio/pull/12)
+- **PR:** [fix: ensure section order in status grid matches section selection (BUG-004) #12](https://github.com/atassani/learning-studio/pull/12)
 - **Notes:** Fixed by passing the original section order from QuizApp to StatusGrid and sorting sections accordingly. See changelog and E2E test.
 
 ### ✅ BUG-003 — Shuffle does not work and repeats same order
@@ -355,7 +360,7 @@ curl -s -D - -o /dev/null https://humblyproud.com/uned/studio
 - **Commits:**
   - RED: Playwright E2E test (mcq-numeric-shortcuts.spec.ts)
   - GREEN: QuizApp.tsx implementation
-- **PR:** [https://github.com/atassani/uned-studio/pull/8](https://github.com/atassani/uned-studio/pull/8)
+- **PR:** [https://github.com/atassani/learning-studio/pull/8](https://github.com/atassani/learning-studio/pull/8)
 - **Reporter:** TT
 - **Notes:** Numeric keys now select MCQ answers (1 = A, 2 = B, etc.) in addition to A/B/C. Improves accessibility and speed for keyboard users.
   - Tried to use Enter and Space to confirm answers, but they are used by default when a button is selected, so it conflicted.

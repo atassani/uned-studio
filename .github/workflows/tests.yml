@@ -21,13 +21,13 @@ jobs:
         run: npm run format
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Create .env for CI
+      - name: Create .env.test for CI
         run: |
           cat <<'EOF' > .env.test
-          NEXT_PUBLIC_BASE_PATH=/uned/studio
+          NEXT_PUBLIC_BASE_PATH=/studio
           NEXT_PUBLIC_AREAS_FILE=areas-mcq-tests.json
-          NEXT_PUBLIC_REDIRECT_SIGN_IN=http://localhost:3000/uned/studio
-          NEXT_PUBLIC_REDIRECT_SIGN_OUT=http://localhost:3000/uned/studio
+          NEXT_PUBLIC_REDIRECT_SIGN_IN=http://localhost:3000/studio
+          NEXT_PUBLIC_REDIRECT_SIGN_OUT=http://localhost:3000/studio
           NEXT_PUBLIC_GA_TRACKING_ID=disabled
           NEXT_PUBLIC_COGNITO_USER_POOL_ID=mock-user-pool-id
           NEXT_PUBLIC_COGNITO_CLIENT_ID=mock-client-id

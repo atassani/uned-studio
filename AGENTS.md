@@ -284,7 +284,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) for all c
    ```
 
 2. **Create the pull request on GitHub:**
-   - Navigate to: https://github.com/atassani/uned-tests
+   - Navigate to: https://github.com/atassani/learning-studio
    - Click "Compare & pull request" for your feature branch.
    - Use a descriptive title following Conventional Commits (e.g., `feat: add appearsIn field to questions`).
    - In the description, summarize:

@@ -9,8 +9,8 @@
 **Add these URLs to "Allowed callback URLs":**
 
 ```
-https://humblyproud.com/uned/studio
-http://localhost:3000/uned/studio  (for local dev)
+https://humblyproud.com/studio
+http://localhost:3000/studio  (for local dev)
 ```
 
 ### 2. **Update Sign-out URLs in Cognito**
@@ -18,8 +18,8 @@ http://localhost:3000/uned/studio  (for local dev)
 **Add these URLs to "Allowed sign-out URLs":**
 
 ```
-https://humblyproud.com/uned/studio
-http://localhost:3000/uned/studio  (for local dev)
+https://humblyproud.com/studio
+http://localhost:3000/studio  (for local dev)
 ```
 
 ### 3. **Google OAuth Configuration**
@@ -29,7 +29,7 @@ http://localhost:3000/uned/studio  (for local dev)
 **Add these to "Authorized redirect URIs":**
 
 ```
-https://humblyproud-uned-studio.auth.eu-west-2.amazoncognito.com/oauth2/idpresponse
+https://humblyproud-studio.auth.eu-west-2.amazoncognito.com/oauth2/idpresponse
 ```
 
 ## 🚀 Deployment Steps
@@ -44,14 +44,14 @@ https://humblyproud-uned-studio.auth.eu-west-2.amazoncognito.com/oauth2/idprespo
 
 **Production Test:**
 
-- Visit: https://humblyproud.com/uned/studio
+- Visit: https://humblyproud.com/studio
 - Should show Google Sign-in button
 - After Google auth, should redirect back to the app
 
 **Local Test:**
 
 - Run: `npm run dev`
-- Visit: http://localhost:3000/uned/studio
+- Visit: http://localhost:3000/studio
 - Should work with localhost URLs
 
 ## ⚠️ Common Issues
