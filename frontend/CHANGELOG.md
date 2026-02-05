@@ -2,7 +2,10 @@
 
 ## [Unreleased]
 
+- test: make studio root access e2e use local baseURL
+
 ## [1.4.7] - 2026-02-03
+
 - tech: move from /uned/studio to /studio path throughout the codebase and infra
 - feat: remove references to uned from code and presentation
 
