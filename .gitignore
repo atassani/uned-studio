@@ -54,9 +54,11 @@ infra/bin/*.js
 infra/bin/*.d.ts
 infra/main/*.js
 infra/main/*.d.ts
+!infra/main/cloudfront-functions/*.js
 infra/build/
 infra/tests/**/*.js
 infra/tests/**/*.d.ts
+
 
 # CDK asset staging directory
 .cdk.staging

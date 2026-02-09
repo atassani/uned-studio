@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { aws_cognito as cognito } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-export class StudioStack extends cdk.Stack {
+export class StudioCognito extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 

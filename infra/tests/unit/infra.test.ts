@@ -7,7 +7,7 @@
 test('SQS Queue Created', () => {
   //   const app = new cdk.App();
   //     // WHEN
-  //   const stack = new Infra.StudioStack(app, 'MyTestStack');
+  //   const stack = new Infra.StudioCognito(app, 'MyTestStack');
   //     // THEN
   //   const template = Template.fromStack(stack);
   //   template.hasResourceProperties('AWS::SQS::Queue', {

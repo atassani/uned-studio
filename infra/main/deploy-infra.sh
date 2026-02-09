@@ -2,7 +2,7 @@
 # Deploy main infra stack in eu-west-2, using an existing ACM certificate ARN
 set -e
 
-STACK_INFRA=StudioStack
+STACK_INFRA=StudioCognito
 
 #STACK_CERT=CertificateStack
 #CERTIFICATE_ARN=$(aws cloudformation describe-stacks --region us-east-1 --stack-name $STACK_CERT \
