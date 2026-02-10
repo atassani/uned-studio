@@ -24,7 +24,7 @@ OUT_DIR="$SCRIPT_DIR/../out"
 export OUT_DIR
 
 # Copy contents to S3 bucket
-aws s3 sync "$OUT_DIR" s3://humblyproud.com/studio --delete --exclude ".DS_Store"
+aws s3 sync "$OUT_DIR" s3://studio.humblyproud.com/ --delete --exclude ".DS_Store"
 
 # Invalidate CloudFront cache
 DISTRIBUTION_ID=$(aws cloudfront list-distributions \
@@ -34,4 +34,4 @@ export DISTRIBUTION_ID
 
 aws cloudfront create-invalidation \
   --distribution-id "$DISTRIBUTION_ID" \
-  --paths "/studio/*"
+  --paths "/studio/index.html" "/studio/_next/*
