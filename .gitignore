@@ -3,7 +3,6 @@
 # misc
 .DS_Store
 .gitignore
-PLAN*.md
 
 # dependencies
 node_modules/
@@ -64,3 +63,7 @@ infra/tests/**/*.d.ts
 .cdk.staging
 cdk.out
 
+# GenAI files
+.codex/rules/default.rules
+AGENT*.md
+PLAN*.md
