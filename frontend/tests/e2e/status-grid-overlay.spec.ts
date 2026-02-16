@@ -1,11 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady } from './helpers';
 
 test.describe('StatusGrid overlay CSS layering verification', () => {
   test('should verify that overlay CSS properties are correctly configured', async ({ page }) => {
-    await setupFreshTest(page);
+    await setupFreshTestAuthenticated(page);
     await waitForAppReady(page);
-    await page.getByTestId('guest-login-btn').click();
 
     // Start a quiz
     await page.getByTestId('area-mcq-tests').click();

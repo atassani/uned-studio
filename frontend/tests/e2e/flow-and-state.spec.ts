@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { setupFreshTest, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady } from './helpers';
 
 async function getCurrentAreaFromLocalStorage(page: Page) {
   const learningStudio = await page.evaluate(() => localStorage.getItem('learningStudio'));
@@ -10,9 +10,8 @@ async function getCurrentAreaFromLocalStorage(page: Page) {
 
 // Clear localStorage before each test to ensure a clean state
 test.beforeEach(async ({ page }) => {
-  await setupFreshTest(page);
+  await setupFreshTestAuthenticated(page);
   await waitForAppReady(page);
-  await page.getByTestId('guest-login-btn').click();
   // Wait for initial page load to complete
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
 });
@@ -93,7 +92,6 @@ test('automatically returns to last studied area on app reload', async ({ page }
 test('restores to area selection if no previous area stored', async ({ page }) => {
   // Reload page
   await page.reload();
-  await page.getByTestId('guest-login-btn').click();
 
   // Should show area selection screen since no area was stored
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();

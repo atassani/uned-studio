@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest } from './helpers';
+import { setupFreshTestAuthenticated } from './helpers';
 
 test.describe('Question Order Control', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
   });
 
   test('sequential order shows questions by number order', async ({ page }) => {

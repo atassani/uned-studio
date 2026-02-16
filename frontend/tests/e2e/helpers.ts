@@ -12,6 +12,20 @@ export function logEnvVars(vars: string[] = []) {
 import { Page, expect } from '@playwright/test';
 const homePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
+function base64UrlEncode(input: string) {
+  return Buffer.from(input)
+    .toString('base64')
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+}
+
+function createMockJwt(email: string) {
+  const header = base64UrlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const payload = base64UrlEncode(JSON.stringify({ email }));
+  return `${header}.${payload}.signature`;
+}
+
 /**
  * Common test setup - navigate to home and clear state for fresh start
  */
@@ -19,6 +33,23 @@ export async function setupFreshTest(page: Page) {
   await page.goto(homePath);
   // Clear localStorage for clean state
   await page.evaluate(() => localStorage.clear());
+}
+
+/**
+ * Common test setup with authenticated user.
+ */
+export async function setupFreshTestAuthenticated(page: Page, email = 'e2e@example.com') {
+  const token = createMockJwt(email);
+  await page.addInitScript(({ jwt }) => {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.clear();
+      localStorage.setItem('jwt', jwt);
+    }
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.clear();
+    }
+  }, { jwt: token });
+  await page.goto(homePath, { waitUntil: 'networkidle' });
 }
 
 /**
@@ -56,6 +87,32 @@ export async function setupSuperFreshTest(page: Page, seed?: string) {
   } catch (error) {
     throw error; // Re-throw the error to ensure test fails with context
   }
+}
+
+/**
+ * Test setup that makes sure any previous information is cleared and user is authenticated.
+ */
+export async function setupSuperFreshTestAuthenticated(
+  page: Page,
+  seed?: string,
+  email = 'e2e@example.com'
+) {
+  const token = createMockJwt(email);
+  let url = homePath;
+  if (seed) {
+    url += (url.includes('?') ? '&' : '?') + `seed=${encodeURIComponent(seed)}`;
+  }
+  await page.context().clearCookies();
+  await page.addInitScript(({ jwt }) => {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.clear();
+      localStorage.setItem('jwt', jwt);
+    }
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.clear();
+    }
+  }, { jwt: token });
+  await page.goto(url, { waitUntil: 'networkidle' });
 }
 
 /**

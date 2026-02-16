@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest } from './helpers';
+import { setupFreshTestAuthenticated } from './helpers';
 
 test.describe('Simple Randomization Test', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
   });
 
   test('question order demonstrates the bug', async ({ page }) => {

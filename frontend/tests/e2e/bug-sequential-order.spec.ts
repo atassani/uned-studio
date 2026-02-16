@@ -1,11 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady } from './helpers';
 
 test.describe('Question Order Bugs', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
+    await setupFreshTestAuthenticated(page);
     await waitForAppReady(page);
-    await page.getByTestId('guest-login-btn').click();
     await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
   });
 

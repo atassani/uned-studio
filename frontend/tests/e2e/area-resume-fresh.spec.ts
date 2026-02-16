@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
 
 test.describe('Resume Quiz Fresh Experience', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
   });
 
   test('Clicking area resumes at last question if progress exists', async ({ page }) => {

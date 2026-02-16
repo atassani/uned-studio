@@ -1,12 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
 
 test.describe('bug 004: Section order mismatch in IPC area', () => {
   test('should show the same section order in Seleccionar Secciones and Opciones for IPC area', async ({
     page,
   }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
     // Select IPC area
     await page.getByTestId('area-ipc').click();
     // Random order

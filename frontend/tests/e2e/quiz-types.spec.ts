@@ -1,9 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady } from './helpers';
 
 test.beforeEach(async ({ page }) => {
-  await setupFreshTest(page);
-  await page.getByTestId('guest-login-btn').click();
+  await setupFreshTestAuthenticated(page);
 });
 
 test('True/False quiz works for Lógica I area', async ({ page }) => {

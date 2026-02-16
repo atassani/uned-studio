@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { waitForAppReady, startQuizByTestId, setupSuperFreshTest } from './helpers';
+import { waitForAppReady, startQuizByTestId, setupSuperFreshTestAuthenticated } from './helpers';
 
 // Clean beforeEach without complex timeouts
 test.beforeEach(async ({ page }) => {
-  await setupSuperFreshTest(page);
+  await setupSuperFreshTestAuthenticated(page);
   await waitForAppReady(page);
 });
 
