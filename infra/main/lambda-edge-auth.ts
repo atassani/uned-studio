@@ -5,13 +5,26 @@ import { CloudFrontRequestEvent, CloudFrontRequestResult, CloudFrontRequest } fr
 import * as https from 'https';
 
 // Minimal Cognito JWT validation
-const COGNITO_REGION = process.env.NEXT_PUBLIC_AWS_REGION;
-const COGNITO_USER_POOL_ID = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
-const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
-const COGNITO_CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
-const REDIRECT_SIGN_IN = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
-const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`;
-const JWKS_URL = `${COGNITO_ISSUER}/.well-known/jwks.json`;
+function getCognitoConfig() {
+  const region = process.env.NEXT_PUBLIC_AWS_REGION;
+  const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
+  const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+  const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+  const redirectSignIn = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+  const issuer =
+    region && userPoolId ? `https://cognito-idp.${region}.amazonaws.com/${userPoolId}` : undefined;
+  const jwksUrl = issuer ? `${issuer}/.well-known/jwks.json` : undefined;
+
+  return {
+    region,
+    userPoolId,
+    domain,
+    clientId,
+    redirectSignIn,
+    issuer,
+    jwksUrl,
+  };
+}
 
 export async function exchangeCodeForTokens(params: {
   code: string;
@@ -65,17 +78,19 @@ function postForm(url: URL, body: string): Promise<string> {
 
 export async function isValidJWT(cookie: string | undefined): Promise<boolean> {
   if (!cookie) return false;
+  const { issuer, jwksUrl } = getCognitoConfig();
+  if (!issuer || !jwksUrl) return false;
   // Import jose only when needed (avoids ESM parse errors in Jest)
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { jwtVerify, createRemoteJWKSet } = require('jose');
-  const jwks = createRemoteJWKSet(new URL(JWKS_URL));
+  const jwks = createRemoteJWKSet(new URL(jwksUrl));
   // Extract JWT from cookie (assume cookie is 'jwt=<token>' or similar)
   const match = cookie.match(/jwt=([^;]+)/);
   if (!match) return false;
   const token = match[1];
   try {
     const { payload } = await jwtVerify(token, jwks, {
-      issuer: COGNITO_ISSUER,
+      issuer,
       // Accept tokens from Google federated users (sub claim is a Google subject)
       // Optionally check audience: e.g. audience: 'your-client-id',
     });
@@ -95,6 +110,7 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
   const querystring = request.querystring || '';
   const queryParams = new URLSearchParams(querystring);
   const code = queryParams.get('code');
+  const { domain, clientId, redirectSignIn } = getCognitoConfig();
 
   // Allow guest access for /studio/guest
   if (uri.startsWith('/studio/guest')) {
@@ -102,12 +118,12 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
   }
 
   // Handle OAuth callback code exchange for Cognito Hosted UI
-  if (code && COGNITO_DOMAIN && COGNITO_CLIENT_ID && REDIRECT_SIGN_IN) {
+  if (code && domain && clientId && redirectSignIn) {
     const tokens = await exchangeCodeForTokens({
       code,
-      redirectUri: REDIRECT_SIGN_IN,
-      clientId: COGNITO_CLIENT_ID,
-      domain: COGNITO_DOMAIN,
+      redirectUri: redirectSignIn,
+      clientId,
+      domain,
     });
 
     if (tokens?.id_token) {
@@ -123,7 +139,7 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
         status: '302',
         statusDescription: 'Found',
         headers: {
-          location: [{ key: 'Location', value: REDIRECT_SIGN_IN }],
+          location: [{ key: 'Location', value: redirectSignIn }],
           'cache-control': [{ key: 'Cache-Control', value: 'no-cache' }],
           'set-cookie': [{ key: 'Set-Cookie', value: cookie }],
         },
