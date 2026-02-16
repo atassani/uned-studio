@@ -133,6 +133,10 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
     .catch(() => {});
   const questionView = page.getByTestId('question-view');
   const statusContinue = page.getByTestId('status-continue-button').first();
+  if (await selectionMenu.isVisible()) {
+    await page.getByTestId('quiz-all-button').click({ timeout: 15000 });
+    await selectionMenu.waitFor({ state: 'hidden', timeout: 10000 });
+  }
   try {
     await questionView.waitFor({ timeout: 20000 });
   } catch {
