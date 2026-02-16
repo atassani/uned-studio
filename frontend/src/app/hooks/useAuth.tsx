@@ -36,6 +36,20 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export function getCognitoLoginUrl(): string | null {
+  const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+  const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+  const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+  if (!domain || !clientId || !redirectUri) {
+    return null;
+  }
+  return (
+    `${domain}/oauth2/authorize?response_type=code&client_id=${clientId}` +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+    `&identity_provider=Google&scope=openid+email+profile`
+  );
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -158,17 +172,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithGoogle = () => {
     // Redirect to Cognito Hosted UI for Google login
-    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
-    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
-    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
-    if (!domain || !clientId || !redirectUri) {
+    const url = getCognitoLoginUrl();
+    if (!url) {
       alert('Cognito config missing.');
       return;
     }
-    const url =
-      `${domain}/oauth2/authorize?response_type=code&client_id=${clientId}` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&identity_provider=Google&scope=openid+email+profile`;
     window.location.href = url;
   };
 
