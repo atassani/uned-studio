@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady, startQuizByTestId } from './helpers';
 
 async function getCurrentAreaFromLocalStorage(page: Page) {
   const learningStudio = await page.evaluate(() => localStorage.getItem('learningStudio'));
@@ -18,9 +18,7 @@ test.beforeEach(async ({ page }) => {
 
 test('remembers last studied area in localStorage', async ({ page }) => {
   // Select Lógica I area
-  await page.getByTestId('area-log1').click();
-  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
-  await page.getByTestId('quiz-all-button').click();
+  await startQuizByTestId(page, 'log1');
 
   // Check that currentArea is stored in localStorage (now shortName)
   const currentArea = await getCurrentAreaFromLocalStorage(page);
@@ -39,10 +37,7 @@ test('remembers last studied area in localStorage', async ({ page }) => {
 test('automatically returns to last studied area on app reload', async ({ page }) => {
   // Set up: study an area first
   await page.waitForLoadState('networkidle');
-  await page.getByTestId('area-ipc').waitFor({ timeout: 15000 });
-  await page.getByTestId('area-ipc').click({ timeout: 10000 });
-  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
-  await page.getByTestId('quiz-all-button').click({ timeout: 10000 });
+  await startQuizByTestId(page, 'ipc');
 
   // Wait for quiz to load - look for any quiz indicator
   await page.waitForLoadState('networkidle');
@@ -100,10 +95,8 @@ test('restores to area selection if no previous area stored', async ({ page }) =
 
 test('preserves quiz progress when switching between areas', async ({ page }) => {
   // Start Lógica I quiz and answer a question
-  await page.getByTestId('area-log1').click({ timeout: 10000 });
+  await startQuizByTestId(page, 'log1', { order: 'sequential' });
   await expect(page.getByText('🎓 Área: Lógica I')).toBeVisible({ timeout: 5000 });
-  await page.getByTestId('order-sequential-button').click();
-  await page.getByTestId('quiz-all-button').click({ timeout: 10000 });
 
   // Wait for quiz to load with network idle first
   await page.waitForLoadState('networkidle');
@@ -165,14 +158,12 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   await page.getByTestId('options-button').click({ timeout: 10000 });
   await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 5000 });
-  await page.getByTestId('area-ipc').click({ timeout: 10000 });
+  await startQuizByTestId(page, 'ipc');
 
   // Wait for IPC area to load and navigate to questions
   await expect(page.getByText('🎓 Área: Introducción al Pensamiento Científico')).toBeVisible({
     timeout: 5000,
   });
-  await page.getByTestId('quiz-all-button').click({ timeout: 10000 });
-
   // Wait for quiz to load with network idle first
   await page.waitForLoadState('networkidle');
 

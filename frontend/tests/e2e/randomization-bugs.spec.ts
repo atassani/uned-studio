@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('Randomization Bugs', () => {
   test.beforeEach(async ({ page }) => {
@@ -11,10 +11,8 @@ test.describe('Randomization Bugs', () => {
     const firstQuestions: number[] = [];
 
     // Go to IPC area and select random order
-    await page.getByTestId('area-ipc').click();
     for (let attempt = 0; attempt < 5; attempt++) {
-      await page.getByTestId('order-random-button').click();
-      await page.getByTestId('quiz-all-button').click();
+      await startQuizByTestId(page, 'ipc', { order: 'random' });
       await waitForQuizReady(page);
 
       // Get the first question number
@@ -36,12 +34,9 @@ test.describe('Randomization Bugs', () => {
 
   test('answer shuffling should randomize first option', async ({ page }) => {
     const firstOptions: string[] = [];
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('answer-order-random-button').click(); // Enable answer shuffling
-
     for (let attempt = 0; attempt < 5; attempt++) {
       // Go to IPC area and enable answer shuffling
-      await page.getByTestId('quiz-all-button').click();
+      await startQuizByTestId(page, 'ipc', { answerOrder: 'random' });
       await waitForQuizReady(page);
 
       // Get the first option text
