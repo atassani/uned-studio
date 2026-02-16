@@ -5,11 +5,15 @@ import { aws_cloudfront as cloudfront, aws_s3 as s3 } from 'aws-cdk-lib';
 import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Construct } from 'constructs';
 
+export interface StudioInfraProps {
+  edgeLambdas?: cloudfront.EdgeLambda[];
+}
+
 export class StudioInfra extends Construct {
   public readonly studioBucket: s3.Bucket;
   public readonly behaviors: Record<string, cloudfront.BehaviorOptions>;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: StudioInfraProps = {}) {
     super(scope, id);
 
     this.studioBucket = new s3.Bucket(this, 'HumblyProudStudioBucket', {
@@ -38,6 +42,7 @@ export class StudioInfra extends Construct {
           eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
         },
       ],
+      ...(props.edgeLambdas ? { edgeLambdas: props.edgeLambdas } : {}),
     };
 
     this.behaviors = {
