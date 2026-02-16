@@ -6,11 +6,18 @@ test('passes edge lambdas to studio behaviors', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
 
-  const functionVersion = lambda.Version.fromVersionArn(
-    stack,
-    'EdgeVersion',
-    'arn:aws:lambda:us-east-1:123456789012:function:edge-auth:1'
+  const versionArn = cdk.Arn.format(
+    {
+      service: 'lambda',
+      resource: 'function',
+      resourceName: 'edge-auth:1',
+      region: 'us-east-1',
+      account: stack.account,
+    },
+    stack
   );
+
+  const functionVersion = lambda.Version.fromVersionArn(stack, 'EdgeVersion', versionArn);
 
   const edgeLambdas: cloudfront.EdgeLambda[] = [
     {
