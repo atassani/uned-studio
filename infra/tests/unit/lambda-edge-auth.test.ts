@@ -1,5 +1,8 @@
 describe('Cognito JWT validation', () => {
   beforeAll(() => {
+    process.env.NEXT_PUBLIC_AWS_REGION = 'eu-west-2';
+    process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID = 'test-pool';
+
     // Patch jose mock to accept the simulated Cognito JWT
     const jose = require('jose');
     jose.jwtVerify.mockImplementation(async (token: any, jwks: any, options: any) => {
@@ -88,8 +91,9 @@ describe('Lambda@Edge Auth Handler', () => {
     process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID = 'client-id';
     process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN = 'https://humblyproud.com/studio';
 
-    const exchangeSpy = jest
-      .spyOn(authModule, 'exchangeCodeForTokens')
+    const originalExchange = authModule.exchangeCodeForTokensImpl;
+    authModule.exchangeCodeForTokensImpl = jest
+      .fn()
       .mockResolvedValue({ id_token: 'jwt-from-cognito' } as any);
 
     const event = makeEvent({ uri: '/studio', cookie: undefined }) as any;
@@ -109,6 +113,6 @@ describe('Lambda@Edge Auth Handler', () => {
       throw new Error('Expected a redirect response');
     }
 
-    exchangeSpy.mockRestore();
+    authModule.exchangeCodeForTokensImpl = originalExchange;
   });
 });
