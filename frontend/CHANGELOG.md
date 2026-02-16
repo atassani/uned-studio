@@ -4,6 +4,7 @@
 
 - test: make studio root access e2e use local baseURL
 - test: add data-testid hooks for MCQ answer buttons
+- test: add data-testid hooks for area selection and quiz start
 
 ## [1.4.7] - 2026-02-03
 
