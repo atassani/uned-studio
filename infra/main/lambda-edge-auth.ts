@@ -48,7 +48,13 @@ export async function exchangeCodeForTokens(params: {
   }
 }
 
-export let exchangeCodeForTokensImpl = exchangeCodeForTokens;
+let exchangeCodeForTokensImpl = exchangeCodeForTokens;
+
+export function setExchangeCodeForTokensImpl(
+  impl: typeof exchangeCodeForTokens | null
+): void {
+  exchangeCodeForTokensImpl = impl ?? exchangeCodeForTokens;
+}
 
 function postForm(url: URL, body: string): Promise<string> {
   return new Promise((resolve, reject) => {

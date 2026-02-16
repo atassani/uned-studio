@@ -91,10 +91,8 @@ describe('Lambda@Edge Auth Handler', () => {
     process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID = 'client-id';
     process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN = 'https://humblyproud.com/studio';
 
-    const originalExchange = authModule.exchangeCodeForTokensImpl;
-    authModule.exchangeCodeForTokensImpl = jest
-      .fn()
-      .mockResolvedValue({ id_token: 'jwt-from-cognito' } as any);
+    const exchangeMock = jest.fn().mockResolvedValue({ id_token: 'jwt-from-cognito' } as any);
+    authModule.setExchangeCodeForTokensImpl(exchangeMock);
 
     const event = makeEvent({ uri: '/studio', cookie: undefined }) as any;
     event.Records[0].cf.request.querystring = 'code=mock_code';
@@ -113,6 +111,6 @@ describe('Lambda@Edge Auth Handler', () => {
       throw new Error('Expected a redirect response');
     }
 
-    authModule.exchangeCodeForTokensImpl = originalExchange;
+    authModule.setExchangeCodeForTokensImpl(null);
   });
 });
