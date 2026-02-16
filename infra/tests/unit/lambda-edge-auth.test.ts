@@ -130,11 +130,16 @@ describe('Lambda@Edge Auth Handler', () => {
     if (result && 'status' in result) {
       expect(result.status).toBe('302');
       expect(result.headers?.location?.[0]?.value).toBe('https://humblyproud.com/studio');
-      const setCookie = result.headers?.['set-cookie']?.[0]?.value || '';
-      expect(setCookie).toContain('jwt=jwt-from-cognito');
-      expect(setCookie).toContain('HttpOnly');
-      expect(setCookie).toContain('Secure');
-      expect(setCookie).toContain('SameSite=Lax');
+      const setCookies = result.headers?.['set-cookie'] || [];
+      const jwtCookie = setCookies[0]?.value || '';
+      const authCookie = setCookies[1]?.value || '';
+      expect(jwtCookie).toContain('jwt=jwt-from-cognito');
+      expect(jwtCookie).toContain('HttpOnly');
+      expect(jwtCookie).toContain('Secure');
+      expect(jwtCookie).toContain('SameSite=Lax');
+      expect(authCookie).toContain('auth=1');
+      expect(authCookie).toContain('Secure');
+      expect(authCookie).toContain('SameSite=Lax');
     } else {
       throw new Error('Expected a redirect response');
     }
@@ -205,11 +210,16 @@ describe('Lambda@Edge Auth Handler', () => {
       expect(result.headers?.location?.[0]?.value).toBe(
         'https://example.auth/logout?client_id=client-id&logout_uri=https%3A%2F%2Fhumblyproud.com%2Fstudio'
       );
-      const setCookie = result.headers?.['set-cookie']?.[0]?.value || '';
-      expect(setCookie).toContain('jwt=');
-      expect(setCookie).toContain('Expires=');
-      expect(setCookie).toContain('HttpOnly');
-      expect(setCookie).toContain('Secure');
+      const setCookies = result.headers?.['set-cookie'] || [];
+      const jwtCookie = setCookies[0]?.value || '';
+      const authCookie = setCookies[1]?.value || '';
+      expect(jwtCookie).toContain('jwt=');
+      expect(jwtCookie).toContain('Expires=');
+      expect(jwtCookie).toContain('HttpOnly');
+      expect(jwtCookie).toContain('Secure');
+      expect(authCookie).toContain('auth=');
+      expect(authCookie).toContain('Expires=');
+      expect(authCookie).toContain('Secure');
     } else {
       throw new Error('Expected a redirect response');
     }
