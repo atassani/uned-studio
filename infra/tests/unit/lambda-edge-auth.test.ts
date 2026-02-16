@@ -94,6 +94,26 @@ describe('Lambda@Edge Auth Handler', () => {
     }
   });
 
+  it('should rewrite studio routes to index.html for SPA', async () => {
+    const event = makeEvent({ uri: '/studio/login', cookie: undefined });
+    const result = await authModule.handler(event as any);
+    if (result && 'uri' in result) {
+      expect(result.uri).toBe('/studio/index.html');
+    } else {
+      throw new Error('Expected request to be allowed');
+    }
+  });
+
+  it('should not rewrite static assets', async () => {
+    const event = makeEvent({ uri: '/studio/assets/logo.png', cookie: undefined });
+    const result = await authModule.handler(event as any);
+    if (result && 'uri' in result) {
+      expect(result.uri).toBe('/studio/assets/logo.png');
+    } else {
+      throw new Error('Expected request to be allowed');
+    }
+  });
+
   it('should exchange OAuth code and set auth cookie', async () => {
     process.env.NEXT_PUBLIC_COGNITO_DOMAIN = 'https://example.auth';
     process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID = 'client-id';
