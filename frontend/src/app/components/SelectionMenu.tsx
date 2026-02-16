@@ -27,7 +27,7 @@ export function SelectionMenu({
   setShowSelectionMenu,
 }: SelectionMenuProps) {
   return (
-    <div className="space-y-8 flex flex-col items-center justify-center">
+    <div className="space-y-8 flex flex-col items-center justify-center" data-testid="selection-menu">
       {/* Show area name at top */}
       {selectedArea && (
         <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
@@ -118,6 +118,7 @@ export function SelectionMenu({
           startQuizAll();
         }}
         aria-label="Todas las preguntas"
+        data-testid="quiz-all-button"
       >
         Todas las preguntas
       </button>
@@ -127,6 +128,7 @@ export function SelectionMenu({
           setSelectionMode('sections');
         }}
         aria-label="Seleccionar secciones"
+        data-testid="quiz-sections-button"
       >
         Seleccionar secciones
       </button>
@@ -136,11 +138,13 @@ export function SelectionMenu({
           setSelectionMode('questions');
         }}
         aria-label="Seleccionar preguntas"
+        data-testid="quiz-questions-button"
       >
         Seleccionar preguntas
       </button>
       <button
         className="px-6 py-3 bg-gray-500 text-white rounded text-lg w-64 mt-6"
+        data-testid="change-area-button"
         onClick={() => {
           setShowAreaSelection(true);
           setShowSelectionMenu(false);

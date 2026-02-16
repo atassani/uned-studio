@@ -14,6 +14,7 @@ export function AreaSelection({ areas, loadAreaAndQuestions }: AreaSelectionProp
           <button
             key={area.file}
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded text-lg text-left flex flex-col items-start"
+            data-testid={`area-${area.shortName}`}
             onClick={async () => {
               await loadAreaAndQuestions(area);
             }}

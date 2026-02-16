@@ -55,6 +55,7 @@ export function ResultDisplay({
               <button
                 className="ml-2 text-2xl"
                 aria-label="Opciones"
+                data-testid="options-button"
                 onClick={() => handleContinue('E')}
                 style={{
                   background: 'none',
