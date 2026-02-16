@@ -23,8 +23,8 @@ export SCRIPT_DIR
 OUT_DIR="$SCRIPT_DIR/../out"
 export OUT_DIR
 
-# Copy contents to S3 bucket under /studio
-aws s3 sync "$OUT_DIR" s3://studio.humblyproud.com/studio/ --delete --exclude ".DS_Store"
+# Copy contents to S3 bucket root (Lambda@Edge strips /studio prefix)
+aws s3 sync "$OUT_DIR" s3://studio.humblyproud.com/ --delete --exclude ".DS_Store"
 
 # Invalidate CloudFront cache
 DISTRIBUTION_ID=$(aws cloudfront list-distributions \
