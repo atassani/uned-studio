@@ -1,5 +1,6 @@
 describe('Cognito JWT validation', () => {
   beforeAll(() => {
+    process.env.EDGE_AUTH_CONFIG_PATH = path.join(os.tmpdir(), 'edge-auth-config-missing.json');
     process.env.NEXT_PUBLIC_AWS_REGION = 'eu-west-2';
     process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID = 'test-pool';
 
@@ -33,6 +34,10 @@ import * as os from 'os';
 import * as path from 'path';
 
 describe('Lambda@Edge Auth Handler', () => {
+  beforeEach(() => {
+    process.env.EDGE_AUTH_CONFIG_PATH = path.join(os.tmpdir(), 'edge-auth-config-missing.json');
+  });
+
   beforeAll(() => {
     // Mock isValidJWT to avoid real JWT validation/network
     jest.spyOn(authModule, 'isValidJWT').mockImplementation(async (cookie: string | undefined) => {
@@ -141,6 +146,7 @@ describe('Lambda@Edge Auth Handler', () => {
   });
 
   it('should skip code exchange when env is missing', async () => {
+    process.env.EDGE_AUTH_CONFIG_PATH = path.join(os.tmpdir(), 'edge-auth-config-missing.json');
     delete process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
     delete process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
     delete process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
@@ -166,6 +172,7 @@ describe('Lambda@Edge Auth Handler', () => {
   });
 
   it('should redirect to cognito logout and clear cookie', async () => {
+    process.env.EDGE_AUTH_CONFIG_PATH = path.join(os.tmpdir(), 'edge-auth-config-missing.json');
     process.env.NEXT_PUBLIC_COGNITO_DOMAIN = 'https://example.auth';
     process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID = 'client-id';
     process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT = 'https://humblyproud.com/studio';

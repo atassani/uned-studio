@@ -36,17 +36,18 @@ export class StudioInfra extends Construct {
       compress: true,
       allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
       cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
-      functionAssociations: [
-        {
-          function: studioRoutingFunction,
-          eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-        },
-      ],
-      ...(props.edgeLambdas ? { edgeLambdas: props.edgeLambdas } : {}),
     };
-    const behaviorOptions = props.edgeLambdas
-      ? { ...baseBehaviorOptions, functionAssociations: undefined }
-      : baseBehaviorOptions;
+    const behaviorOptions: cloudfront.BehaviorOptions = props.edgeLambdas
+      ? { ...baseBehaviorOptions, edgeLambdas: props.edgeLambdas }
+      : {
+          ...baseBehaviorOptions,
+          functionAssociations: [
+            {
+              function: studioRoutingFunction,
+              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+            },
+          ],
+        };
 
     this.behaviors = {
       'studio': behaviorOptions,
