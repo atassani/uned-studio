@@ -30,17 +30,17 @@ export class StudioInfra extends Construct {
       code: cloudfront.FunctionCode.fromInline(code),
     });
 
-    const baseBehaviorOptions: cloudfront.BehaviorOptions = {
+    const htmlBehaviorOptions: cloudfront.BehaviorOptions = {
       origin: S3BucketOrigin.withOriginAccessControl(this.studioBucket),
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       compress: true,
       allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-      cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+      cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
     };
     const behaviorOptions: cloudfront.BehaviorOptions = props.edgeLambdas
-      ? { ...baseBehaviorOptions, edgeLambdas: props.edgeLambdas }
+      ? { ...htmlBehaviorOptions, edgeLambdas: props.edgeLambdas }
       : {
-          ...baseBehaviorOptions,
+          ...htmlBehaviorOptions,
           functionAssociations: [
             {
               function: studioRoutingFunction,
@@ -50,6 +50,13 @@ export class StudioInfra extends Construct {
         };
 
     this.behaviors = {
+      'studio/_next/*': {
+        origin: S3BucketOrigin.withOriginAccessControl(this.studioBucket),
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        compress: true,
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+      },
       'studio': behaviorOptions,
       'studio/*': behaviorOptions,
     };
