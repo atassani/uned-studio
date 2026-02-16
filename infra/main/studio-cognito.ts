@@ -8,6 +8,7 @@ export class StudioCognito extends cdk.Stack {
 
     const existingUserPoolId = process.env.EXISTING_COGNITO_USER_POOL_ID;
     const existingHostedUiDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+    const existingUserPoolClientId = process.env.EXISTING_COGNITO_USER_POOL_CLIENT_ID;
 
     if (existingUserPoolId && !existingHostedUiDomain) {
       throw new Error(
@@ -90,32 +91,42 @@ export class StudioCognito extends cdk.Stack {
 
     // User Pool Client for SPA (created after Google IdP)
     // Used by frontend for Cognito Hosted UI login
-    const userPoolClient = new cognito.UserPoolClient(this, 'StudioUserPoolClient', {
-      userPool,
-      userPoolClientName: 'studio-spa-client',
-      generateSecret: false, // SPA can't securely store secrets
-      authFlows: {
-        userSrp: true,
-        userPassword: false,
-      },
-      oAuth: {
-        flows: {
-          authorizationCodeGrant: true,
-        },
-        scopes: [cognito.OAuthScope.EMAIL, cognito.OAuthScope.OPENID, cognito.OAuthScope.PROFILE],
-        callbackUrls: [
-          'https://humblyproud.com/studio',
-          'http://localhost:3000/studio', // For local development
-        ],
-        logoutUrls: [
-          'https://humblyproud.com/studio',
-          'http://localhost:3000/studio', // For local development
-        ],
-      },
-      supportedIdentityProviders: [cognito.UserPoolClientIdentityProvider.GOOGLE],
-    });
+    const userPoolClient = existingUserPoolClientId
+      ? cognito.UserPoolClient.fromUserPoolClientId(
+          this,
+          'StudioUserPoolClient',
+          existingUserPoolClientId
+        )
+      : new cognito.UserPoolClient(this, 'StudioUserPoolClient', {
+          userPool,
+          userPoolClientName: 'studio-spa-client',
+          generateSecret: false, // SPA can't securely store secrets
+          authFlows: {
+            userSrp: true,
+            userPassword: false,
+          },
+          oAuth: {
+            flows: {
+              authorizationCodeGrant: true,
+            },
+            scopes: [
+              cognito.OAuthScope.EMAIL,
+              cognito.OAuthScope.OPENID,
+              cognito.OAuthScope.PROFILE,
+            ],
+            callbackUrls: [
+              'https://humblyproud.com/studio',
+              'http://localhost:3000/studio', // For local development
+            ],
+            logoutUrls: [
+              'https://humblyproud.com/studio',
+              'http://localhost:3000/studio', // For local development
+            ],
+          },
+          supportedIdentityProviders: [cognito.UserPoolClientIdentityProvider.GOOGLE],
+        });
 
-    if (googleIdp) {
+    if (!existingUserPoolClientId && googleIdp) {
       userPoolClient.node.addDependency(googleIdp);
     }
 

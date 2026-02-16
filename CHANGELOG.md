@@ -7,3 +7,4 @@
 - docs: document edge auth config file
 - fix: avoid cloudfront function conflict when using edge lambda
 - fix: allow importing an existing cognito user pool
+- feat: allow importing an existing cognito user pool client
