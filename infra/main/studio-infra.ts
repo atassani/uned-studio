@@ -30,8 +30,9 @@ export class StudioInfra extends Construct {
       code: cloudfront.FunctionCode.fromInline(code),
     });
 
+    const studioOrigin = S3BucketOrigin.withOriginAccessControl(this.studioBucket);
     const htmlBehaviorOptions: cloudfront.BehaviorOptions = {
-      origin: S3BucketOrigin.withOriginAccessControl(this.studioBucket),
+      origin: studioOrigin,
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       compress: true,
       allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
@@ -50,7 +51,7 @@ export class StudioInfra extends Construct {
         };
 
     const staticBehaviorOptions: cloudfront.BehaviorOptions = {
-      origin: S3BucketOrigin.withOriginAccessControl(this.studioBucket),
+      origin: studioOrigin,
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       compress: true,
       allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,

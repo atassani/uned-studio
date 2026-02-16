@@ -35,6 +35,7 @@ test('passes edge lambdas to studio behaviors', () => {
   expect(studio.behaviors['studio/_next/*'].cachePolicy).toEqual(
     cloudfront.CachePolicy.CACHING_OPTIMIZED
   );
+  expect(studio.behaviors['studio/_next/*'].origin).toBe(studio.behaviors['studio'].origin);
   expect(studio.behaviors['studio'].functionAssociations).toBeUndefined();
   expect(studio.behaviors['studio/*'].functionAssociations).toBeUndefined();
 });

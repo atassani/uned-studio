@@ -11,3 +11,4 @@
 - fix: rewrite studio spa routes in edge auth
 - fix: disable caching for studio html routes
 - fix: properly strip /studio prefix in edge auth path rewriting
+- fix: ensure studio behaviors share the same CloudFront origin
