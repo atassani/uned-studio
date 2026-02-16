@@ -78,7 +78,7 @@ describe('Lambda@Edge Auth Handler', () => {
     const result = await authModule.handler(event as any);
     // Type guard for CloudFrontRequest
     if (result && 'uri' in result) {
-      expect(result.uri).toBe('/studio/index.html');
+      expect(result.uri).toBe('/secure/index.html');
     } else {
       throw new Error('Expected request to be allowed');
     }
@@ -88,7 +88,7 @@ describe('Lambda@Edge Auth Handler', () => {
     const event = makeEvent({ uri: '/studio/guest', cookie: undefined });
     const result = await authModule.handler(event as any);
     if (result && 'uri' in result) {
-      expect(result.uri).toBe('/studio/index.html');
+      expect(result.uri).toBe('/guest/index.html');
     } else {
       throw new Error('Expected guest request to be allowed');
     }
@@ -98,7 +98,7 @@ describe('Lambda@Edge Auth Handler', () => {
     const event = makeEvent({ uri: '/studio/login', cookie: undefined });
     const result = await authModule.handler(event as any);
     if (result && 'uri' in result) {
-      expect(result.uri).toBe('/studio/index.html');
+      expect(result.uri).toBe('/login/index.html');
     } else {
       throw new Error('Expected request to be allowed');
     }
@@ -108,7 +108,7 @@ describe('Lambda@Edge Auth Handler', () => {
     const event = makeEvent({ uri: '/studio/assets/logo.png', cookie: undefined });
     const result = await authModule.handler(event as any);
     if (result && 'uri' in result) {
-      expect(result.uri).toBe('/studio/assets/logo.png');
+      expect(result.uri).toBe('/assets/logo.png');
     } else {
       throw new Error('Expected request to be allowed');
     }

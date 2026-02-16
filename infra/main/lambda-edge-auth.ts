@@ -144,8 +144,21 @@ function isStaticAsset(uri: string): boolean {
 function maybeRewriteSpaPath(request: CloudFrontRequest): void {
   const uri = request.uri;
   if (!uri.startsWith('/studio')) return;
-  if (isStaticAsset(uri)) return;
-  request.uri = '/studio/index.html';
+
+  // Strip /studio prefix so the S3 bucket uses root paths
+  let stripped = uri.slice('/studio'.length);
+  if (!stripped || stripped === '/') {
+    request.uri = '/index.html';
+    return;
+  }
+
+  if (isStaticAsset(stripped)) {
+    request.uri = stripped;
+    return;
+  }
+
+  // SPA fallback: non-asset paths get /index.html
+  request.uri = stripped + '/index.html';
 }
 
 export async function handler(event: CloudFrontRequestEvent): Promise<CloudFrontRequestResult> {

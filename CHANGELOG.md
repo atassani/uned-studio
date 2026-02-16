@@ -9,3 +9,4 @@
 - fix: allow importing an existing cognito user pool
 - feat: allow importing an existing cognito user pool client
 - fix: rewrite studio spa routes in edge auth
+- fix: properly strip /studio prefix in edge auth path rewriting
