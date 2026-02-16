@@ -3,15 +3,18 @@
 
 import { CloudFrontRequestEvent, CloudFrontRequestResult, CloudFrontRequest } from 'aws-lambda';
 import * as https from 'https';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Minimal Cognito JWT validation
 function getCognitoConfig() {
-  const region = process.env.NEXT_PUBLIC_AWS_REGION;
-  const userPoolId = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
-  const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
-  const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
-  const redirectSignIn = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
-  const redirectSignOut = process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT;
+  const fileConfig = readEdgeAuthConfig();
+  const region = fileConfig?.region ?? process.env.NEXT_PUBLIC_AWS_REGION;
+  const userPoolId = fileConfig?.userPoolId ?? process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
+  const domain = fileConfig?.domain ?? process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+  const clientId = fileConfig?.clientId ?? process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+  const redirectSignIn = fileConfig?.redirectSignIn ?? process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+  const redirectSignOut = fileConfig?.redirectSignOut ?? process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT;
   const issuer =
     region && userPoolId ? `https://cognito-idp.${region}.amazonaws.com/${userPoolId}` : undefined;
   const jwksUrl = issuer ? `${issuer}/.well-known/jwks.json` : undefined;
@@ -26,6 +29,27 @@ function getCognitoConfig() {
     issuer,
     jwksUrl,
   };
+}
+
+function readEdgeAuthConfig():
+  | {
+      region?: string;
+      userPoolId?: string;
+      domain?: string;
+      clientId?: string;
+      redirectSignIn?: string;
+      redirectSignOut?: string;
+    }
+  | null {
+  const configPath =
+    process.env.EDGE_AUTH_CONFIG_PATH ?? path.join(__dirname, 'edge-auth-config.json');
+  try {
+    if (!fs.existsSync(configPath)) return null;
+    const raw = fs.readFileSync(configPath, 'utf8');
+    return JSON.parse(raw);
+  } catch (err) {
+    return null;
+  }
 }
 
 export async function exchangeCodeForTokens(params: {

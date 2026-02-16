@@ -54,6 +54,7 @@ infra/bin/*.d.ts
 infra/main/*.js
 infra/main/*.d.ts
 !infra/main/cloudfront-functions/*.js
+infra/main/edge-auth-config.json
 infra/build/
 infra/tests/**/*.js
 infra/tests/**/*.d.ts
