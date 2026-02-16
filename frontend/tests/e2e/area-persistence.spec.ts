@@ -32,12 +32,12 @@ test('remembers last studied area in localStorage', async ({ page }) => {
   await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
 
-  const opcionesBtn = page.getByRole('button', { name: 'Opciones' });
+  const opcionesBtn = page.getByTestId('options-button');
   await page.screenshot({ path: 'debug-opciones.png' });
   await opcionesBtn.waitFor({ state: 'visible', timeout: 25000 });
   await opcionesBtn.click();
 
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 10000 });
+  await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
   await page.getByText(/Introducción al Pensamiento Científico/).waitFor({ timeout: 10000 });
   await page
     .getByRole('button', { name: /Introducción al Pensamiento Científico/ })
@@ -56,14 +56,12 @@ test('remembers last studied area in localStorage going throu Options', async ({
   // Debug screenshot and fallback for 'Opciones' button
   await page.screenshot({ path: 'debug-opciones-fail.png' });
   try {
-    await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
+    await page.getByTestId('options-button').click({ timeout: 10000 });
   } catch {
-    await page
-      .getByRole('button', { name: 'Opciones' })
-      .waitFor({ state: 'visible', timeout: 10000 });
-    await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
+    await page.getByTestId('options-button').waitFor({ state: 'visible', timeout: 10000 });
+    await page.getByTestId('options-button').click({ timeout: 10000 });
   }
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 10000 });
+  await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
   await page.getByText(/Introducción al Pensamiento Científico/).waitFor({ timeout: 10000 });
   await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
   await page.getByRole('button', { name: 'Todas las preguntas' }).click();
@@ -77,8 +75,8 @@ test('automatically returns to last studied area on app reload', async ({ page }
   await page.getByRole('button', { name: /Lógica I/ }).waitFor({ timeout: 15000 });
   await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 10000 });
+  await page.getByTestId('options-button').click({ timeout: 10000 });
+  await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
   await page.getByText(/Introducción al Pensamiento Científico/).waitFor({ timeout: 15000 });
   await page
     .getByRole('button', { name: /Introducción al Pensamiento Científico/ })
@@ -118,9 +116,9 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   await page.waitForLoadState('networkidle');
 
   // Wait for the V button to be available and clickable
-  await page.getByRole('button', { name: 'V', exact: true }).waitFor({ timeout: 20000 });
+  await page.getByTestId('tf-answer-true').waitFor({ timeout: 20000 });
 
-  await page.getByRole('button', { name: 'V', exact: true }).click({ timeout: 15000 });
+  await page.getByTestId('tf-answer-true').click({ timeout: 15000 });
   await page.getByRole('button', { name: 'Continuar' }).click({ timeout: 15000 });
   // Check we have progress
   const pageText = await page.locator('body').innerText();
@@ -129,8 +127,8 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   const pendientes = pendientesMatch ? parseInt(pendientesMatch[1], 10) : null;
 
   // Switch to IPC area
-  await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 15000 });
+  await page.getByTestId('options-button').click({ timeout: 15000 });
+  await page.getByTestId('change-area-button').first().click({ timeout: 15000 });
   await page
     .getByRole('button', { name: /Introducción al Pensamiento Científico/ })
     .waitFor({ timeout: 15000 });
@@ -141,14 +139,14 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
 
   // Wait for IPC quiz to load properly
   await page.waitForLoadState('networkidle');
-  await page.waitForSelector('text=A', { timeout: 15000 });
+  await page.getByTestId('mcq-answer-A').waitFor({ timeout: 15000 });
 
   // Answer a question in IPC
-  await page.getByRole('button', { name: 'A', exact: true }).click({ timeout: 15000 });
+  await page.getByTestId('mcq-answer-A').click({ timeout: 15000 });
   await page.getByRole('button', { name: 'Continuar' }).click({ timeout: 15000 });
   // Switch back to Lógica I
-  await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 15000 });
+  await page.getByTestId('options-button').click({ timeout: 15000 });
+  await page.getByTestId('change-area-button').first().click({ timeout: 15000 });
   await page.getByRole('button', { name: /Lógica I/ }).waitFor({ timeout: 15000 });
   await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 15000 });
   // Wait for the area to load completely - look for quiz elements
