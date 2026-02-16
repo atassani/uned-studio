@@ -115,8 +115,15 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   // Start Lógica I quiz and answer a question
   await page.getByTestId('area-log1').waitFor({ timeout: 20000 });
   await page.getByTestId('area-log1').click({ timeout: 15000 });
-  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
+  const selectionMenu = page.getByTestId('selection-menu');
+  await selectionMenu.waitFor({ timeout: 20000 });
   await page.getByTestId('quiz-all-button').click({ timeout: 15000 });
+  try {
+    await selectionMenu.waitFor({ state: 'hidden', timeout: 5000 });
+  } catch {
+    await page.getByTestId('quiz-all-button').click({ timeout: 15000 });
+    await selectionMenu.waitFor({ state: 'hidden', timeout: 10000 });
+  }
 
   // Wait for quiz to load properly
   await page.waitForLoadState('networkidle');
@@ -125,11 +132,15 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
     .waitForSelector('[data-testid="loading-spinner"]', { state: 'detached', timeout: 20000 })
     .catch(() => {});
   const questionView = page.getByTestId('question-view');
-  const statusContinue = page.getByTestId('status-continue-button');
-  await expect(questionView.or(statusContinue)).toBeVisible({ timeout: 20000 });
-  if (await statusContinue.isVisible()) {
-    await statusContinue.click({ timeout: 15000 });
+  const statusContinue = page.getByTestId('status-continue-button').first();
+  try {
     await questionView.waitFor({ timeout: 20000 });
+  } catch {
+    await statusContinue.waitFor({ timeout: 20000 });
+    if (await statusContinue.isVisible()) {
+      await statusContinue.click({ timeout: 15000 });
+      await questionView.waitFor({ timeout: 20000 });
+    }
   }
 
   const trueButton = page.getByTestId('tf-answer-true');
