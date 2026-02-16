@@ -113,4 +113,75 @@ describe('Lambda@Edge Auth Handler', () => {
 
     authModule.setExchangeCodeForTokensImpl(null);
   });
+
+  it('should redirect to login when code exchange fails', async () => {
+    process.env.NEXT_PUBLIC_COGNITO_DOMAIN = 'https://example.auth';
+    process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID = 'client-id';
+    process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN = 'https://humblyproud.com/studio';
+
+    const exchangeMock = jest.fn().mockResolvedValue(null);
+    authModule.setExchangeCodeForTokensImpl(exchangeMock);
+
+    const event = makeEvent({ uri: '/studio/app', cookie: undefined }) as any;
+    event.Records[0].cf.request.querystring = 'code=bad_code';
+
+    const result = await authModule.handler(event);
+
+    if (result && 'status' in result) {
+      expect(result.status).toBe('302');
+      expect(result.headers?.location?.[0]?.value).toContain('/studio/login');
+    } else {
+      throw new Error('Expected a redirect response');
+    }
+
+    authModule.setExchangeCodeForTokensImpl(null);
+  });
+
+  it('should skip code exchange when env is missing', async () => {
+    delete process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+    delete process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    delete process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+
+    const exchangeMock = jest.fn().mockResolvedValue({ id_token: 'jwt-from-cognito' } as any);
+    authModule.setExchangeCodeForTokensImpl(exchangeMock);
+
+    const event = makeEvent({ uri: '/studio/app', cookie: undefined }) as any;
+    event.Records[0].cf.request.querystring = 'code=mock_code';
+
+    const result = await authModule.handler(event);
+
+    expect(exchangeMock).not.toHaveBeenCalled();
+
+    if (result && 'status' in result) {
+      expect(result.status).toBe('302');
+      expect(result.headers?.location?.[0]?.value).toContain('/studio/login');
+    } else {
+      throw new Error('Expected a redirect response');
+    }
+
+    authModule.setExchangeCodeForTokensImpl(null);
+  });
+
+  it('should redirect to cognito logout and clear cookie', async () => {
+    process.env.NEXT_PUBLIC_COGNITO_DOMAIN = 'https://example.auth';
+    process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID = 'client-id';
+    process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT = 'https://humblyproud.com/studio';
+
+    const event = makeEvent({ uri: '/studio/logout', cookie: 'jwt=valid' });
+    const result = await authModule.handler(event as any);
+
+    if (result && 'status' in result) {
+      expect(result.status).toBe('302');
+      expect(result.headers?.location?.[0]?.value).toBe(
+        'https://example.auth/logout?client_id=client-id&logout_uri=https%3A%2F%2Fhumblyproud.com%2Fstudio'
+      );
+      const setCookie = result.headers?.['set-cookie']?.[0]?.value || '';
+      expect(setCookie).toContain('jwt=');
+      expect(setCookie).toContain('Expires=');
+      expect(setCookie).toContain('HttpOnly');
+      expect(setCookie).toContain('Secure');
+    } else {
+      throw new Error('Expected a redirect response');
+    }
+  });
 });
