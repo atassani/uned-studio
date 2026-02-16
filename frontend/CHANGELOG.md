@@ -6,6 +6,7 @@
 - test: add data-testid hooks for MCQ answer buttons
 - test: add data-testid hooks for area selection and quiz start
 - test: use testids for quiz ordering and start controls
+- test: migrate home and resume e2e specs to testids
 
 ## [1.4.7] - 2026-02-03
 
