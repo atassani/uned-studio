@@ -40,13 +40,15 @@ export function getCognitoLoginUrl(): string | null {
   const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
   const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
   const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+  const prompt = process.env.NEXT_PUBLIC_COGNITO_PROMPT;
   if (!domain || !clientId || !redirectUri) {
     return null;
   }
+  const promptParam = prompt ? `&prompt=${encodeURIComponent(prompt)}` : '';
   return (
     `${domain}/oauth2/authorize?response_type=code&client_id=${clientId}` +
     `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-    `&identity_provider=Google&scope=openid+email+profile`
+    `&identity_provider=Google&scope=openid+email+profile${promptParam}`
   );
 }
 
@@ -90,24 +92,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    // 1. If auth cookie exists, mark authenticated
-    if (authCookie) {
-      setUser({
-        username: 'google-user',
-        attributes: {},
-        isGuest: false,
-      });
-      setIsAuthenticated(true);
-      setIsLoading(false);
-      if (typeof window !== 'undefined') {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('code')) {
-          urlParams.delete('code');
-          const newUrl =
-            window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
-          window.history.replaceState({}, '', newUrl);
-        }
+    const removeCodeParam = () => {
+      if (typeof window === 'undefined') return;
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('code')) {
+        urlParams.delete('code');
+        const newUrl =
+          window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+        window.history.replaceState({}, '', newUrl);
       }
+    };
+
+    const fetchCurrentUser = async () => {
+      const response = await fetch('/studio/me', { credentials: 'same-origin' });
+      if (!response.ok) {
+        return null;
+      }
+      return (await response.json()) as UserWithAttributes['attributes'];
+    };
+
+    // 1. If auth cookie exists, load user from /studio/me
+    if (authCookie) {
+      setIsLoading(true);
+      fetchCurrentUser()
+        .then((payload) => {
+          if (!payload) {
+            setUser(null);
+            setIsAuthenticated(false);
+            return;
+          }
+          setUser({
+            username: payload.email || payload.name || payload.sub || 'google-user',
+            attributes: payload,
+            isGuest: false,
+          });
+          setIsAuthenticated(true);
+        })
+        .catch(() => {
+          setUser(null);
+          setIsAuthenticated(false);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          removeCodeParam();
+        });
       return;
     }
 
@@ -127,6 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(false);
         setIsLoading(false);
       }
+      removeCodeParam();
       return;
     }
 
@@ -169,11 +198,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUser(null);
                 setIsLoading(false);
               }
-              // Remove code param from URL
-              urlParams.delete('code');
-              const newUrl =
-                window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
-              window.history.replaceState({}, '', newUrl);
+              removeCodeParam();
             } else {
               setIsAuthenticated(false);
               setUser(null);
@@ -220,6 +245,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
     setUser(null);
     storage.clearState();
+    window.location.href = '/studio/logout';
   };
 
   return (

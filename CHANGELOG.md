@@ -12,3 +12,4 @@
 - fix: disable caching for studio html routes
 - fix: properly strip /studio prefix in edge auth path rewriting
 - fix: ensure studio behaviors share the same CloudFront origin
+- feat: add edge /studio/me endpoint for current user info

@@ -225,6 +225,42 @@ describe('Lambda@Edge Auth Handler', () => {
     }
   });
 
+  it('should return user info for /studio/me when jwt is valid', async () => {
+    const payload = { email: 'user@example.com', name: 'Test User', sub: 'abc123' };
+    authModule.setGetJwtPayloadImpl(async () => payload);
+    const event = makeEvent({ uri: '/studio/me', cookie: 'jwt=valid' });
+
+    const result = await authModule.handler(event as any);
+
+    if (result && 'status' in result) {
+      expect(result.status).toBe('200');
+      expect(result.headers?.['content-type']?.[0]?.value).toBe('application/json');
+      expect(result.body).toContain('"email":"user@example.com"');
+      expect(result.body).toContain('"name":"Test User"');
+      expect(result.body).toContain('"sub":"abc123"');
+    } else {
+      throw new Error('Expected a response');
+    }
+
+    authModule.setGetJwtPayloadImpl(null);
+  });
+
+  it('should return 401 for /studio/me when jwt is missing or invalid', async () => {
+    authModule.setGetJwtPayloadImpl(async () => null);
+    const event = makeEvent({ uri: '/studio/me', cookie: undefined });
+
+    const result = await authModule.handler(event as any);
+
+    if (result && 'status' in result) {
+      expect(result.status).toBe('401');
+      expect(result.headers?.['content-type']?.[0]?.value).toBe('application/json');
+    } else {
+      throw new Error('Expected a response');
+    }
+
+    authModule.setGetJwtPayloadImpl(null);
+  });
+
   it('should read edge auth config from file when present', async () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'edge-auth-'));
     const configPath = path.join(tempDir, 'edge-auth-config.json');

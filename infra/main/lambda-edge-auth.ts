@@ -110,17 +110,19 @@ function postForm(url: URL, body: string): Promise<string> {
   });
 }
 
-export async function isValidJWT(cookie: string | undefined): Promise<boolean> {
-  if (!cookie) return false;
+export async function getJwtPayload(
+  cookie: string | undefined
+): Promise<Record<string, any> | null> {
+  if (!cookie) return null;
   const { issuer, jwksUrl } = getCognitoConfig();
-  if (!issuer || !jwksUrl) return false;
+  if (!issuer || !jwksUrl) return null;
   // Import jose only when needed (avoids ESM parse errors in Jest)
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { jwtVerify, createRemoteJWKSet } = require('jose');
   const jwks = createRemoteJWKSet(new URL(jwksUrl));
   // Extract JWT from cookie (assume cookie is 'jwt=<token>' or similar)
   const match = cookie.match(/jwt=([^;]+)/);
-  if (!match) return false;
+  if (!match) return null;
   const token = match[1];
   try {
     const { payload } = await jwtVerify(token, jwks, {
@@ -128,11 +130,21 @@ export async function isValidJWT(cookie: string | undefined): Promise<boolean> {
       // Accept tokens from Google federated users (sub claim is a Google subject)
       // Optionally check audience: e.g. audience: 'your-client-id',
     });
-    // Accept if token is valid and issued by Cognito (including federated Google users)
-    return true;
+    return payload;
   } catch (err) {
-    return false;
+    return null;
   }
+}
+
+export async function isValidJWT(cookie: string | undefined): Promise<boolean> {
+  const payload = await getJwtPayload(cookie);
+  return Boolean(payload);
+}
+
+let getJwtPayloadImpl = getJwtPayload;
+
+export function setGetJwtPayloadImpl(impl: typeof getJwtPayload | null): void {
+  getJwtPayloadImpl = impl ?? getJwtPayload;
 }
 
 const LOGIN_URL = '/studio/login';
@@ -170,6 +182,40 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
   const code = queryParams.get('code');
   const { domain, clientId, redirectSignIn, redirectSignOut } = getCognitoConfig();
 
+  if (uri.startsWith('/studio/me')) {
+    const payload = await getJwtPayloadImpl(cookieHeader);
+    if (!payload) {
+      return {
+        status: '401',
+        statusDescription: 'Unauthorized',
+        headers: {
+          'content-type': [{ key: 'Content-Type', value: 'application/json' }],
+          'cache-control': [{ key: 'Cache-Control', value: 'no-store' }],
+        },
+        body: JSON.stringify({ error: 'unauthorized' }),
+      };
+    }
+
+    const user = {
+      sub: payload.sub,
+      email: payload.email,
+      name: payload.name,
+      given_name: payload.given_name,
+      family_name: payload.family_name,
+      preferred_username: payload.preferred_username,
+    };
+
+    return {
+      status: '200',
+      statusDescription: 'OK',
+      headers: {
+        'content-type': [{ key: 'Content-Type', value: 'application/json' }],
+        'cache-control': [{ key: 'Cache-Control', value: 'no-store' }],
+      },
+      body: JSON.stringify(user),
+    };
+  }
+
   if (uri.startsWith('/studio/logout')) {
     const logoutCookie = [
       'jwt=',
@@ -200,7 +246,7 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
       statusDescription: 'Found',
       headers: {
         location: [{ key: 'Location', value: logoutUrl }],
-        'cache-control': [{ key: 'Cache-Control', value: 'no-cache' }],
+        'cache-control': [{ key: 'Cache-Control', value: 'no-store' }],
         'set-cookie': [
           { key: 'Set-Cookie', value: logoutCookie },
           { key: 'Set-Cookie', value: logoutAuthCookie },

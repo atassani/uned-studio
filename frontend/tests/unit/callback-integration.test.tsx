@@ -16,6 +16,11 @@ function AuthStateViewer() {
 }
 
 describe('Cognito callback integration', () => {
+  afterEach(() => {
+    document.cookie = 'auth=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+    jest.restoreAllMocks();
+  });
+
   it('sets user as authenticated after successful callback', async () => {
     // Simulate a valid code and navigation
     const code = 'valid_code';
@@ -69,6 +74,17 @@ describe('Cognito callback integration', () => {
 
   it('sets user as authenticated when auth cookie is present', async () => {
     document.cookie = 'auth=1';
+    jest.spyOn(global, 'fetch').mockImplementation((url) => {
+      if (url.toString().includes('/studio/me')) {
+        return Promise.resolve(
+          new Response(JSON.stringify({ email: 'me@example.com', name: 'Me User' }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        );
+      }
+      return Promise.reject(new Error('Unknown URL'));
+    });
     const { getByTestId } = render(
       <AuthProvider>
         <AuthStateViewer />
@@ -77,6 +93,7 @@ describe('Cognito callback integration', () => {
 
     await waitFor(() => {
       expect(getByTestId('auth-status').textContent).toBe('yes');
+      expect(getByTestId('auth-user').textContent).toBe('me@example.com');
     });
   });
 });
