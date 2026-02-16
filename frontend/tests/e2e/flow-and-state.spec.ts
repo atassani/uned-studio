@@ -19,17 +19,18 @@ test.beforeEach(async ({ page }) => {
 
 test('remembers last studied area in localStorage', async ({ page }) => {
   // Select Lógica I area
-  await page.getByRole('button', { name: /Lógica I/ }).click();
-  await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+  await page.getByTestId('area-log1').click();
+  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
+  await page.getByTestId('quiz-all-button').click();
 
   // Check that currentArea is stored in localStorage (now shortName)
   const currentArea = await getCurrentAreaFromLocalStorage(page);
   expect(currentArea).toBe('log1');
 
   // Go to different area
-  await page.getByRole('button', { name: 'Opciones' }).click();
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click();
-  await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
+  await page.getByTestId('options-button').click();
+  await page.getByTestId('change-area-button').first().click();
+  await page.getByTestId('area-ipc').click();
 
   // Check that currentArea is updated (now shortName)
   const newCurrentArea = await getCurrentAreaFromLocalStorage(page);
@@ -39,13 +40,10 @@ test('remembers last studied area in localStorage', async ({ page }) => {
 test('automatically returns to last studied area on app reload', async ({ page }) => {
   // Set up: study an area first
   await page.waitForLoadState('networkidle');
-  await page
-    .getByRole('button', { name: /Introducción al Pensamiento Científico/ })
-    .waitFor({ timeout: 15000 });
-  await page
-    .getByRole('button', { name: /Introducción al Pensamiento Científico/ })
-    .click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
+  await page.getByTestId('area-ipc').waitFor({ timeout: 15000 });
+  await page.getByTestId('area-ipc').click({ timeout: 10000 });
+  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
+  await page.getByTestId('quiz-all-button').click({ timeout: 10000 });
 
   // Wait for quiz to load - look for any quiz indicator
   await page.waitForLoadState('networkidle');
@@ -62,15 +60,15 @@ test('automatically returns to last studied area on app reload', async ({ page }
 
   // Check if we're in the quiz (should auto-resume) or back to IPC area
   const continueButtonVisible = await page
-    .getByRole('button', { name: 'Continuar' })
+    .getByTestId('result-continue-button')
     .isVisible({ timeout: 10000 })
     .catch(() => false);
   const menuVisible = await page
-    .getByText('¿Cómo quieres las preguntas?')
+    .getByTestId('selection-menu')
     .isVisible({ timeout: 10000 })
     .catch(() => false);
   const areaMenuVisible = await page
-    .getByText('🎓 Área: Introducción al Pensamiento Científico')
+    .getByTestId('area-ipc')
     .isVisible({ timeout: 10000 })
     .catch(() => false);
   const areaSelectionVisible = await page
@@ -99,15 +97,15 @@ test('restores to area selection if no previous area stored', async ({ page }) =
 
   // Should show area selection screen since no area was stored
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Lógica I/ })).toBeVisible();
+  await expect(page.getByTestId('area-log1')).toBeVisible();
 });
 
 test('preserves quiz progress when switching between areas', async ({ page }) => {
   // Start Lógica I quiz and answer a question
-  await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
+  await page.getByTestId('area-log1').click({ timeout: 10000 });
   await expect(page.getByText('🎓 Área: Lógica I')).toBeVisible({ timeout: 5000 });
-  await page.getByRole('button', { name: 'Orden secuencial' }).click();
-  await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
+  await page.getByTestId('order-sequential-button').click();
+  await page.getByTestId('quiz-all-button').click({ timeout: 10000 });
 
   // Wait for quiz to load with network idle first
   await page.waitForLoadState('networkidle');
@@ -118,11 +116,11 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   } catch {
     // Fallback: wait for any quiz answer buttons which indicate quiz is loaded
     const vButtonVisible = await page
-      .getByRole('button', { name: 'V', exact: true })
+      .getByTestId('tf-answer-true')
       .isVisible()
       .catch(() => false);
     const aButtonVisible = await page
-      .getByRole('button', { name: 'A', exact: true })
+      .getByTestId('mcq-answer-A')
       .isVisible()
       .catch(() => false);
 
@@ -133,11 +131,11 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
     } else {
       // Wait for any answer button to appear
       try {
-        await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+        await expect(page.getByTestId('tf-answer-true')).toBeVisible({
           timeout: 6000,
         });
       } catch {
-        await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({
+        await expect(page.getByTestId('mcq-answer-A')).toBeVisible({
           timeout: 6000,
         });
       }
@@ -146,15 +144,15 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
 
   // Click appropriate answer button based on question type
   const vButtonExists = await page
-    .getByRole('button', { name: 'V', exact: true })
+    .getByTestId('tf-answer-true')
     .isVisible()
     .catch(() => false);
   if (vButtonExists) {
-    await page.getByRole('button', { name: 'V', exact: true }).click({ timeout: 10000 });
+    await page.getByTestId('tf-answer-true').click({ timeout: 10000 });
   } else {
-    await page.getByRole('button', { name: 'A', exact: true }).click({ timeout: 10000 });
+    await page.getByTestId('mcq-answer-A').click({ timeout: 10000 });
   }
-  await page.getByRole('button', { name: 'Continuar' }).click({ timeout: 10000 });
+  await page.getByTestId('result-continue-button').click({ timeout: 10000 });
 
   // Check and store the number of pending questions after answering one in Lógica I
   const statusText = await page.locator('body').innerText();
@@ -166,18 +164,16 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   const sectionBefore = sectionMatch ? sectionMatch[1].trim() : null;
 
   // Switch to IPC area
-  await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 10000 });
+  await page.getByTestId('options-button').click({ timeout: 10000 });
+  await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 5000 });
-  await page
-    .getByRole('button', { name: /Introducción al Pensamiento Científico/ })
-    .click({ timeout: 10000 });
+  await page.getByTestId('area-ipc').click({ timeout: 10000 });
 
   // Wait for IPC area to load and navigate to questions
   await expect(page.getByText('🎓 Área: Introducción al Pensamiento Científico')).toBeVisible({
     timeout: 5000,
   });
-  await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
+  await page.getByTestId('quiz-all-button').click({ timeout: 10000 });
 
   // Wait for quiz to load with network idle first
   await page.waitForLoadState('networkidle');
@@ -187,21 +183,21 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
     await expect(page.locator('.question-text')).toBeVisible({ timeout: 8000 });
   } catch {
     // Fallback: wait for Multiple Choice buttons which indicate quiz is loaded
-    await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({
+    await expect(page.getByTestId('mcq-answer-A')).toBeVisible({
       timeout: 8000,
     });
   }
 
   // Now answer a question in IPC
-  await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({ timeout: 5000 });
-  await page.getByRole('button', { name: 'A', exact: true }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Continuar' }).click({ timeout: 10000 });
+  await expect(page.getByTestId('mcq-answer-A')).toBeVisible({ timeout: 5000 });
+  await page.getByTestId('mcq-answer-A').click({ timeout: 10000 });
+  await page.getByTestId('result-continue-button').click({ timeout: 10000 });
 
   // Switch back to Lógica I
-  await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 10000 });
+  await page.getByTestId('options-button').click({ timeout: 10000 });
+  await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 5000 });
-  await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
+  await page.getByTestId('area-log1').click({ timeout: 10000 });
 
   // Wait for Lógica I area to load and navigate to questions
   await expect(page.getByText('🎓 Área: Lógica I')).toBeVisible({ timeout: 5000 });
@@ -215,15 +211,15 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   } catch {
     // Fallback: wait for any answer buttons which indicate quiz is loaded
     const vButtonVisible = await page
-      .getByRole('button', { name: 'V', exact: true })
+      .getByTestId('tf-answer-true')
       .isVisible()
       .catch(() => false);
     const aButtonVisible = await page
-      .getByRole('button', { name: 'A', exact: true })
+      .getByTestId('mcq-answer-A')
       .isVisible()
       .catch(() => false);
     if (!vButtonVisible && !aButtonVisible) {
-      await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+      await expect(page.getByTestId('tf-answer-true')).toBeVisible({
         timeout: 8000,
       });
     }
@@ -231,15 +227,15 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
 
   // Check for question UI (e.g., answer buttons)
   const vButtonVisible = await page
-    .getByRole('button', { name: 'V', exact: true })
+    .getByTestId('tf-answer-true')
     .isVisible()
     .catch(() => false);
   const fButtonVisible = await page
-    .getByRole('button', { name: 'F', exact: true })
+    .getByTestId('tf-answer-false')
     .isVisible()
     .catch(() => false);
   const aButtonVisible = await page
-    .getByRole('button', { name: 'A', exact: true })
+    .getByTestId('mcq-answer-A')
     .isVisible()
     .catch(() => false);
   // At least one answer button should be visible

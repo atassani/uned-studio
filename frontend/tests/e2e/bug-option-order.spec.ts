@@ -5,10 +5,10 @@ test.describe('bug-006: options are always in the same order, even with shuffle 
   test('options appear in different order when restarting a quiz', async ({ page }) => {
     await setupFreshTest(page);
     await page.getByTestId('guest-login-btn').click();
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/i }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: 'Aleatorizar respuestas' }).click();
-    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await page.getByTestId('area-ipc').click();
+    await page.getByTestId('order-sequential-button').click();
+    await page.getByTestId('answer-order-random-button').click();
+    await page.getByTestId('quiz-all-button').click();
     await waitForQuizReady(page);
 
     const options: string[][] = [];
@@ -25,9 +25,9 @@ test.describe('bug-006: options are always in the same order, even with shuffle 
         matchC ? matchC[1] : 'UNKNOWN',
       ];
       options.push(optionsForThisAttempt);
-      await page.getByRole('button', { name: 'Opciones' }).click();
-      await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
-      await page.getByRole('button', { name: /todas las preguntas/i }).click();
+      await page.getByTestId('options-button').click();
+      await page.getByTestId('reset-quiz-button').first().click();
+      await page.getByTestId('quiz-all-button').click();
       await waitForQuizReady(page);
     }
 
@@ -44,10 +44,10 @@ test.describe('bug-006: options are always in the same order, even with shuffle 
   test('options appear in same order if Secuencial', async ({ page }) => {
     await setupFreshTest(page);
     await page.getByTestId('guest-login-btn').click();
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/i }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: 'Respuestas secuenciales' }).click();
-    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await page.getByTestId('area-ipc').click();
+    await page.getByTestId('order-sequential-button').click();
+    await page.getByTestId('answer-order-sequential-button').click();
+    await page.getByTestId('quiz-all-button').click();
     await waitForQuizReady(page);
 
     const options: string[][] = [];
@@ -64,9 +64,9 @@ test.describe('bug-006: options are always in the same order, even with shuffle 
         matchC ? matchC[1] : 'UNKNOWN',
       ];
       options.push(optionsForThisAttempt);
-      await page.getByRole('button', { name: 'Opciones' }).click();
-      await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
-      await page.getByRole('button', { name: /todas las preguntas/i }).click();
+      await page.getByTestId('options-button').click();
+      await page.getByTestId('reset-quiz-button').first().click();
+      await page.getByTestId('quiz-all-button').click();
       await waitForQuizReady(page);
     }
 

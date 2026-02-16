@@ -8,15 +8,15 @@ test.describe('StatusGrid overlay CSS layering verification', () => {
     await page.getByTestId('guest-login-btn').click();
 
     // Start a quiz
-    await page.getByRole('button', { name: /MCQ/i }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await page.getByTestId('area-mcq-tests').click();
+    await page.getByTestId('order-sequential-button').click();
+    await page.getByTestId('quiz-all-button').click();
 
     // Wait for the first question
     await expect(page.locator('.question-text')).toBeVisible();
 
     // Answer incorrectly - click on 'A' option
-    await page.getByText('A)').click();
+    await page.getByTestId('mcq-answer-A').click();
 
     // Navigate to status grid using keyboard shortcut
     await page.keyboard.press('E');

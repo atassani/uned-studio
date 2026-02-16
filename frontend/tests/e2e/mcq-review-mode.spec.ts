@@ -6,17 +6,17 @@ test.describe('MCQ review mode', () => {
     await setupFreshTest(page);
     await page.getByTestId('guest-login-btn').click();
     // Go to MCQ area and start quiz
-    await page.getByRole('button', { name: /MCQ/i }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await page.getByTestId('area-mcq-tests').click();
+    await page.getByTestId('order-sequential-button').click();
+    await page.getByTestId('quiz-all-button').click();
     await waitForQuizReady(page);
-    await page.getByRole('button', { name: 'A' }).click();
-    await page.getByRole('button', { name: 'Continuar' }).click();
+    await page.getByTestId('mcq-answer-A').click();
+    await page.getByTestId('result-continue-button').click();
 
     // Answer all remaining questions
     while (!(await page.getByText('Quiz Completado').isVisible())) {
-      await page.getByRole('button', { name: 'B' }).click();
-      await page.getByRole('button', { name: 'Continuar' }).click();
+      await page.getByTestId('mcq-answer-B').click();
+      await page.getByTestId('result-continue-button').click();
     }
 
     // On results page, find a failed question (should be first)

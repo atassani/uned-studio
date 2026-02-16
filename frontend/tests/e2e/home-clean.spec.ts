@@ -12,7 +12,7 @@ test('True/False quiz works for Lógica I area', async ({ page }) => {
   // Ensure we are in the quiz UI before looking for answer buttons
   let inQuiz = false;
   try {
-    await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+    await expect(page.getByTestId('tf-answer-true')).toBeVisible({
       timeout: 3000,
     });
     inQuiz = true;
@@ -20,8 +20,8 @@ test('True/False quiz works for Lógica I area', async ({ page }) => {
   if (!inQuiz) {
     // Try to click 'Todas las preguntas' to enter quiz
     try {
-      await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 3000 });
-      await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+      await page.getByTestId('quiz-all-button').click({ timeout: 3000 });
+      await expect(page.getByTestId('tf-answer-true')).toBeVisible({
         timeout: 5000,
       });
     } catch (e) {
@@ -30,17 +30,17 @@ test('True/False quiz works for Lógica I area', async ({ page }) => {
   }
 
   try {
-    await expect(page.getByRole('button', { name: 'V', exact: true })).toBeVisible({
+    await expect(page.getByTestId('tf-answer-true')).toBeVisible({
       timeout: 10000,
     });
   } catch (e) {
     throw e;
   }
-  await expect(page.getByRole('button', { name: 'F', exact: true })).toBeVisible();
+  await expect(page.getByTestId('tf-answer-false')).toBeVisible();
 
   // Answer a question
-  await page.getByRole('button', { name: 'V', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Continuar' })).toBeVisible();
+  await page.getByTestId('tf-answer-true').click();
+  await expect(page.getByTestId('result-continue-button')).toBeVisible();
 });
 
 test('Multiple Choice quiz works for IPC area', async ({ page }) => {
@@ -52,8 +52,8 @@ test('Multiple Choice quiz works for IPC area', async ({ page }) => {
   await expect(page.getByTestId('mcq-answer-C')).toBeVisible();
 
   // Answer a question
-  await page.getByRole('button', { name: 'A', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Continuar' })).toBeVisible();
+  await page.getByTestId('mcq-answer-A').click();
+  await expect(page.getByTestId('result-continue-button')).toBeVisible();
 });
 
 test('keyboard shortcuts work for Multiple Choice questions', async ({ page }) => {
@@ -61,7 +61,7 @@ test('keyboard shortcuts work for Multiple Choice questions', async ({ page }) =
 
   // Press 'a' to answer with option A
   await page.keyboard.press('a');
-  await expect(page.getByRole('button', { name: 'Continuar' })).toBeVisible();
+  await expect(page.getByTestId('result-continue-button')).toBeVisible();
 });
 
 test('shows area name in quiz view', async ({ page }) => {

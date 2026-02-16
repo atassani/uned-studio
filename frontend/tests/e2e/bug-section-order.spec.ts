@@ -8,11 +8,11 @@ test.describe('bug 004: Section order mismatch in IPC area', () => {
     await setupFreshTest(page);
     await page.getByTestId('guest-login-btn').click();
     // Select IPC area
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/i }).click();
+    await page.getByTestId('area-ipc').click();
     // Random order
-    await page.getByRole('button', { name: 'Orden aleatorio' }).click();
+    await page.getByTestId('order-random-button').click();
     // Open Seleccionar Secciones
-    await page.getByRole('button', { name: /seleccionar secciones/i }).click();
+    await page.getByTestId('quiz-sections-button').click();
     // Get section order in modal (by extracting text from all label > span)
     const sectionItems = await page.locator('label input + span').allTextContents();
     // Cancel
@@ -21,10 +21,10 @@ test.describe('bug 004: Section order mismatch in IPC area', () => {
       .first()
       .click();
     // Start Todas las Preguntas
-    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await page.getByTestId('quiz-all-button').click();
     await waitForQuizReady(page);
     // Open Opciones
-    await page.getByRole('button', { name: /opciones/i }).click();
+    await page.getByTestId('options-button').click();
     // Get section order in grid
     const sectionItemsFromOptionsRaw = await page
       .locator('div.font-bold.text-lg.mb-2')
