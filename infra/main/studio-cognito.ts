@@ -6,67 +6,87 @@ export class StudioCognito extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const existingUserPoolId = process.env.EXISTING_COGNITO_USER_POOL_ID;
+    const existingHostedUiDomain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+
+    if (existingUserPoolId && !existingHostedUiDomain) {
+      throw new Error(
+        'NEXT_PUBLIC_COGNITO_DOMAIN must be set when importing an existing Cognito user pool.'
+      );
+    }
+
     // Cognito User Pool for /studio authentication
     // Required for Google OAuth login and JWT validation at Lambda@Edge
-    const userPool = new cognito.UserPool(this, 'StudioUserPool', {
-      userPoolName: 'studio-users',
-      selfSignUpEnabled: false, // No manual sign-up, only Google OAuth
-      signInAliases: {
-        email: true,
-      },
-      autoVerify: {
-        email: true,
-      },
-      standardAttributes: {
-        email: {
-          required: true,
-          mutable: true,
-        },
-        givenName: {
-          required: false,
-          mutable: true,
-        },
-        familyName: {
-          required: false,
-          mutable: true,
-        },
-      },
-      removalPolicy: cdk.RemovalPolicy.DESTROY, // Cost optimization for dev
-    });
+    const userPool = existingUserPoolId
+      ? cognito.UserPool.fromUserPoolId(this, 'StudioUserPool', existingUserPoolId)
+      : new cognito.UserPool(this, 'StudioUserPool', {
+          userPoolName: 'studio-users',
+          selfSignUpEnabled: false, // No manual sign-up, only Google OAuth
+          signInAliases: {
+            email: true,
+          },
+          autoVerify: {
+            email: true,
+          },
+          standardAttributes: {
+            email: {
+              required: true,
+              mutable: true,
+            },
+            givenName: {
+              required: false,
+              mutable: true,
+            },
+            familyName: {
+              required: false,
+              mutable: true,
+            },
+          },
+          removalPolicy: cdk.RemovalPolicy.DESTROY, // Cost optimization for dev
+        });
 
-    // User Pool Domain for Hosted UI
-    const userPoolDomain = new cognito.UserPoolDomain(this, 'StudioUserPoolDomain', {
-      userPool,
-      cognitoDomain: {
-        domainPrefix: 'humblyproud-studio', // Must be globally unique
-      },
-    });
+    const userPoolDomain =
+      existingUserPoolId && existingHostedUiDomain
+        ? existingHostedUiDomain
+        : (() => {
+            const domain = new cognito.UserPoolDomain(this, 'StudioUserPoolDomain', {
+              userPool,
+              cognitoDomain: {
+                domainPrefix: 'humblyproud-studio', // Must be globally unique
+              },
+            });
+            return `https://${domain.domainName}.auth.${this.region}.amazoncognito.com`;
+          })();
 
     // Google Identity Provider (must be created before User Pool Client)
     // Requires envd GOOGLE_OAUTH_CLIENT_ID and GOOGLE_OAUTH_CLIENT_SECRET, obtained from SSM Parameter Store /studio/google-oauth/client-id and /studio/google-oauth/client-secret
     const googleClientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
     const googleClientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
-    if (!googleClientId) {
-      throw new Error(
-        'GOOGLE_OAUTH_CLIENT_ID environment variable must be set to the Google OAuth client ID.'
-      );
+    if (!existingUserPoolId) {
+      if (!googleClientId) {
+        throw new Error(
+          'GOOGLE_OAUTH_CLIENT_ID environment variable must be set to the Google OAuth client ID.'
+        );
+      }
+      if (!googleClientSecret) {
+        throw new Error(
+          'GOOGLE_OAUTH_CLIENT_SECRET environment variable must be set to the Google OAuth client secret.'
+        );
+      }
     }
-    if (!googleClientSecret) {
-      throw new Error(
-        'GOOGLE_OAUTH_CLIENT_SECRET environment variable must be set to the Google OAuth client secret.'
-      );
-    }
-    const googleIdp = new cognito.UserPoolIdentityProviderGoogle(this, 'GoogleIdP', {
-      userPool,
-      clientId: googleClientId,
-      clientSecretValue: cdk.SecretValue.unsafePlainText(googleClientSecret),
-      scopes: ['email', 'openid', 'profile'],
-      attributeMapping: {
-        email: cognito.ProviderAttribute.GOOGLE_EMAIL,
-        givenName: cognito.ProviderAttribute.GOOGLE_GIVEN_NAME,
-        familyName: cognito.ProviderAttribute.GOOGLE_FAMILY_NAME,
-      },
-    });
+    const googleIdp = existingUserPoolId
+      ? undefined
+      : new cognito.UserPoolIdentityProviderGoogle(this, 'GoogleIdP', {
+          userPool,
+          clientId: googleClientId ?? '',
+          clientSecretValue: cdk.SecretValue.unsafePlainText(googleClientSecret ?? ''),
+          scopes: ['email', 'openid', 'profile'],
+          attributeMapping: {
+            email: cognito.ProviderAttribute.GOOGLE_EMAIL,
+            givenName: cognito.ProviderAttribute.GOOGLE_GIVEN_NAME,
+            familyName: cognito.ProviderAttribute.GOOGLE_FAMILY_NAME,
+          },
+        });
 
     // User Pool Client for SPA (created after Google IdP)
     // Used by frontend for Cognito Hosted UI login
@@ -95,7 +115,9 @@ export class StudioCognito extends cdk.Stack {
       supportedIdentityProviders: [cognito.UserPoolClientIdentityProvider.GOOGLE],
     });
 
-    userPoolClient.node.addDependency(googleIdp);
+    if (googleIdp) {
+      userPoolClient.node.addDependency(googleIdp);
+    }
 
     // Cognito outputs for frontend and Lambda@Edge configuration
     new cdk.CfnOutput(this, 'CognitoUserPoolId', {
@@ -109,7 +131,7 @@ export class StudioCognito extends cdk.Stack {
     });
 
     new cdk.CfnOutput(this, 'CognitoHostedUIUrl', {
-      value: `https://${userPoolDomain.domainName}.auth.${this.region}.amazoncognito.com`,
+      value: userPoolDomain,
       description: 'Cognito Hosted UI URL for Google authentication (frontend login URL)',
     });
 

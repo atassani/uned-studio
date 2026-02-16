@@ -4,6 +4,18 @@ set -e
 
 STACK_INFRA=StudioCognito
 
+# Load frontend envs if available (for existing Cognito import)
+FRONTEND_ENV_FILE="../frontend/.env.production"
+if [ -f "$FRONTEND_ENV_FILE" ]; then
+  set -a
+  # shellcheck disable=SC1090
+  . "$FRONTEND_ENV_FILE"
+  set +a
+fi
+
+EXISTING_COGNITO_USER_POOL_ID=${EXISTING_COGNITO_USER_POOL_ID:-$NEXT_PUBLIC_COGNITO_USER_POOL_ID}
+export EXISTING_COGNITO_USER_POOL_ID
+
 #STACK_CERT=CertificateStack
 #CERTIFICATE_ARN=$(aws cloudformation describe-stacks --region us-east-1 --stack-name $STACK_CERT \
 #  --query "Stacks[0].Outputs[?OutputKey=='CertificateArn'].OutputValue" --output text)
@@ -25,6 +37,6 @@ npm run build
 
 # Export the variable so it is available to the CDK process
 #export CERTIFICATE_ARN
-#npx cdk deploy $STACK_INFRA
+npx cdk deploy $STACK_INFRA
 
-npx cdk diff $STACK_INFRA
+#npx cdk diff $STACK_INFRA
