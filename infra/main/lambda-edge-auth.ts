@@ -11,6 +11,7 @@ function getCognitoConfig() {
   const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
   const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
   const redirectSignIn = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+  const redirectSignOut = process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT;
   const issuer =
     region && userPoolId ? `https://cognito-idp.${region}.amazonaws.com/${userPoolId}` : undefined;
   const jwksUrl = issuer ? `${issuer}/.well-known/jwks.json` : undefined;
@@ -21,6 +22,7 @@ function getCognitoConfig() {
     domain,
     clientId,
     redirectSignIn,
+    redirectSignOut,
     issuer,
     jwksUrl,
   };
@@ -118,7 +120,37 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
   const querystring = request.querystring || '';
   const queryParams = new URLSearchParams(querystring);
   const code = queryParams.get('code');
-  const { domain, clientId, redirectSignIn } = getCognitoConfig();
+  const { domain, clientId, redirectSignIn, redirectSignOut } = getCognitoConfig();
+
+  if (uri.startsWith('/studio/logout')) {
+    const logoutCookie = [
+      'jwt=',
+      'Path=/',
+      'Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+      'HttpOnly',
+      'Secure',
+      'SameSite=Lax',
+    ].join('; ');
+
+    const fallbackLocation = LOGIN_URL;
+    const logoutUrl =
+      domain && clientId && redirectSignOut
+        ? `${domain}/logout?client_id=${encodeURIComponent(
+            clientId
+          )}&logout_uri=${encodeURIComponent(redirectSignOut)}`
+        : fallbackLocation;
+
+    return {
+      status: '302',
+      statusDescription: 'Found',
+      headers: {
+        location: [{ key: 'Location', value: logoutUrl }],
+        'cache-control': [{ key: 'Cache-Control', value: 'no-cache' }],
+        'set-cookie': [{ key: 'Set-Cookie', value: logoutCookie }],
+      },
+      body: '',
+    };
+  }
 
   // Allow guest access for /studio/guest
   if (uri.startsWith('/studio/guest')) {
