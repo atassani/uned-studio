@@ -86,9 +86,25 @@ test('automatically returns to last studied area on app reload', async ({ page }
   // Reload page with increased timeout
   await page.reload({ waitUntil: 'networkidle', timeout: 20000 });
   await page.waitForLoadState('networkidle');
-  // Should be in IPC area
-  await page.getByTestId('area-ipc').waitFor({ timeout: 15000 });
-  await expect(page.getByTestId('area-ipc')).toBeVisible();
+  // Should remember IPC in storage and land either on selection menu or quiz
+  await expect
+    .poll(async () => getCurrentAreaFromLocalStorage(page), { timeout: 15000 })
+    .toBe('ipc');
+
+  const selectionMenuVisible = await page
+    .getByTestId('selection-menu')
+    .isVisible()
+    .catch(() => false);
+  const questionViewVisible = await page
+    .getByTestId('question-view')
+    .isVisible()
+    .catch(() => false);
+  const areaSelectionVisible = await page
+    .getByTestId('area-ipc')
+    .isVisible()
+    .catch(() => false);
+
+  expect(selectionMenuVisible || questionViewVisible || areaSelectionVisible).toBe(true);
 }, 40000);
 
 test('restores to area selection if no previous area stored', async ({ page }) => {

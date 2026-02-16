@@ -43,7 +43,11 @@ export async function setupFreshTestAuthenticated(page: Page, email = 'e2e@examp
   const token = createMockJwt(email);
   await page.addInitScript(({ jwt }) => {
     if (typeof localStorage !== 'undefined') {
-      localStorage.clear();
+      const isInitialized = localStorage.getItem('__e2e_setup_done');
+      if (!isInitialized) {
+        localStorage.clear();
+        localStorage.setItem('__e2e_setup_done', 'true');
+      }
       localStorage.setItem('jwt', jwt);
     }
     if (typeof sessionStorage !== 'undefined') {
@@ -106,7 +110,11 @@ export async function setupSuperFreshTestAuthenticated(
   await page.context().clearCookies();
   await page.addInitScript(({ jwt }) => {
     if (typeof localStorage !== 'undefined') {
-      localStorage.clear();
+      const isInitialized = localStorage.getItem('__e2e_setup_done');
+      if (!isInitialized) {
+        localStorage.clear();
+        localStorage.setItem('__e2e_setup_done', 'true');
+      }
       localStorage.setItem('jwt', jwt);
     }
     if (typeof sessionStorage !== 'undefined') {
@@ -201,8 +209,12 @@ export async function startQuizByTestId(
   await waitForAppReady(page);
 
   const mode = options.mode ?? 'all';
-  await page.getByTestId(`area-${areaShortName}`).click();
-  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
+  const areaButton = page.getByTestId(`area-${areaShortName}`);
+  const selectionMenu = page.getByTestId('selection-menu');
+  if (await areaButton.isVisible().catch(() => false)) {
+    await areaButton.click();
+  }
+  await selectionMenu.waitFor({ timeout: 20000 });
   if (options.order) {
     await page.getByTestId(orderToTestId[options.order]).click();
   }

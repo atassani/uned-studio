@@ -5,7 +5,8 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Load environment files
-dotenv.config({ path: path.resolve(__dirname, '.env.test') });
+process.env.DOTENV_CONFIG_QUIET = 'true';
+dotenv.config({ path: path.resolve(__dirname, '.env.test'), quiet: true });
 
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || '').replace(/\/$/, '');
 const baseSuffix = basePath ? `${basePath}/` : '/';

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- test: avoid clearing localStorage on authenticated reloads in e2e helpers
+- test: make area persistence reload assertion resilient to resume state
 - test: make studio root access e2e use local baseURL
 - test: add data-testid hooks for MCQ answer buttons
 - test: add data-testid hooks for area selection and quiz start

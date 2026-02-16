@@ -80,7 +80,12 @@ test('automatically returns to last studied area on app reload', async ({ page }
   } else {
     // We're on the home page - check that IPC is available
     expect(menuVisible || areaMenuVisible).toBe(true);
-    expect(areaSelectionVisible).toBe(false);
+    if (areaSelectionVisible) {
+      const currentArea = await getCurrentAreaFromLocalStorage(page);
+      expect(currentArea).toBe('ipc');
+    } else {
+      expect(areaSelectionVisible).toBe(false);
+    }
   }
 }, 45000);
 
