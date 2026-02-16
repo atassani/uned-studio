@@ -5,3 +5,4 @@
 - feat: add edge logout redirect and failure handling tests
 - feat: support edge auth config via local json file
 - docs: document edge auth config file
+- fix: avoid cloudfront function conflict when using edge lambda

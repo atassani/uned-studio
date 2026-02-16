@@ -30,7 +30,7 @@ export class StudioInfra extends Construct {
       code: cloudfront.FunctionCode.fromInline(code),
     });
 
-    const behaviorOptions: cloudfront.BehaviorOptions = {
+    const baseBehaviorOptions: cloudfront.BehaviorOptions = {
       origin: S3BucketOrigin.withOriginAccessControl(this.studioBucket),
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       compress: true,
@@ -44,6 +44,9 @@ export class StudioInfra extends Construct {
       ],
       ...(props.edgeLambdas ? { edgeLambdas: props.edgeLambdas } : {}),
     };
+    const behaviorOptions = props.edgeLambdas
+      ? { ...baseBehaviorOptions, functionAssociations: undefined }
+      : baseBehaviorOptions;
 
     this.behaviors = {
       'studio': behaviorOptions,
