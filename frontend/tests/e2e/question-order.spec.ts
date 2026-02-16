@@ -68,13 +68,9 @@ test.describe('Question Order Control', () => {
     // Wait for section selection to load completely
     await page.waitForLoadState('networkidle');
 
-    // Wait for sections to be visible with multiple strategies
-    await page.screenshot({ path: 'debug-question-order-tema.png' });
     try {
       await page.waitForSelector('text=/Tema/', { timeout: 5000 });
     } catch (e) {
-      const content = await page.content();
-      console.error('Tema not found. Page content:', content);
       throw e;
     }
 

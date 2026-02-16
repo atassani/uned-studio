@@ -38,7 +38,6 @@ test('remembers last studied area in localStorage', async ({ page }) => {
     .catch(() => {});
   await page.getByTestId('question-view').waitFor({ timeout: 30000 });
   const opcionesBtn = page.getByTestId('options-button');
-  await page.screenshot({ path: 'debug-opciones.png' });
   await opcionesBtn.waitFor({ state: 'visible', timeout: 25000 });
   await opcionesBtn.click();
 
@@ -62,8 +61,6 @@ test('remembers last studied area in localStorage going throu Options', async ({
     .waitForSelector('[data-testid="loading-spinner"]', { state: 'detached', timeout: 20000 })
     .catch(() => {});
   await page.getByTestId('question-view').waitFor({ timeout: 30000 });
-  // Debug screenshot and fallback for 'Opciones' button
-  await page.screenshot({ path: 'debug-opciones-fail.png' });
   try {
     await page.getByTestId('options-button').click({ timeout: 10000 });
   } catch {

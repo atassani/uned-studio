@@ -49,9 +49,6 @@ test('keyboard shortcuts work for Multiple Choice questions', async ({ page }) =
         timeout: 8000,
       });
     } catch (e) {
-      await page.screenshot({ path: 'debug-mcq-keyboard-abutton-not-found.png' });
-      const content = await page.content();
-      console.error('A button not found (keyboard shortcut test). Page content:', content);
       throw e;
     }
   }
@@ -72,9 +69,6 @@ test('selects one section and starts quiz in Lógica I area', async ({ page }) =
       .getByRole('checkbox', { name: 'CUESTIONES DE LOS APUNTES' })
       .waitFor({ timeout: 15000 });
   } catch (e) {
-    await page.screenshot({ path: 'debug-section-checkbox-not-found.png' });
-    const content = await page.content();
-    console.error('Section checkbox not found. Page content:', content);
     throw e;
   }
   await page.getByRole('checkbox', { name: 'CUESTIONES DE LOS APUNTES' }).check({ timeout: 15000 });

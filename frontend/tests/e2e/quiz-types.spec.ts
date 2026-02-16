@@ -28,8 +28,6 @@ test('Multiple Choice quiz shows question text with A/B/C buttons (consistent wi
     state: 'detached',
     timeout: 15000,
   });
-  // Debug screenshot before expect
-  await page.screenshot({ path: 'debug-quiz-types.png' });
   // Try question prompt first, fallback to answer buttons
   try {
     await expect(

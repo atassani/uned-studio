@@ -9,9 +9,6 @@ test.beforeEach(async ({ page }) => {
 
 test('True/False quiz works for Lógica I area', async ({ page }) => {
   await startQuiz(page, 'Lógica I');
-
-  // Should see True/False question interface
-  await page.screenshot({ path: 'debug-true-false-v-home-clean.png' });
   // Ensure we are in the quiz UI before looking for answer buttons
   let inQuiz = false;
   try {
@@ -28,9 +25,6 @@ test('True/False quiz works for Lógica I area', async ({ page }) => {
         timeout: 5000,
       });
     } catch (e) {
-      await page.screenshot({ path: 'debug-home-clean-not-in-quiz.png' });
-      const content = await page.content();
-      console.error('Failed to enter quiz UI. Page content:', content);
       throw e;
     }
   }
@@ -40,8 +34,6 @@ test('True/False quiz works for Lógica I area', async ({ page }) => {
       timeout: 10000,
     });
   } catch (e) {
-    const content = await page.content();
-    console.error('V button not found. Page content:', content);
     throw e;
   }
   await expect(page.getByRole('button', { name: 'F', exact: true })).toBeVisible();
