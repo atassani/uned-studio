@@ -85,6 +85,7 @@ export function SelectionMenu({
               tabIndex={0}
               role="button"
               aria-label="Aleatorizar respuestas"
+              data-testid="answer-order-random-button"
             >
               Aleatorio
             </span>
@@ -95,6 +96,7 @@ export function SelectionMenu({
                 onChange={(e) => setShuffleAnswers(!e.target.checked)}
                 className="sr-only peer"
                 aria-label="Alternar orden de respuestas"
+                data-testid="answer-order-toggle"
               />
               <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
                 <div
@@ -108,6 +110,7 @@ export function SelectionMenu({
               tabIndex={0}
               role="button"
               aria-label="Respuestas secuenciales"
+              data-testid="answer-order-sequential-button"
             >
               Secuencial
             </span>
