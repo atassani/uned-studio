@@ -18,6 +18,7 @@
 - test: refactor additional specs to startQuizByTestId
 - test: add selection menu helper for e2e
 - fix: render google login as hosted ui link
+- fix: remove index.html route alias to allow export
 
 ## [1.4.7] - 2026-02-03
 
