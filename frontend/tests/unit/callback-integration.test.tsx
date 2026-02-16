@@ -66,4 +66,17 @@ describe('Cognito callback integration', () => {
       expect(getByTestId('auth-user').textContent).toBe('e2e@example.com');
     });
   });
+
+  it('sets user as authenticated when auth cookie is present', async () => {
+    document.cookie = 'auth=1';
+    const { getByTestId } = render(
+      <AuthProvider>
+        <AuthStateViewer />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('auth-status').textContent).toBe('yes');
+    });
+  });
 });

@@ -179,6 +179,13 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
       'Secure',
       'SameSite=Lax',
     ].join('; ');
+    const logoutAuthCookie = [
+      'auth=',
+      'Path=/',
+      'Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+      'Secure',
+      'SameSite=Lax',
+    ].join('; ');
 
     const fallbackLocation = LOGIN_URL;
     const logoutUrl =
@@ -194,7 +201,10 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
       headers: {
         location: [{ key: 'Location', value: logoutUrl }],
         'cache-control': [{ key: 'Cache-Control', value: 'no-cache' }],
-        'set-cookie': [{ key: 'Set-Cookie', value: logoutCookie }],
+        'set-cookie': [
+          { key: 'Set-Cookie', value: logoutCookie },
+          { key: 'Set-Cookie', value: logoutAuthCookie },
+        ],
       },
       body: '',
     };
@@ -223,6 +233,7 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
         'Secure',
         'SameSite=Lax',
       ].join('; ');
+      const authCookie = ['auth=1', 'Path=/', 'Secure', 'SameSite=Lax'].join('; ');
 
       return {
         status: '302',
@@ -230,7 +241,10 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
         headers: {
           location: [{ key: 'Location', value: redirectSignIn }],
           'cache-control': [{ key: 'Cache-Control', value: 'no-cache' }],
-          'set-cookie': [{ key: 'Set-Cookie', value: cookie }],
+          'set-cookie': [
+            { key: 'Set-Cookie', value: cookie },
+            { key: 'Set-Cookie', value: authCookie },
+          ],
         },
         body: '',
       };

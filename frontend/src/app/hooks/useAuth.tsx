@@ -59,6 +59,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Restore auth state from localStorage JWT on load, or handle OAuth code
   useEffect(() => {
     const jwt = typeof window !== 'undefined' ? localStorage.getItem('jwt') : null;
+    const authCookie =
+      typeof document !== 'undefined'
+        ? document.cookie.split(';').some((part) => part.trim() === 'auth=1')
+        : false;
     const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
     const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
     const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
@@ -86,7 +90,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    // 1. If JWT exists, restore user
+    // 1. If auth cookie exists, mark authenticated
+    if (authCookie) {
+      setUser({
+        username: 'google-user',
+        attributes: {},
+        isGuest: false,
+      });
+      setIsAuthenticated(true);
+      setIsLoading(false);
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('code')) {
+          urlParams.delete('code');
+          const newUrl =
+            window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+          window.history.replaceState({}, '', newUrl);
+        }
+      }
+      return;
+    }
+
+    // 2. If JWT exists, restore user
     if (jwt) {
       const userInfo = parseJwt(jwt);
       if (userInfo) {
@@ -105,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // 2. If code param exists, exchange for tokens
+    // 3. If code param exists, exchange for tokens (fallback for local dev)
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');

@@ -34,4 +34,4 @@ export DISTRIBUTION_ID
 
 aws cloudfront create-invalidation \
   --distribution-id "$DISTRIBUTION_ID" \
-  --paths "/studio/index.html" "/studio/_next/*"
+  --paths "/studio" "/studio/" "/studio/index.html" "/studio/_next/*"

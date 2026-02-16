@@ -20,6 +20,7 @@
 - fix: render google login as hosted ui link
 - fix: remove index.html route alias to allow export
 - fix: deploy studio assets under /studio prefix
+- fix: treat auth cookie as authenticated session
 
 ## [1.4.7] - 2026-02-03
 
