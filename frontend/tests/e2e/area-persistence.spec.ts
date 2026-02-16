@@ -32,6 +32,7 @@ test('remembers last studied area in localStorage', async ({ page }) => {
   await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
 
+  await page.getByTestId('question-view').waitFor({ timeout: 15000 });
   const opcionesBtn = page.getByTestId('options-button');
   await page.screenshot({ path: 'debug-opciones.png' });
   await opcionesBtn.waitFor({ state: 'visible', timeout: 25000 });
@@ -53,6 +54,7 @@ test('remembers last studied area in localStorage going throu Options', async ({
   await page.getByRole('button', { name: /Lógica I/ }).waitFor({ timeout: 15000 });
   await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
+  await page.getByTestId('question-view').waitFor({ timeout: 15000 });
   // Debug screenshot and fallback for 'Opciones' button
   await page.screenshot({ path: 'debug-opciones-fail.png' });
   try {
@@ -75,6 +77,7 @@ test('automatically returns to last studied area on app reload', async ({ page }
   await page.getByRole('button', { name: /Lógica I/ }).waitFor({ timeout: 15000 });
   await page.getByRole('button', { name: /Lógica I/ }).click({ timeout: 10000 });
   await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
+  await page.getByTestId('question-view').waitFor({ timeout: 15000 });
   await page.getByTestId('options-button').click({ timeout: 10000 });
   await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
   await page.getByText(/Introducción al Pensamiento Científico/).waitFor({ timeout: 15000 });
@@ -115,10 +118,16 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   // Wait for quiz to load properly
   await page.waitForLoadState('networkidle');
 
-  // Wait for the V button to be available and clickable
-  await page.getByTestId('tf-answer-true').waitFor({ timeout: 20000 });
+  await page.getByTestId('question-view').waitFor({ timeout: 20000 });
 
-  await page.getByTestId('tf-answer-true').click({ timeout: 15000 });
+  const trueButton = page.getByTestId('tf-answer-true');
+  const mcqButton = page.getByTestId('mcq-answer-A');
+  await expect(trueButton.or(mcqButton)).toBeVisible({ timeout: 20000 });
+  if (await trueButton.isVisible()) {
+    await trueButton.click({ timeout: 15000 });
+  } else {
+    await mcqButton.click({ timeout: 15000 });
+  }
   await page.getByRole('button', { name: 'Continuar' }).click({ timeout: 15000 });
   // Check we have progress
   const pageText = await page.locator('body').innerText();
