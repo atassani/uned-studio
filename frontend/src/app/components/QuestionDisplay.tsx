@@ -31,7 +31,7 @@ export function QuestionDisplay({
   const pendingCount = questions.length - (correctCount + failCount);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="question-view">
       {/* Show area name at top */}
       {selectedArea && (
         <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
@@ -43,6 +43,7 @@ export function QuestionDisplay({
         <button
           className="ml-2 text-2xl"
           aria-label="Opciones"
+          data-testid="options-button"
           onClick={goToStatusWithResume}
           style={{
             background: 'none',
@@ -102,12 +103,14 @@ export function QuestionDisplay({
         <div className="flex gap-4 mt-4">
           <button
             className="px-6 py-2 bg-green-600 text-white rounded text-lg"
+            data-testid="tf-answer-true"
             onClick={() => handleAnswer('V')}
           >
             V
           </button>
           <button
             className="px-6 py-2 bg-red-600 text-white rounded text-lg"
+            data-testid="tf-answer-false"
             onClick={() => handleAnswer('F')}
           >
             F
@@ -121,6 +124,7 @@ export function QuestionDisplay({
             return (
               <button
                 key={index}
+                data-testid={`mcq-answer-${letter}`}
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-lg"
                 onClick={() => handleAnswer(letter.toLowerCase())}
               >

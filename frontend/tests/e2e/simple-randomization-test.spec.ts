@@ -1,17 +1,14 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest } from './helpers';
+import { setupFreshTestAuthenticated, startQuizByTestId } from './helpers';
 
 test.describe('Simple Randomization Test', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
   });
 
   test('question order demonstrates the bug', async ({ page }) => {
     // Go to IPC area and select random order
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-    await page.getByRole('button', { name: 'Orden aleatorio' }).click();
-    await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+    await startQuizByTestId(page, 'ipc', { order: 'random' });
 
     // Wait for the quiz to load completely
     await page.waitForLoadState('networkidle');
@@ -26,14 +23,14 @@ test.describe('Simple Randomization Test', () => {
     expect(firstQuestionNum1).not.toBeNull();
 
     // Go back to start a new quiz with proper state clearing
-    await page.getByRole('button', { name: 'Opciones' }).click();
-    await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
+    await page.getByTestId('options-button').click();
+    await page.getByTestId('reset-quiz-button').first().click();
 
     // Wait for page to reset completely
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000); // Allow state to clear
 
-    await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+    await page.getByTestId('quiz-all-button').click();
 
     // Wait for new quiz to load
     await page.waitForLoadState('networkidle');
@@ -54,11 +51,11 @@ test.describe('Simple Randomization Test', () => {
     // If first two are the same, try a few more times to reduce false positives
     if (firstQuestionNum1 === firstQuestionNum2) {
       for (let i = 0; i < 3; i++) {
-        await page.getByRole('button', { name: 'Opciones' }).click();
-        await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
+        await page.getByTestId('options-button').click();
+        await page.getByTestId('reset-quiz-button').first().click();
         await page.waitForLoadState('networkidle');
         await page.waitForTimeout(500);
-        await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+        await page.getByTestId('quiz-all-button').click();
         await page.waitForLoadState('networkidle');
         await page.waitForSelector('.question-text', { timeout: 10000 });
 

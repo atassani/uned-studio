@@ -1,49 +1,46 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
 
 test.describe('Resume Quiz Fresh Experience', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
   });
 
   test('Clicking area resumes at last question if progress exists', async ({ page }) => {
     // Go to IPC (Multiple Choice), answer 2 questions
     await page.waitForLoadState('networkidle');
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).waitFor();
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+    await page.getByTestId('area-ipc').waitFor();
+    await page.getByTestId('area-ipc').click();
+    await page.getByTestId('order-sequential-button').click();
+    await page.getByTestId('quiz-all-button').click();
 
     // Wait for quiz to load and answer 2 questions
-    await page.waitForSelector('text=A');
+    await page.getByTestId('mcq-answer-A').waitFor();
     for (let i = 0; i < 2; i++) {
-      await page.screenshot({ path: `debug-mcq-a-resume-fresh-${i}.png` });
       try {
-        await page.getByRole('button', { name: 'A', exact: true }).click();
+        await page.getByTestId('mcq-answer-A').click();
       } catch (e) {
-        const content = await page.content();
-        console.error('A button not found. Page content:', content);
         throw e;
       }
-      await page.getByRole('button', { name: 'Continuar' }).click();
-      if (i < 1) await page.waitForSelector('text=A');
+      await page.getByTestId('result-continue-button').click();
+      if (i < 1) await page.getByTestId('mcq-answer-A').waitFor();
     }
 
-    await page.getByRole('button', { name: 'Opciones' }).click();
-    await page.getByRole('button', { name: 'Cambiar área' }).first().click();
-    await page.getByText(/Filosofía del Lenguaje/).waitFor();
-    await page.getByRole('button', { name: /Filosofía del Lenguaje/ }).click();
-    await page.getByRole('button', { name: 'Todas las preguntas' }).click();
-    await page.getByRole('button', { name: 'A', exact: true }).click();
+    await page.getByTestId('options-button').click();
+    await page.getByTestId('change-area-button').first().click();
+    await page.getByTestId('area-fdl').waitFor();
+    await page.getByTestId('area-fdl').click();
+    await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
+    await page.getByTestId('quiz-all-button').click();
+    await page.getByTestId('mcq-answer-A').click();
 
-    await page.getByRole('button', { name: 'Opciones' }).click();
-    await page.getByRole('button', { name: 'Cambiar área' }).first().click();
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).waitFor();
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
+    await page.getByTestId('options-button').click();
+    await page.getByTestId('change-area-button').first().click();
+    await page.getByTestId('area-ipc').waitFor();
+    await page.getByTestId('area-ipc').click();
 
     // Wait for page to load completely
-    await page.waitForSelector('text=❓');
+    await page.getByTestId('question-view').waitFor();
 
     // Should resume at question 3 (index 2)
     const isVisible = await page.getByText(/3\./).first().isVisible();
@@ -52,26 +49,24 @@ test.describe('Resume Quiz Fresh Experience', () => {
 
   test('Clicking "Todas las preguntas" always starts fresh', async ({ page }) => {
     // Go to IPC, answer 2 questions
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+    await page.getByTestId('area-ipc').click();
+    await page.getByTestId('order-sequential-button').click();
+    await page.getByTestId('quiz-all-button').click();
     await waitForQuizReady(page);
     for (let i = 0; i < 2; i++) {
-      await page.screenshot({ path: `debug-mcq-a-resume-fresh-${i}.png` });
       try {
-        await page.getByRole('button', { name: 'A', exact: true }).click();
+        await page.getByTestId('mcq-answer-A').click();
       } catch (e) {
-        const content = await page.content();
-        console.error('A button not found. Page content:', content);
         throw e;
       }
-      await page.getByRole('button', { name: 'Continuar' }).click();
+      await page.getByTestId('result-continue-button').click();
     }
     // Go back to menu
-    await page.getByRole('button', { name: 'Opciones' }).click();
-    await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
+    await page.getByTestId('options-button').click();
+    await page.getByTestId('reset-quiz-button').first().click();
     // Click "Todas las preguntas" again
-    await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+    await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
+    await page.getByTestId('quiz-all-button').click();
     await waitForQuizReady(page);
     // Should be on question 1
     //await expect(page.getByText(/1\./)).toBeVisible();

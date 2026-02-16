@@ -2,7 +2,21 @@
 
 ## [Unreleased]
 
+- test: avoid clearing localStorage on authenticated reloads in e2e helpers
+- test: make area persistence reload assertion resilient to resume state
 - test: make studio root access e2e use local baseURL
+- test: add data-testid hooks for MCQ answer buttons
+- test: add data-testid hooks for area selection and quiz start
+- test: use testids for quiz ordering and start controls
+- test: migrate home and resume e2e specs to testids
+- test: migrate remaining e2e specs to testids
+- test: add testids for answer order controls
+- test: add testid-based quiz start helper
+- test: use authenticated setup for e2e
+- test: gate env var logging behind DEBUG_E2E
+- test: extend startQuizByTestId options and refactor specs
+- test: refactor additional specs to startQuizByTestId
+- test: add selection menu helper for e2e
 
 ## [1.4.7] - 2026-02-03
 

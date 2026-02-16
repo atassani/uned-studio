@@ -1,23 +1,20 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
 
 test.describe('MCQ numeric keyboard shortcuts', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
   });
 
   test('should select the correct answer when pressing 1/2/3', async ({ page }) => {
     // Start quiz in area 2 (ipc, Multiple Choice)
-    await page
-      .getByRole('button', { name: /Estudiar Introducción al Pensamiento Científico/i })
-      .click();
-    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await page.getByTestId('area-ipc').click();
+    await page.getByTestId('quiz-all-button').click();
     await waitForQuizReady(page);
 
     // Wait for MCQ options to appear
-    const optionA = page.getByText(/^A\)/);
-    const optionB = page.getByText(/^B\)/);
+    const optionA = page.getByTestId('mcq-answer-A');
+    const optionB = page.getByTestId('mcq-answer-B');
     await expect(optionA).toBeVisible();
     await expect(optionB).toBeVisible();
 
@@ -32,7 +29,7 @@ test.describe('MCQ numeric keyboard shortcuts', () => {
     await expect(page.getByTestId('quiz-result-text')).toHaveText(/¡Correcto!|Incorrecto/);
 
     // Go to next question if available
-    const continuarBtn = page.getByRole('button', { name: /continuar/i });
+    const continuarBtn = page.getByTestId('result-continue-button');
     if (await continuarBtn.isVisible()) {
       await continuarBtn.click();
       await waitForQuizReady(page);

@@ -94,6 +94,7 @@ export function StatusGrid({
     <div className="flex gap-4 mt-6">
       <button
         className="px-4 py-2 bg-blue-600 text-white rounded"
+        data-testid="status-continue-button"
         onClick={() => handleContinue('C')}
         disabled={pendingQuestions().length === 0}
         aria-label="Continuar"
@@ -102,6 +103,7 @@ export function StatusGrid({
       </button>
       <button
         className="px-4 py-2 bg-orange-500 text-white rounded"
+        data-testid="reset-quiz-button"
         onClick={resetQuiz}
         onTouchEnd={resetQuiz}
         aria-label="Volver a empezar"
@@ -110,6 +112,7 @@ export function StatusGrid({
       </button>
       <button
         className="px-4 py-2 bg-gray-500 text-white rounded"
+        data-testid="change-area-button"
         onClick={() => {
           setShowAreaSelection(true);
           setShowStatus(false);

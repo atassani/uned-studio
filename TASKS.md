@@ -19,21 +19,7 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### TECH-010 - Fix tests
-
-- **Status:** backlog
-- **Priority:** P1
-- **Reported:** 2026-02-01
-- **Reporter:** TT
-- **Notes:**
-- Fix flaky tests
-- Make tests work as mocked authenticated users instead of guests
-- Remove screen captures
-- Remove console.logs
-- Remove secrets and setting variables in tests
-- Remove tests that do not test
-
-### BUG-008 — Sign out is not removing jwt from localStorage
+### BUG-008 — Sign out is not removing jwt from localStorage: use Cognito
 
 - **Status:** backlog
 - **Priority:** P1
@@ -48,7 +34,8 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reported:** 2026-02-01
 - **Reporter:** TT
 - **Notes:**
-- ***
+
+---
 
 ## Backlog
 
@@ -59,31 +46,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Reported:** YYYY-MM-DD
 - **Reporter:** TT
 - **Notes:**
-
-```
-bfg --replace-text passwords.txt
-git show 5659eb6ee406c67d3f76590cdf68fc27cfd8c3c0:infra/lib/infra-stack.ts
-git reflog expire --expire=now --all && git gc --prune=now --aggressive
-
-aws configure get region
-aws cognito-idp list-user-pools --max-results 20
-aws cognito-idp describe-user-pool --user-pool-id eu-west-2_lGf1JmMyv
-aws cognito-idp list-user-pool-clients --user-pool-id eu-west-2_lGf1JmMyv
-aws cognito-idp describe-user-pool-domain --domain humblyproud-studio
-aws cognito-idp list-identity-providers --user-pool-id eu-west-2_lGf1JmMyv --region eu-west-2
-aws cognito-idp describe-identity-provider --user-pool-id eu-west-2_lGf1JmMyv --provider-name Google --region eu-west-2
-
-https://console.cloud.google.com/apis/credentials
-
-aws ssm get-parameter --name /studio/google-oauth/client-id --with-decryption --region eu-west-2
-aws ssm get-parameter --name /studio/google-oauth/client-id --with-decryption --region eu-west-2 --query 'Parameter.Value' --output text
-
---no-cli-pager
-export AWS_PAGER=""
-
-curl -I https://humblyproud.com/studio
-curl -s -D - -o /dev/null https://humblyproud.com/studio
-```
 
 ### FEAT-012 — Lógica I Exams as individual sections
 
@@ -180,6 +142,21 @@ curl -s -D - -o /dev/null https://humblyproud.com/studio
 ---
 
 ## Done
+
+### ✅ TECH-010 - Fix tests
+
+- **Status:** done
+- **Priority:** P1
+- **Reported:** 2026-02-01
+- **Completed:** 2026-02-16
+- **Reporter:** TT
+- **Notes:**
+- Fix flaky tests
+- Make tests work as mocked authenticated users instead of guests
+- Remove screen captures
+- Remove console.logs
+- Remove secrets and setting variables in tests
+- Remove tests that do not test
 
 ### ✅ TECH-009 — Tidy project to make it presentable
 

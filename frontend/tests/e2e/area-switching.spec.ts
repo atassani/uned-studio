@@ -1,25 +1,21 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest } from './helpers';
+import { setupFreshTestAuthenticated, startQuizByTestId } from './helpers';
 
 test.beforeEach(async ({ page }) => {
-  await setupFreshTest(page);
-  await page.getByTestId('guest-login-btn').click();
+  await setupFreshTestAuthenticated(page);
 });
 
 test('Test area switching preserves progress', async ({ page }) => {
-  await page.getByRole('button', { name: 'Estudiar Lógica I' }).waitFor({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Estudiar Lógica I' }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Todas las preguntas' }).waitFor({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Todas las preguntas' }).click({ timeout: 10000 });
+  await startQuizByTestId(page, 'log1');
 
   // Wait for quiz to load completely
   await page.waitForLoadState('networkidle');
 
   // Wait for V button to be available
-  await page.getByRole('button', { name: 'V', exact: true }).waitFor({ timeout: 20000 });
-  await page.getByRole('button', { name: 'V', exact: true }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Continuar' }).waitFor({ timeout: 15000 });
-  await page.getByRole('button', { name: 'Continuar' }).click({ timeout: 10000 });
+  await page.getByTestId('tf-answer-true').waitFor({ timeout: 20000 });
+  await page.getByTestId('tf-answer-true').click({ timeout: 10000 });
+  await page.getByTestId('result-continue-button').waitFor({ timeout: 15000 });
+  await page.getByTestId('result-continue-button').click({ timeout: 10000 });
 
   // Wait for status to update
   await page.waitForSelector('text=❓');
@@ -28,12 +24,12 @@ test('Test area switching preserves progress', async ({ page }) => {
   expect(pendientesMatch).not.toBeNull();
   const pendientesBefore = pendientesMatch ? parseInt(pendientesMatch[1], 10) : null;
 
-  await page.getByRole('button', { name: 'Opciones' }).waitFor({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Cambiar área' }).first().waitFor({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Estudiar Lógica I' }).waitFor({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Estudiar Lógica I' }).click({ timeout: 10000 });
+  await page.getByTestId('options-button').waitFor({ timeout: 10000 });
+  await page.getByTestId('options-button').click({ timeout: 10000 });
+  await page.getByTestId('change-area-button').first().waitFor({ timeout: 10000 });
+  await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
+  await page.getByTestId('area-log1').waitFor({ timeout: 10000 });
+  await page.getByTestId('area-log1').click({ timeout: 10000 });
   // Wait for the area to load completely
   await page.waitForSelector('text=❓', { timeout: 10000 });
   // Check that progress is preserved
@@ -43,12 +39,12 @@ test('Test area switching preserves progress', async ({ page }) => {
   const pendientesAfterSwitch = pendientesMatch2 ? parseInt(pendientesMatch2[1], 10) : null;
   expect(pendientesAfterSwitch).toBe(pendientesBefore);
   // Now switch back directly using 'Cambiar área' from the main UI
-  await page.getByRole('button', { name: 'Opciones' }).waitFor({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Opciones' }).click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Cambiar área' }).first().waitFor({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Cambiar área' }).first().click({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Estudiar Lógica I' }).waitFor({ timeout: 10000 });
-  await page.getByRole('button', { name: 'Estudiar Lógica I' }).click({ timeout: 10000 });
+  await page.getByTestId('options-button').waitFor({ timeout: 10000 });
+  await page.getByTestId('options-button').click({ timeout: 10000 });
+  await page.getByTestId('change-area-button').first().waitFor({ timeout: 10000 });
+  await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
+  await page.getByTestId('area-log1').waitFor({ timeout: 10000 });
+  await page.getByTestId('area-log1').click({ timeout: 10000 });
 
   // Wait for status to update again
   await page.waitForSelector('text=❓');

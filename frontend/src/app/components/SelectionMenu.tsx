@@ -27,7 +27,10 @@ export function SelectionMenu({
   setShowSelectionMenu,
 }: SelectionMenuProps) {
   return (
-    <div className="space-y-8 flex flex-col items-center justify-center">
+    <div
+      className="space-y-8 flex flex-col items-center justify-center"
+      data-testid="selection-menu"
+    >
       {/* Show area name at top */}
       {selectedArea && (
         <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
@@ -43,6 +46,7 @@ export function SelectionMenu({
             tabIndex={0}
             role="button"
             aria-label="Orden aleatorio"
+            data-testid="order-random-button"
           >
             Aleatorio
           </span>
@@ -53,6 +57,7 @@ export function SelectionMenu({
               onChange={(e) => setShuffleQuestions(!e.target.checked)}
               className="sr-only peer"
               aria-label="Alternar orden de preguntas"
+              data-testid="question-order-toggle"
             />
             <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
               <div
@@ -66,6 +71,7 @@ export function SelectionMenu({
             tabIndex={0}
             role="button"
             aria-label="Orden secuencial"
+            data-testid="order-sequential-button"
           >
             Secuencial
           </span>
@@ -82,6 +88,7 @@ export function SelectionMenu({
               tabIndex={0}
               role="button"
               aria-label="Aleatorizar respuestas"
+              data-testid="answer-order-random-button"
             >
               Aleatorio
             </span>
@@ -92,6 +99,7 @@ export function SelectionMenu({
                 onChange={(e) => setShuffleAnswers(!e.target.checked)}
                 className="sr-only peer"
                 aria-label="Alternar orden de respuestas"
+                data-testid="answer-order-toggle"
               />
               <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
                 <div
@@ -105,6 +113,7 @@ export function SelectionMenu({
               tabIndex={0}
               role="button"
               aria-label="Respuestas secuenciales"
+              data-testid="answer-order-sequential-button"
             >
               Secuencial
             </span>
@@ -118,6 +127,7 @@ export function SelectionMenu({
           startQuizAll();
         }}
         aria-label="Todas las preguntas"
+        data-testid="quiz-all-button"
       >
         Todas las preguntas
       </button>
@@ -127,6 +137,7 @@ export function SelectionMenu({
           setSelectionMode('sections');
         }}
         aria-label="Seleccionar secciones"
+        data-testid="quiz-sections-button"
       >
         Seleccionar secciones
       </button>
@@ -136,11 +147,13 @@ export function SelectionMenu({
           setSelectionMode('questions');
         }}
         aria-label="Seleccionar preguntas"
+        data-testid="quiz-questions-button"
       >
         Seleccionar preguntas
       </button>
       <button
         className="px-6 py-3 bg-gray-500 text-white rounded text-lg w-64 mt-6"
+        data-testid="change-area-button"
         onClick={() => {
           setShowAreaSelection(true);
           setShowSelectionMenu(false);

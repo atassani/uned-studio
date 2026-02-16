@@ -1,22 +1,19 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('MCQ review mode', () => {
   test('can view question details from results grid after quiz', async ({ page }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
     // Go to MCQ area and start quiz
-    await page.getByRole('button', { name: /MCQ/i }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
     await waitForQuizReady(page);
-    await page.getByRole('button', { name: 'A' }).click();
-    await page.getByRole('button', { name: 'Continuar' }).click();
+    await page.getByTestId('mcq-answer-A').click();
+    await page.getByTestId('result-continue-button').click();
 
     // Answer all remaining questions
     while (!(await page.getByText('Quiz Completado').isVisible())) {
-      await page.getByRole('button', { name: 'B' }).click();
-      await page.getByRole('button', { name: 'Continuar' }).click();
+      await page.getByTestId('mcq-answer-B').click();
+      await page.getByTestId('result-continue-button').click();
     }
 
     // On results page, find a failed question (should be first)

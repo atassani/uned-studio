@@ -1,17 +1,14 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('MCQ variable options (2–5)', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
   });
 
   test('should render and allow keyboard shortcuts for MCQ with 2 options', async ({ page }) => {
     // Go to area with MCQ (e.g., IPC)
-    await page.getByRole('button', { name: /MCQ/i }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
     await waitForQuizReady(page);
 
     // Find a question with exactly 2 options
@@ -22,19 +19,19 @@ test.describe('MCQ variable options (2–5)', () => {
       if (options.length === 2) {
         found = true;
         // Should show only A and B
-        await expect(page.getByText(/^A\)/)).toBeVisible();
-        await expect(page.getByText(/^B\)/)).toBeVisible();
-        await expect(page.getByText(/^C\)/)).toHaveCount(0);
+        await expect(page.getByTestId('mcq-answer-A')).toBeVisible();
+        await expect(page.getByTestId('mcq-answer-B')).toBeVisible();
+        await expect(page.getByTestId('mcq-answer-C')).toHaveCount(0);
         // Try keyboard shortcut '1' and '2'
         await page.keyboard.press('1');
         await expect(page.getByTestId('quiz-result-text')).toBeVisible();
-        await page.getByRole('button', { name: /continuar/i }).click();
+        await page.getByTestId('result-continue-button').click();
         await waitForQuizReady(page);
         break;
       } else {
         // Go to next question
-        if (await page.getByRole('button', { name: /continuar/i }).isVisible()) {
-          await page.getByRole('button', { name: /continuar/i }).click();
+        if (await page.getByTestId('result-continue-button').isVisible()) {
+          await page.getByTestId('result-continue-button').click();
           await waitForQuizReady(page);
         }
       }
@@ -47,9 +44,7 @@ test.describe('MCQ variable options (2–5)', () => {
       page,
     }) => {
       // Start quiz in area with MCQ (e.g., IPC)
-      await page.getByRole('button', { name: /MCQ/i }).click();
-      await page.getByRole('button', { name: 'Orden secuencial' }).click();
-      await page.getByRole('button', { name: /todas las preguntas/i }).click();
+      await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
       await waitForQuizReady(page);
 
       // Find a question with the right number of options
@@ -62,25 +57,21 @@ test.describe('MCQ variable options (2–5)', () => {
           // Check that the answer buttons are A..(A+count-1)
           for (let j = 0; j < count; ++j) {
             const letter = String.fromCharCode(65 + j); // 'A', 'B', ...
-            await expect(
-              page.locator(`button.bg-blue-600:has-text("${letter}"):not([aria-label])`).first()
-            ).toBeVisible();
+            await expect(page.getByTestId(`mcq-answer-${letter}`)).toBeVisible();
           }
           // There should not be a button for the next letter
           const nextLetter = String.fromCharCode(65 + count);
 
-          await expect(
-            page.locator(`button.bg-blue-600:has-text("${nextLetter}"):not([aria-label])`).first()
-          ).not.toBeVisible();
+          await expect(page.getByTestId(`mcq-answer-${nextLetter}`)).toHaveCount(0);
           break;
         } else {
           // Goes to the next screen clicking on the first button
-          await page.locator('button.bg-blue-600:has-text("A"):not([aria-label])').first().click();
-          await expect(page.getByTestId('quiz-result-text')).toBeVisible;
+          await page.getByTestId('mcq-answer-A').click();
+          await expect(page.getByTestId('quiz-result-text')).toBeVisible();
         }
         // Go to next question
-        if (await page.getByRole('button', { name: /continuar/i }).isVisible()) {
-          await page.getByRole('button', { name: /continuar/i }).click();
+        if (await page.getByTestId('result-continue-button').isVisible()) {
+          await page.getByTestId('result-continue-button').click();
           await waitForQuizReady(page);
         }
       }

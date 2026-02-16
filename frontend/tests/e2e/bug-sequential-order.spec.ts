@@ -1,18 +1,16 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady, openSelectionMenuByTestId } from './helpers';
 
 test.describe('Question Order Bugs', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
+    await setupFreshTestAuthenticated(page);
     await waitForAppReady(page);
-    await page.getByTestId('guest-login-btn').click();
     await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
   });
 
   test('sequential order with manually set localStorage to trigger bug', async ({ page }) => {
     // First, start clean and get to a quiz state
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
+    await openSelectionMenuByTestId(page, 'ipc', { order: 'sequential' });
 
     // Manually set localStorage to simulate having answered question 1 and being on question 2
     await page.evaluate(() => {
@@ -21,9 +19,9 @@ test.describe('Question Order Bugs', () => {
     });
 
     // Now start a section - it should start at question 1, not use the saved index
-    await page.getByRole('button', { name: 'Seleccionar secciones' }).click();
+    await page.getByTestId('quiz-sections-button').click();
     await page.getByText('Tema 1. Ciencia, hechos y evidencia').click();
-    await page.getByRole('button', { name: 'Empezar' }).click();
+    await page.getByTestId('start-quiz-button').click();
 
     // Check what question we're seeing
     const questionText = await page.locator('body').innerText();

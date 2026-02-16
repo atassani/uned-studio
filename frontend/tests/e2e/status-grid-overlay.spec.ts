@@ -1,22 +1,19 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady, startQuizByTestId } from './helpers';
 
 test.describe('StatusGrid overlay CSS layering verification', () => {
   test('should verify that overlay CSS properties are correctly configured', async ({ page }) => {
-    await setupFreshTest(page);
+    await setupFreshTestAuthenticated(page);
     await waitForAppReady(page);
-    await page.getByTestId('guest-login-btn').click();
 
     // Start a quiz
-    await page.getByRole('button', { name: /MCQ/i }).click();
-    await page.getByRole('button', { name: 'Orden secuencial' }).click();
-    await page.getByRole('button', { name: /todas las preguntas/i }).click();
+    await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
 
     // Wait for the first question
     await expect(page.locator('.question-text')).toBeVisible();
 
     // Answer incorrectly - click on 'A' option
-    await page.getByText('A)').click();
+    await page.getByTestId('mcq-answer-A').click();
 
     // Navigate to status grid using keyboard shortcut
     await page.keyboard.press('E');

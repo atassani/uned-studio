@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTest, setupSuperFreshTest, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('Randomization Bugs', () => {
   test.beforeEach(async ({ page }) => {
-    await setupFreshTest(page);
-    await page.getByTestId('guest-login-btn').click();
+    await setupFreshTestAuthenticated(page);
   });
 
   test('random question order should randomize first question', async ({ page }) => {
@@ -12,10 +11,8 @@ test.describe('Randomization Bugs', () => {
     const firstQuestions: number[] = [];
 
     // Go to IPC area and select random order
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
     for (let attempt = 0; attempt < 5; attempt++) {
-      await page.getByRole('button', { name: 'Orden aleatorio' }).click();
-      await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+      await startQuizByTestId(page, 'ipc', { order: 'random' });
       await waitForQuizReady(page);
 
       // Get the first question number
@@ -25,8 +22,8 @@ test.describe('Randomization Bugs', () => {
       if (match) {
         firstQuestions.push(parseInt(match[1], 10));
       }
-      await page.getByRole('button', { name: 'Opciones' }).click();
-      await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
+      await page.getByTestId('options-button').click();
+      await page.getByTestId('reset-quiz-button').first().click();
     }
 
     // If randomization works, we shouldn't always get question 1
@@ -37,12 +34,9 @@ test.describe('Randomization Bugs', () => {
 
   test('answer shuffling should randomize first option', async ({ page }) => {
     const firstOptions: string[] = [];
-    await page.getByRole('button', { name: /Introducción al Pensamiento Científico/ }).click();
-    await page.getByRole('button', { name: 'Aleatorio' }).click(); // Enable answer shuffling
-
     for (let attempt = 0; attempt < 5; attempt++) {
       // Go to IPC area and enable answer shuffling
-      await page.getByRole('button', { name: 'Todas las preguntas' }).click();
+      await startQuizByTestId(page, 'ipc', { answerOrder: 'random' });
       await waitForQuizReady(page);
 
       // Get the first option text
@@ -51,8 +45,8 @@ test.describe('Randomization Bugs', () => {
       const match = questionText.match(/^A\) (.+)/);
       firstOptions.push(match ? match[1] : 'UNKNOWN');
 
-      await page.getByRole('button', { name: 'Opciones' }).click();
-      await page.getByRole('button', { name: 'Volver a empezar' }).first().click();
+      await page.getByTestId('options-button').click();
+      await page.getByTestId('reset-quiz-button').first().click();
     }
 
     // If shuffling works, we shouldn't always get the same first option
@@ -62,7 +56,7 @@ test.describe('Randomization Bugs', () => {
 
   test('True/False areas should not show answer shuffling controls', async ({ page }) => {
     // Go to Lógica I (True/False area)
-    await page.getByRole('button', { name: /Lógica I/ }).click();
+    await page.getByTestId('area-log1').click();
 
     // Should NOT see answer shuffling controls
     await expect(page.getByText('Orden de respuestas:')).not.toBeVisible();
