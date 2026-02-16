@@ -2,12 +2,66 @@
 // Supports: OAuth redirect, JWT/cookie validation, guest access
 
 import { CloudFrontRequestEvent, CloudFrontRequestResult, CloudFrontRequest } from 'aws-lambda';
+import * as https from 'https';
 
 // Minimal Cognito JWT validation
 const COGNITO_REGION = process.env.NEXT_PUBLIC_AWS_REGION;
 const COGNITO_USER_POOL_ID = process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID;
+const COGNITO_DOMAIN = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+const COGNITO_CLIENT_ID = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+const REDIRECT_SIGN_IN = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
 const COGNITO_ISSUER = `https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}`;
 const JWKS_URL = `${COGNITO_ISSUER}/.well-known/jwks.json`;
+
+export async function exchangeCodeForTokens(params: {
+  code: string;
+  redirectUri: string;
+  clientId: string;
+  domain: string;
+}): Promise<{ id_token?: string } | null> {
+  const tokenUrl = new URL('/oauth2/token', params.domain);
+  const body = new URLSearchParams({
+    grant_type: 'authorization_code',
+    client_id: params.clientId,
+    code: params.code,
+    redirect_uri: params.redirectUri,
+  }).toString();
+
+  const responseBody = await postForm(tokenUrl, body);
+  try {
+    return JSON.parse(responseBody);
+  } catch (err) {
+    return null;
+  }
+}
+
+function postForm(url: URL, body: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const request = https.request(
+      {
+        protocol: url.protocol,
+        hostname: url.hostname,
+        path: `${url.pathname}${url.search}`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Length': Buffer.byteLength(body),
+        },
+      },
+      (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        res.on('end', () => resolve(data));
+      }
+    );
+
+    request.on('error', reject);
+    request.write(body);
+    request.end();
+  });
+}
 
 export async function isValidJWT(cookie: string | undefined): Promise<boolean> {
   if (!cookie) return false;
@@ -38,10 +92,44 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
   const request: CloudFrontRequest = event.Records[0].cf.request;
   const uri = request.uri;
   const cookieHeader = request.headers.cookie?.[0]?.value;
+  const querystring = request.querystring || '';
+  const queryParams = new URLSearchParams(querystring);
+  const code = queryParams.get('code');
 
   // Allow guest access for /studio/guest
   if (uri.startsWith('/studio/guest')) {
     return request;
+  }
+
+  // Handle OAuth callback code exchange for Cognito Hosted UI
+  if (code && COGNITO_DOMAIN && COGNITO_CLIENT_ID && REDIRECT_SIGN_IN) {
+    const tokens = await exchangeCodeForTokens({
+      code,
+      redirectUri: REDIRECT_SIGN_IN,
+      clientId: COGNITO_CLIENT_ID,
+      domain: COGNITO_DOMAIN,
+    });
+
+    if (tokens?.id_token) {
+      const cookie = [
+        `jwt=${tokens.id_token}`,
+        'Path=/',
+        'HttpOnly',
+        'Secure',
+        'SameSite=Lax',
+      ].join('; ');
+
+      return {
+        status: '302',
+        statusDescription: 'Found',
+        headers: {
+          location: [{ key: 'Location', value: REDIRECT_SIGN_IN }],
+          'cache-control': [{ key: 'Cache-Control', value: 'no-cache' }],
+          'set-cookie': [{ key: 'Set-Cookie', value: cookie }],
+        },
+        body: '',
+      };
+    }
   }
 
   // Allow if valid JWT/cookie
