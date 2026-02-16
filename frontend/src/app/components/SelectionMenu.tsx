@@ -27,7 +27,10 @@ export function SelectionMenu({
   setShowSelectionMenu,
 }: SelectionMenuProps) {
   return (
-    <div className="space-y-8 flex flex-col items-center justify-center" data-testid="selection-menu">
+    <div
+      className="space-y-8 flex flex-col items-center justify-center"
+      data-testid="selection-menu"
+    >
       {/* Show area name at top */}
       {selectedArea && (
         <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>

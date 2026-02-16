@@ -1,3 +1,7 @@
+import { Page, expect } from '@playwright/test';
+
+const homePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 /**
  * Log selected environment variables to the console for debugging.
  * Pass an array of variable names, or log all NEXT_PUBLIC_ and NODE_ENV by default.
@@ -10,8 +14,6 @@ export function logEnvVars(vars: string[] = []) {
   // eslint-disable-next-line no-console
   console.log('Env vars:', Object.fromEntries(allVars.map((k) => [k, process.env[k]])));
 }
-import { Page, expect } from '@playwright/test';
-const homePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 function base64UrlEncode(input: string) {
   return Buffer.from(input)
@@ -41,19 +43,22 @@ export async function setupFreshTest(page: Page) {
  */
 export async function setupFreshTestAuthenticated(page: Page, email = 'e2e@example.com') {
   const token = createMockJwt(email);
-  await page.addInitScript(({ jwt }) => {
-    if (typeof localStorage !== 'undefined') {
-      const isInitialized = localStorage.getItem('__e2e_setup_done');
-      if (!isInitialized) {
-        localStorage.clear();
-        localStorage.setItem('__e2e_setup_done', 'true');
+  await page.addInitScript(
+    ({ jwt }) => {
+      if (typeof localStorage !== 'undefined') {
+        const isInitialized = localStorage.getItem('__e2e_setup_done');
+        if (!isInitialized) {
+          localStorage.clear();
+          localStorage.setItem('__e2e_setup_done', 'true');
+        }
+        localStorage.setItem('jwt', jwt);
       }
-      localStorage.setItem('jwt', jwt);
-    }
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.clear();
-    }
-  }, { jwt: token });
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.clear();
+      }
+    },
+    { jwt: token }
+  );
   await page.goto(homePath, { waitUntil: 'networkidle' });
 }
 
@@ -108,19 +113,22 @@ export async function setupSuperFreshTestAuthenticated(
     url += (url.includes('?') ? '&' : '?') + `seed=${encodeURIComponent(seed)}`;
   }
   await page.context().clearCookies();
-  await page.addInitScript(({ jwt }) => {
-    if (typeof localStorage !== 'undefined') {
-      const isInitialized = localStorage.getItem('__e2e_setup_done');
-      if (!isInitialized) {
-        localStorage.clear();
-        localStorage.setItem('__e2e_setup_done', 'true');
+  await page.addInitScript(
+    ({ jwt }) => {
+      if (typeof localStorage !== 'undefined') {
+        const isInitialized = localStorage.getItem('__e2e_setup_done');
+        if (!isInitialized) {
+          localStorage.clear();
+          localStorage.setItem('__e2e_setup_done', 'true');
+        }
+        localStorage.setItem('jwt', jwt);
       }
-      localStorage.setItem('jwt', jwt);
-    }
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.clear();
-    }
-  }, { jwt: token });
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.clear();
+      }
+    },
+    { jwt: token }
+  );
   await page.goto(url, { waitUntil: 'networkidle' });
 }
 
