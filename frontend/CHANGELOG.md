@@ -12,6 +12,7 @@
 - test: add testid-based quiz start helper
 - test: use authenticated setup for e2e
 - test: gate env var logging behind DEBUG_E2E
+- test: extend startQuizByTestId options and refactor specs
 
 ## [1.4.7] - 2026-02-03
 
