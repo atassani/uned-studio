@@ -121,6 +121,7 @@ export function QuestionDisplay({
             return (
               <button
                 key={index}
+                data-testid={`mcq-answer-${letter}`}
                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-lg"
                 onClick={() => handleAnswer(letter.toLowerCase())}
               >
