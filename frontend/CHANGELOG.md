@@ -11,6 +11,7 @@
 - test: add testids for answer order controls
 - test: add testid-based quiz start helper
 - test: use authenticated setup for e2e
+- test: gate env var logging behind DEBUG_E2E
 
 ## [1.4.7] - 2026-02-03
 
