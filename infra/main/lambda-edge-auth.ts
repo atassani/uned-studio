@@ -48,6 +48,8 @@ export async function exchangeCodeForTokens(params: {
   }
 }
 
+export let exchangeCodeForTokensImpl = exchangeCodeForTokens;
+
 function postForm(url: URL, body: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const request = https.request(
@@ -119,7 +121,7 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
 
   // Handle OAuth callback code exchange for Cognito Hosted UI
   if (code && domain && clientId && redirectSignIn) {
-    const tokens = await exchangeCodeForTokens({
+    const tokens = await exchangeCodeForTokensImpl({
       code,
       redirectUri: redirectSignIn,
       clientId,
