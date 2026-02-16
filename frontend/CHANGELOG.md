@@ -13,6 +13,7 @@
 - test: use authenticated setup for e2e
 - test: gate env var logging behind DEBUG_E2E
 - test: extend startQuizByTestId options and refactor specs
+- test: refactor additional specs to startQuizByTestId
 
 ## [1.4.7] - 2026-02-03
 
