@@ -30,4 +30,6 @@ test('passes edge lambdas to studio behaviors', () => {
 
   expect(studio.behaviors['studio'].edgeLambdas).toEqual(edgeLambdas);
   expect(studio.behaviors['studio/*'].edgeLambdas).toEqual(edgeLambdas);
+  expect(studio.behaviors['studio'].functionAssociations).toBeUndefined();
+  expect(studio.behaviors['studio/*'].functionAssociations).toBeUndefined();
 });
