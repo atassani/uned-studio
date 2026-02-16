@@ -28,6 +28,9 @@ jest.mock('jose', () => ({
 // Jest test scaffold for Lambda@Edge authentication handler
 
 import * as authModule from '../../main/lambda-edge-auth';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 describe('Lambda@Edge Auth Handler', () => {
   beforeAll(() => {
@@ -183,5 +186,43 @@ describe('Lambda@Edge Auth Handler', () => {
     } else {
       throw new Error('Expected a redirect response');
     }
+  });
+
+  it('should read edge auth config from file when present', async () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'edge-auth-'));
+    const configPath = path.join(tempDir, 'edge-auth-config.json');
+    fs.writeFileSync(
+      configPath,
+      JSON.stringify({
+        domain: 'https://example.auth',
+        clientId: 'client-id',
+        redirectSignIn: 'https://humblyproud.com/studio',
+      })
+    );
+
+    process.env.EDGE_AUTH_CONFIG_PATH = configPath;
+    delete process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+    delete process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    delete process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+
+    const exchangeMock = jest.fn().mockResolvedValue({ id_token: 'jwt-from-cognito' } as any);
+    authModule.setExchangeCodeForTokensImpl(exchangeMock);
+
+    const event = makeEvent({ uri: '/studio', cookie: undefined }) as any;
+    event.Records[0].cf.request.querystring = 'code=mock_code';
+
+    const result = await authModule.handler(event);
+
+    if (result && 'status' in result) {
+      expect(result.status).toBe('302');
+      expect(result.headers?.location?.[0]?.value).toBe('https://humblyproud.com/studio');
+      const setCookie = result.headers?.['set-cookie']?.[0]?.value || '';
+      expect(setCookie).toContain('jwt=jwt-from-cognito');
+    } else {
+      throw new Error('Expected a redirect response');
+    }
+
+    authModule.setExchangeCodeForTokensImpl(null);
+    delete process.env.EDGE_AUTH_CONFIG_PATH;
   });
 });
