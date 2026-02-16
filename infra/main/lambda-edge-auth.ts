@@ -137,6 +137,17 @@ export async function isValidJWT(cookie: string | undefined): Promise<boolean> {
 
 const LOGIN_URL = '/studio/login';
 
+function isStaticAsset(uri: string): boolean {
+  return /\.[a-zA-Z0-9]+$/.test(uri);
+}
+
+function maybeRewriteSpaPath(request: CloudFrontRequest): void {
+  const uri = request.uri;
+  if (!uri.startsWith('/studio')) return;
+  if (isStaticAsset(uri)) return;
+  request.uri = '/studio/index.html';
+}
+
 export async function handler(event: CloudFrontRequestEvent): Promise<CloudFrontRequestResult> {
   const request: CloudFrontRequest = event.Records[0].cf.request;
   const uri = request.uri;
@@ -178,6 +189,7 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
 
   // Allow guest access for /studio/guest
   if (uri.startsWith('/studio/guest')) {
+    maybeRewriteSpaPath(request);
     return request;
   }
 
@@ -214,6 +226,7 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
 
   // Allow if valid JWT/cookie
   if (await isValidJWT(cookieHeader)) {
+    maybeRewriteSpaPath(request);
     return request;
   }
 
@@ -231,5 +244,6 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
   }
 
   // Allow public access to other /studio paths
+  maybeRewriteSpaPath(request);
   return request;
 }

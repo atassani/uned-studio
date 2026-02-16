@@ -8,3 +8,4 @@
 - fix: avoid cloudfront function conflict when using edge lambda
 - fix: allow importing an existing cognito user pool
 - feat: allow importing an existing cognito user pool client
+- fix: rewrite studio spa routes in edge auth
