@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('bug 004: Section order mismatch in IPC area', () => {
   test('should show the same section order in Seleccionar Secciones and Opciones for IPC area', async ({
@@ -7,11 +7,8 @@ test.describe('bug 004: Section order mismatch in IPC area', () => {
   }) => {
     await setupFreshTestAuthenticated(page);
     // Select IPC area
-    await page.getByTestId('area-ipc').click();
-    // Random order
-    await page.getByTestId('order-random-button').click();
-    // Open Seleccionar Secciones
-    await page.getByTestId('quiz-sections-button').click();
+    // Random order and open Seleccionar Secciones
+    await startQuizByTestId(page, 'ipc', { order: 'random', mode: 'sections' });
     // Get section order in modal (by extracting text from all label > span)
     const sectionItems = await page.locator('label input + span').allTextContents();
     // Cancel

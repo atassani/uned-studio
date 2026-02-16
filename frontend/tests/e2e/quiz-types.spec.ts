@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady, startQuizByTestId } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await setupFreshTestAuthenticated(page);
@@ -7,9 +7,7 @@ test.beforeEach(async ({ page }) => {
 
 test('True/False quiz works for Lógica I area', async ({ page }) => {
   await waitForAppReady(page);
-  await page.getByTestId('area-log1').click();
-  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
-  await page.getByTestId('quiz-all-button').click();
+  await startQuizByTestId(page, 'log1');
   await expect(page.getByTestId('tf-answer-true')).toBeVisible();
   await expect(page.getByTestId('tf-answer-false')).toBeVisible();
   await page.getByTestId('tf-answer-true').click();
@@ -21,9 +19,7 @@ test('Multiple Choice quiz shows question text with A/B/C buttons (consistent wi
   page,
 }) => {
   await waitForAppReady(page);
-  await page.getByTestId('area-ipc').click();
-  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
-  await page.getByTestId('quiz-all-button').click();
+  await startQuizByTestId(page, 'ipc');
   // Wait for loading spinner to disappear
   await page.waitForSelector('[data-testid="loading-spinner"]', {
     state: 'detached',

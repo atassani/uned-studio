@@ -1,13 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('MCQ review mode', () => {
   test('can view question details from results grid after quiz', async ({ page }) => {
     await setupFreshTestAuthenticated(page);
     // Go to MCQ area and start quiz
-    await page.getByTestId('area-mcq-tests').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
     await waitForQuizReady(page);
     await page.getByTestId('mcq-answer-A').click();
     await page.getByTestId('result-continue-button').click();

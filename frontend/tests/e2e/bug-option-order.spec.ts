@@ -1,13 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('bug-006: options are always in the same order, even with shuffle enabled', () => {
   test('options appear in different order when restarting a quiz', async ({ page }) => {
     await setupFreshTestAuthenticated(page);
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('answer-order-random-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'ipc', { order: 'sequential', answerOrder: 'random' });
     await waitForQuizReady(page);
 
     const options: string[][] = [];
@@ -42,10 +39,7 @@ test.describe('bug-006: options are always in the same order, even with shuffle 
 
   test('options appear in same order if Secuencial', async ({ page }) => {
     await setupFreshTestAuthenticated(page);
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('answer-order-sequential-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'ipc', { order: 'sequential', answerOrder: 'sequential' });
     await waitForQuizReady(page);
 
     const options: string[][] = [];

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated } from './helpers';
+import { setupFreshTestAuthenticated, startQuizByTestId } from './helpers';
 
 test.describe('Simple Randomization Test', () => {
   test.beforeEach(async ({ page }) => {
@@ -8,9 +8,7 @@ test.describe('Simple Randomization Test', () => {
 
   test('question order demonstrates the bug', async ({ page }) => {
     // Go to IPC area and select random order
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-random-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'ipc', { order: 'random' });
 
     // Wait for the quiz to load completely
     await page.waitForLoadState('networkidle');

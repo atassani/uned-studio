@@ -1,14 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('BUG-007 Grid Answer Display', () => {
   test('shows user answer with letter in grid overlay', async ({ page }) => {
     await setupFreshTestAuthenticated(page);
 
     // Go to MCQ area and start quiz
-    await page.getByTestId('area-mcq-tests').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
     await waitForQuizReady(page);
 
     // Answer the first question (q1, capital of France) incorrectly with "B" (London)

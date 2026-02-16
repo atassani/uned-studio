@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('MCQ variable number of answers', () => {
   test.beforeEach(async ({ page }) => {
@@ -10,10 +10,8 @@ test.describe('MCQ variable number of answers', () => {
     page,
   }) => {
     // Use test data with MCQ questions having 2, 3, 4, 5 options in order
-    await page.getByTestId('area-mcq-tests').click();
     // Set to sequential order to ensure predictable question order
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
     await waitForQuizReady(page);
 
     // Question 1: 2 options

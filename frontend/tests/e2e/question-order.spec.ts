@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated } from './helpers';
+import { setupFreshTestAuthenticated, startQuizByTestId } from './helpers';
 
 test.describe('Question Order Control', () => {
   test.beforeEach(async ({ page }) => {
@@ -8,9 +8,7 @@ test.describe('Question Order Control', () => {
 
   test('sequential order shows questions by number order', async ({ page }) => {
     // Start IPC quiz with sequential order (Multiple Choice area)
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'ipc', { order: 'sequential' });
 
     // First question should be question number 1
     const questionText = await page.locator('body').innerText();
@@ -29,9 +27,7 @@ test.describe('Question Order Control', () => {
 
   test('random order shows questions in randomized order', async ({ page }) => {
     // Start IPC quiz with random order (Multiple Choice area)
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-random-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'ipc', { order: 'random' });
 
     // Collect first few question numbers to verify randomness
     const questionNumbers: number[] = [];
@@ -60,9 +56,7 @@ test.describe('Question Order Control', () => {
 
   test('question order preference applies to section selection', async ({ page }) => {
     // Start IPC quiz with sequential order (Multiple Choice area)
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('quiz-sections-button').click();
+    await startQuizByTestId(page, 'ipc', { order: 'sequential', mode: 'sections' });
 
     // Wait for section selection to load completely
     await page.waitForLoadState('networkidle');
@@ -106,9 +100,7 @@ test.describe('Question Order Control', () => {
 
   test('sequential order works for question selection mode', async ({ page }) => {
     // Start IPC quiz with sequential order (Multiple Choice area)
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('quiz-questions-button').click();
+    await startQuizByTestId(page, 'ipc', { order: 'sequential', mode: 'questions' });
 
     // Wait for question list to load and select a few specific questions
     await page.waitForTimeout(1000);
@@ -141,9 +133,7 @@ test.describe('Question Order Control', () => {
 
   test('sequential order preserved after resuming quiz', async ({ page }) => {
     // Start quiz with sequential order and answer first question (Multiple Choice area)
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'ipc', { order: 'sequential' });
 
     // Verify first question is 1
     let questionText = await page.locator('body').innerText();

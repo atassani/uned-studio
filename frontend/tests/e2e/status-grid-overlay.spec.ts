@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady, startQuizByTestId } from './helpers';
 
 test.describe('StatusGrid overlay CSS layering verification', () => {
   test('should verify that overlay CSS properties are correctly configured', async ({ page }) => {
@@ -7,9 +7,7 @@ test.describe('StatusGrid overlay CSS layering verification', () => {
     await waitForAppReady(page);
 
     // Start a quiz
-    await page.getByTestId('area-mcq-tests').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
 
     // Wait for the first question
     await expect(page.locator('.question-text')).toBeVisible();

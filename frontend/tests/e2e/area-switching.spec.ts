@@ -1,15 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated } from './helpers';
+import { setupFreshTestAuthenticated, startQuizByTestId } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await setupFreshTestAuthenticated(page);
 });
 
 test('Test area switching preserves progress', async ({ page }) => {
-  await page.getByTestId('area-log1').waitFor({ timeout: 15000 });
-  await page.getByTestId('area-log1').click({ timeout: 10000 });
-  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
-  await page.getByTestId('quiz-all-button').click({ timeout: 10000 });
+  await startQuizByTestId(page, 'log1');
 
   // Wait for quiz to load completely
   await page.waitForLoadState('networkidle');

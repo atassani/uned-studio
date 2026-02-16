@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForQuizReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForQuizReady, startQuizByTestId } from './helpers';
 
 test.describe('MCQ variable options (2–5)', () => {
   test.beforeEach(async ({ page }) => {
@@ -8,9 +8,7 @@ test.describe('MCQ variable options (2–5)', () => {
 
   test('should render and allow keyboard shortcuts for MCQ with 2 options', async ({ page }) => {
     // Go to area with MCQ (e.g., IPC)
-    await page.getByTestId('area-mcq-tests').click();
-    await page.getByTestId('order-sequential-button').click();
-    await page.getByTestId('quiz-all-button').click();
+    await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
     await waitForQuizReady(page);
 
     // Find a question with exactly 2 options
@@ -46,9 +44,7 @@ test.describe('MCQ variable options (2–5)', () => {
       page,
     }) => {
       // Start quiz in area with MCQ (e.g., IPC)
-      await page.getByTestId('area-mcq-tests').click();
-      await page.getByTestId('order-sequential-button').click();
-      await page.getByTestId('quiz-all-button').click();
+      await startQuizByTestId(page, 'mcq-tests', { order: 'sequential' });
       await waitForQuizReady(page);
 
       // Find a question with the right number of options
