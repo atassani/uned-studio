@@ -171,11 +171,23 @@ export async function startQuiz(
 }
 
 type QuizMode = 'all' | 'sections' | 'questions';
+type QuestionOrder = 'sequential' | 'random';
+type AnswerOrder = 'sequential' | 'random';
 
 const quizModeToTestId: Record<QuizMode, string> = {
   all: 'quiz-all-button',
   sections: 'quiz-sections-button',
   questions: 'quiz-questions-button',
+};
+
+const orderToTestId: Record<QuestionOrder, string> = {
+  sequential: 'order-sequential-button',
+  random: 'order-random-button',
+};
+
+const answerOrderToTestId: Record<AnswerOrder, string> = {
+  sequential: 'answer-order-sequential-button',
+  random: 'answer-order-random-button',
 };
 
 /**
@@ -184,13 +196,24 @@ const quizModeToTestId: Record<QuizMode, string> = {
 export async function startQuizByTestId(
   page: Page,
   areaShortName: string,
-  quizMode: QuizMode = 'all'
+  options: { mode?: QuizMode; order?: QuestionOrder; answerOrder?: AnswerOrder } = {}
 ) {
   await waitForAppReady(page);
 
+  const mode = options.mode ?? 'all';
   await page.getByTestId(`area-${areaShortName}`).click();
   await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
-  await page.getByTestId(quizModeToTestId[quizMode]).click();
+  if (options.order) {
+    await page.getByTestId(orderToTestId[options.order]).click();
+  }
+  if (options.answerOrder) {
+    await page.getByTestId(answerOrderToTestId[options.answerOrder]).click();
+  }
+  await page.getByTestId(quizModeToTestId[mode]).click();
 
-  await waitForQuizReady(page);
+  if (mode === 'all') {
+    await waitForQuizReady(page);
+  } else {
+    await page.getByTestId('start-quiz-button').waitFor({ timeout: 20000 });
+  }
 }
