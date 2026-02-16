@@ -70,6 +70,7 @@ export function SectionSelection({
           disabled={selectedSections.size === 0}
           onClick={startQuizSections}
           aria-label="Empezar"
+          data-testid="start-quiz-button"
         >
           Empezar
         </button>

@@ -116,6 +116,7 @@ export function ResultDisplay({
         <div className="flex gap-4 mt-4">
           <button
             className="px-4 py-2 bg-blue-600 text-white rounded"
+            data-testid="result-continue-button"
             onClick={() => handleContinue('C')}
           >
             Continuar

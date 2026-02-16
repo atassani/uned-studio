@@ -87,6 +87,7 @@ export function QuestionSelection({
           disabled={selectedQuestions.size === 0}
           onClick={startQuizQuestions}
           aria-label="Empezar"
+          data-testid="start-quiz-button"
         >
           Empezar
         </button>

@@ -103,6 +103,7 @@ export function StatusGrid({
       </button>
       <button
         className="px-4 py-2 bg-orange-500 text-white rounded"
+        data-testid="reset-quiz-button"
         onClick={resetQuiz}
         onTouchEnd={resetQuiz}
         aria-label="Volver a empezar"
