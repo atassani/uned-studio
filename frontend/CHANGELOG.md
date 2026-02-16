@@ -9,6 +9,7 @@
 - test: migrate home and resume e2e specs to testids
 - test: migrate remaining e2e specs to testids
 - test: add testids for answer order controls
+- test: add testid-based quiz start helper
 
 ## [1.4.7] - 2026-02-03
 
