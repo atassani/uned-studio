@@ -47,9 +47,9 @@ test('Multiple Choice quiz works for IPC area', async ({ page }) => {
   await startQuiz(page, 'Introducción al Pensamiento Científico');
 
   // Should see Multiple Choice question interface with options
-  await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'B', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'C', exact: true })).toBeVisible();
+  await expect(page.getByTestId('mcq-answer-A')).toBeVisible();
+  await expect(page.getByTestId('mcq-answer-B')).toBeVisible();
+  await expect(page.getByTestId('mcq-answer-C')).toBeVisible();
 
   // Answer a question
   await page.getByRole('button', { name: 'A', exact: true }).click();
