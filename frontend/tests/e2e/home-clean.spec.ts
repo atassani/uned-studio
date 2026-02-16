@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { waitForAppReady, startQuiz, setupSuperFreshTest } from './helpers';
+import { waitForAppReady, startQuizByTestId, setupSuperFreshTest } from './helpers';
 
 // Clean beforeEach without complex timeouts
 test.beforeEach(async ({ page }) => {
@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('True/False quiz works for Lógica I area', async ({ page }) => {
-  await startQuiz(page, 'Lógica I');
+  await startQuizByTestId(page, 'log1');
   // Ensure we are in the quiz UI before looking for answer buttons
   let inQuiz = false;
   try {
@@ -44,7 +44,7 @@ test('True/False quiz works for Lógica I area', async ({ page }) => {
 });
 
 test('Multiple Choice quiz works for IPC area', async ({ page }) => {
-  await startQuiz(page, 'Introducción al Pensamiento Científico');
+  await startQuizByTestId(page, 'ipc');
 
   // Should see Multiple Choice question interface with options
   await expect(page.getByTestId('mcq-answer-A')).toBeVisible();
@@ -57,7 +57,7 @@ test('Multiple Choice quiz works for IPC area', async ({ page }) => {
 });
 
 test('keyboard shortcuts work for Multiple Choice questions', async ({ page }) => {
-  await startQuiz(page, 'Introducción al Pensamiento Científico');
+  await startQuizByTestId(page, 'ipc');
 
   // Press 'a' to answer with option A
   await page.keyboard.press('a');
@@ -65,6 +65,6 @@ test('keyboard shortcuts work for Multiple Choice questions', async ({ page }) =
 });
 
 test('shows area name in quiz view', async ({ page }) => {
-  await startQuiz(page, 'Lógica I');
+  await startQuizByTestId(page, 'log1');
   await expect(page.getByText('🎓 Área: Lógica I')).toBeVisible();
 });

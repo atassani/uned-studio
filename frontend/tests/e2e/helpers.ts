@@ -111,3 +111,28 @@ export async function startQuiz(
 
   await waitForQuizReady(page);
 }
+
+type QuizMode = 'all' | 'sections' | 'questions';
+
+const quizModeToTestId: Record<QuizMode, string> = {
+  all: 'quiz-all-button',
+  sections: 'quiz-sections-button',
+  questions: 'quiz-questions-button',
+};
+
+/**
+ * Navigate to a study area and start quiz using test ids.
+ */
+export async function startQuizByTestId(
+  page: Page,
+  areaShortName: string,
+  quizMode: QuizMode = 'all'
+) {
+  await waitForAppReady(page);
+
+  await page.getByTestId(`area-${areaShortName}`).click();
+  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
+  await page.getByTestId(quizModeToTestId[quizMode]).click();
+
+  await waitForQuizReady(page);
+}
