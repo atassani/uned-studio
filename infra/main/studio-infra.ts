@@ -49,14 +49,27 @@ export class StudioInfra extends Construct {
           ],
         };
 
+    const staticBehaviorOptions: cloudfront.BehaviorOptions = {
+      origin: S3BucketOrigin.withOriginAccessControl(this.studioBucket),
+      viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      compress: true,
+      allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+      cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+    };
+    const staticBehavior: cloudfront.BehaviorOptions = props.edgeLambdas
+      ? { ...staticBehaviorOptions, edgeLambdas: props.edgeLambdas }
+      : {
+          ...staticBehaviorOptions,
+          functionAssociations: [
+            {
+              function: studioRoutingFunction,
+              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+            },
+          ],
+        };
+
     this.behaviors = {
-      'studio/_next/*': {
-        origin: S3BucketOrigin.withOriginAccessControl(this.studioBucket),
-        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        compress: true,
-        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
-      },
+      'studio/_next/*': staticBehavior,
       'studio': behaviorOptions,
       'studio/*': behaviorOptions,
     };
