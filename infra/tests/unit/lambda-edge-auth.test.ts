@@ -41,6 +41,7 @@ describe('Lambda@Edge Auth Handler', () => {
           cf: {
             request: {
               uri,
+              querystring: '',
               headers: cookie ? { cookie: [{ key: 'Cookie', value: cookie }] } : {},
             },
           },
@@ -80,5 +81,34 @@ describe('Lambda@Edge Auth Handler', () => {
     } else {
       throw new Error('Expected guest request to be allowed');
     }
+  });
+
+  it('should exchange OAuth code and set auth cookie', async () => {
+    process.env.NEXT_PUBLIC_COGNITO_DOMAIN = 'https://example.auth';
+    process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID = 'client-id';
+    process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN = 'https://humblyproud.com/studio';
+
+    const exchangeSpy = jest
+      .spyOn(authModule, 'exchangeCodeForTokens')
+      .mockResolvedValue({ id_token: 'jwt-from-cognito' } as any);
+
+    const event = makeEvent({ uri: '/studio', cookie: undefined }) as any;
+    event.Records[0].cf.request.querystring = 'code=mock_code';
+
+    const result = await authModule.handler(event);
+
+    if (result && 'status' in result) {
+      expect(result.status).toBe('302');
+      expect(result.headers?.location?.[0]?.value).toBe('https://humblyproud.com/studio');
+      const setCookie = result.headers?.['set-cookie']?.[0]?.value || '';
+      expect(setCookie).toContain('jwt=jwt-from-cognito');
+      expect(setCookie).toContain('HttpOnly');
+      expect(setCookie).toContain('Secure');
+      expect(setCookie).toContain('SameSite=Lax');
+    } else {
+      throw new Error('Expected a redirect response');
+    }
+
+    exchangeSpy.mockRestore();
   });
 });
