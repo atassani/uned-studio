@@ -3,6 +3,7 @@
  * Pass an array of variable names, or log all NEXT_PUBLIC_ and NODE_ENV by default.
  */
 export function logEnvVars(vars: string[] = []) {
+  if (process.env.DEBUG_E2E !== '1') return;
   const allVars = vars.length
     ? vars
     : Object.keys(process.env).filter((k) => k.startsWith('NEXT_PUBLIC_') || k === 'NODE_ENV');
