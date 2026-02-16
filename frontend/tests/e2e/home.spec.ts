@@ -45,7 +45,7 @@ test('keyboard shortcuts work for Multiple Choice questions', async ({ page }) =
     await expect(page.locator('.question-text')).toBeVisible({ timeout: 8000 });
   } catch {
     try {
-      await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({
+      await expect(page.getByTestId('mcq-answer-A')).toBeVisible({
         timeout: 8000,
       });
     } catch (e) {
@@ -111,16 +111,16 @@ test('MCQ shows expected answer in correct format when wrong answer is selected'
     await expect(page.locator('.question-text')).toBeVisible({ timeout: 8000 });
   } catch {
     // Fallback: wait for answer buttons which indicate quiz is loaded
-    await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({
+    await expect(page.getByTestId('mcq-answer-A')).toBeVisible({
       timeout: 8000,
     });
   }
 
   // Wait for first question to load - use exact match for A button
-  await expect(page.getByRole('button', { name: 'A', exact: true })).toBeVisible({ timeout: 5000 });
+  await expect(page.getByTestId('mcq-answer-A')).toBeVisible({ timeout: 5000 });
 
   // Click on answer A
-  await page.getByRole('button', { name: 'A', exact: true }).click({ timeout: 10000 });
+  await page.getByTestId('mcq-answer-A').click({ timeout: 10000 });
 
   // Check if it shows "Incorrecto" - if so, verify expected answer format
   const isIncorrect = await page.getByText('❌ Incorrecto.').isVisible();
@@ -137,10 +137,10 @@ test('MCQ shows expected answer in correct format when wrong answer is selected'
     await page.getByRole('button', { name: 'Continuar' }).click();
 
     // Wait for next question to load - buttons are more reliable than question text
-    await expect(page.getByRole('button', { name: 'B', exact: true })).toBeVisible({
+    await expect(page.getByTestId('mcq-answer-B')).toBeVisible({
       timeout: 5000,
     });
-    await page.getByRole('button', { name: 'B', exact: true }).click();
+    await page.getByTestId('mcq-answer-B').click();
 
     const isIncorrectB = await page.getByText('❌ Incorrecto.').isVisible();
 
