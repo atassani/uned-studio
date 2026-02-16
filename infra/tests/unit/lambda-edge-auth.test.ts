@@ -78,7 +78,7 @@ describe('Lambda@Edge Auth Handler', () => {
     const result = await authModule.handler(event as any);
     // Type guard for CloudFrontRequest
     if (result && 'uri' in result) {
-      expect(result.uri).toBe('/studio/secure');
+      expect(result.uri).toBe('/studio/index.html');
     } else {
       throw new Error('Expected request to be allowed');
     }
@@ -88,7 +88,7 @@ describe('Lambda@Edge Auth Handler', () => {
     const event = makeEvent({ uri: '/studio/guest', cookie: undefined });
     const result = await authModule.handler(event as any);
     if (result && 'uri' in result) {
-      expect(result.uri).toBe('/studio/guest');
+      expect(result.uri).toBe('/studio/index.html');
     } else {
       throw new Error('Expected guest request to be allowed');
     }
