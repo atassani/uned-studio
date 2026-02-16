@@ -19,20 +19,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### TECH-010 - Fix tests
-
-- **Status:** backlog
-- **Priority:** P1
-- **Reported:** 2026-02-01
-- **Reporter:** TT
-- **Notes:**
-- Fix flaky tests
-- Make tests work as mocked authenticated users instead of guests
-- Remove screen captures
-- Remove console.logs
-- Remove secrets and setting variables in tests
-- Remove tests that do not test
-
 ### BUG-008 — Sign out is not removing jwt from localStorage: use Cognito
 
 - **Status:** backlog
@@ -156,6 +142,21 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ---
 
 ## Done
+
+### ✅ TECH-010 - Fix tests
+
+- **Status:** done
+- **Priority:** P1
+- **Reported:** 2026-02-01
+- **Completed:** 2026-02-16
+- **Reporter:** TT
+- **Notes:**
+- Fix flaky tests
+- Make tests work as mocked authenticated users instead of guests
+- Remove screen captures
+- Remove console.logs
+- Remove secrets and setting variables in tests
+- Remove tests that do not test
 
 ### ✅ TECH-009 — Tidy project to make it presentable
 
