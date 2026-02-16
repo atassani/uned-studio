@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { aws_cloudfront as cloudfront, aws_lambda as lambda } from 'aws-cdk-lib';
-import { StudioInfra } from '../../main/studio-infra.ts';
-
-test('passes edge lambdas to studio behaviors', () => {
+test('passes edge lambdas to studio behaviors', async () => {
+  jest.resetModules();
+  const { StudioInfra } = await import('../../main/studio-infra');
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'TestStack');
 
