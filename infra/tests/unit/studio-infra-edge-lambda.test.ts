@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { aws_cloudfront as cloudfront, aws_lambda as lambda } from 'aws-cdk-lib';
-import { StudioInfra } from '../../main/studio-infra';
+import { StudioInfra } from '../../main/studio-infra.ts';
 
 test('passes edge lambdas to studio behaviors', () => {
   const app = new cdk.App();
