@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady, openSelectionMenuByTestId } from './helpers';
 
 test.describe('Question Order Bugs', () => {
   test.beforeEach(async ({ page }) => {
@@ -10,8 +10,7 @@ test.describe('Question Order Bugs', () => {
 
   test('sequential order with manually set localStorage to trigger bug', async ({ page }) => {
     // First, start clean and get to a quiz state
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-sequential-button').click();
+    await openSelectionMenuByTestId(page, 'ipc', { order: 'sequential' });
 
     // Manually set localStorage to simulate having answered question 1 and being on question 2
     await page.evaluate(() => {

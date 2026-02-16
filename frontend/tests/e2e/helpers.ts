@@ -217,3 +217,22 @@ export async function startQuizByTestId(
     await page.getByTestId('start-quiz-button').waitFor({ timeout: 20000 });
   }
 }
+
+/**
+ * Navigate to a study area and land on the selection menu without starting a quiz.
+ */
+export async function openSelectionMenuByTestId(
+  page: Page,
+  areaShortName: string,
+  options: { order?: QuestionOrder; answerOrder?: AnswerOrder } = {}
+) {
+  await waitForAppReady(page);
+  await page.getByTestId(`area-${areaShortName}`).click();
+  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
+  if (options.order) {
+    await page.getByTestId(orderToTestId[options.order]).click();
+  }
+  if (options.answerOrder) {
+    await page.getByTestId(answerOrderToTestId[options.answerOrder]).click();
+  }
+}
