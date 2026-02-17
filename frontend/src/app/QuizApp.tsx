@@ -57,6 +57,105 @@ export default function QuizApp() {
   const resumeQuestionRef = useRef<number | null>(null);
   const currentLoadingAreaRef = useRef<string | null>(null);
 
+  const dataBaseUrl =
+    process.env.NEXT_PUBLIC_DATA_BASE_URL || process.env.NEXT_PUBLIC_BASE_PATH || '';
+
+  const buildDataUrl = useCallback(
+    (pathOrUrl: string) => {
+      if (/^https?:\/\//i.test(pathOrUrl) || pathOrUrl.startsWith('//')) {
+        return pathOrUrl;
+      }
+      const base = dataBaseUrl.replace(/\/$/, '');
+      const path = pathOrUrl.replace(/^\//, '');
+      if (!base) {
+        return pathOrUrl;
+      }
+      return `${base}/${path}`;
+    },
+    [dataBaseUrl]
+  );
+
+  const safeLocalStorage = useMemo(
+    () => ({
+      get(key: string) {
+        try {
+          if (typeof window === 'undefined') return null;
+          return window.localStorage.getItem(key);
+        } catch {
+          return null;
+        }
+      },
+      set(key: string, value: string) {
+        try {
+          if (typeof window === 'undefined') return;
+          window.localStorage.setItem(key, value);
+        } catch {
+          return;
+        }
+      },
+    }),
+    []
+  );
+
+  const fetchJsonWithCache = useCallback(
+    async (url: string) => {
+      const etagKey = `data-etag:${url}`;
+      const cacheKey = `data-cache:${url}`;
+      const cachedEtag = safeLocalStorage.get(etagKey);
+      const headers: HeadersInit = {};
+      if (cachedEtag) {
+        headers['If-None-Match'] = cachedEtag;
+      }
+
+      const response = await fetch(url, {
+        headers,
+        cache: 'no-cache',
+      });
+
+      if (response.status === 304) {
+        const cached = safeLocalStorage.get(cacheKey);
+        if (cached) {
+          return JSON.parse(cached);
+        }
+      }
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const etag = response.headers?.get?.('ETag');
+      if (etag) {
+        safeLocalStorage.set(etagKey, etag);
+      }
+      safeLocalStorage.set(cacheKey, JSON.stringify(data));
+      return data;
+    },
+    [safeLocalStorage]
+  );
+
+  const normalizeAreasPayload = (data: unknown) => {
+    if (Array.isArray(data)) {
+      return data as AreaType[];
+    }
+    if (data && typeof data === 'object' && 'areas' in data) {
+      const areas = (data as { areas?: AreaType[] }).areas;
+      if (Array.isArray(areas)) return areas;
+    }
+    throw new Error('Invalid areas payload');
+  };
+
+  const normalizeQuestionsPayload = (data: unknown) => {
+    if (Array.isArray(data)) {
+      return data as QuestionType[];
+    }
+    if (data && typeof data === 'object' && 'questions' in data) {
+      const questions = (data as { questions?: QuestionType[] }).questions;
+      if (Array.isArray(questions)) return questions;
+    }
+    throw new Error('Invalid questions payload');
+  };
+
   // New area-related state
   const [areas, setAreas] = useState<AreaType[]>([]);
   const [areasError, setAreasError] = useState<string | null>(null);
@@ -141,20 +240,18 @@ export default function QuizApp() {
         areasFile = params.get('areas')!;
       }
     }
-    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${areasFile}`)
-      .then((r) => {
-        if (!r.ok) {
-          throw new Error(`Error ${r.status}: ${r.statusText}`);
-        }
-        return r.json();
-      })
-      .then((areasData: AreaType[]) => {
-        setAreas(areasData);
+    const areasUrl = buildDataUrl(areasFile);
+    fetchJsonWithCache(areasUrl)
+      .then((areasData: unknown) => {
+        const normalizedAreas = normalizeAreasPayload(areasData);
+        setAreas(normalizedAreas);
         setAreasError(null);
         // Only show area selection if no area is selected
         const currentAreaShortName = storage.getCurrentArea();
         if (currentAreaShortName) {
-          const areaToRestore = areasData.find((area) => area.shortName === currentAreaShortName);
+          const areaToRestore = normalizedAreas.find(
+            (area) => area.shortName === currentAreaShortName
+          );
           if (areaToRestore) {
             setSelectedArea(areaToRestore);
             setCurrentQuizType(areaToRestore.type);
@@ -217,106 +314,117 @@ export default function QuizApp() {
     const savedStatus = storage.getAreaQuizStatus(areaKey);
     const savedCurrent = storage.getAreaCurrentQuestion(areaKey);
     const savedSelectedQuestions = storage.getAreaSelectedQuestions(areaKey);
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${area.file}`);
-    if (currentLoadingAreaRef.current !== loadingId) return;
-    if (response.ok) {
-      const questionsData = await response.json();
-      const questionsWithIndex = questionsData.map((q: QuestionType, idx: number) => ({
-        ...q,
-        index: idx,
-      }));
+    try {
+      const areaUrl = buildDataUrl(area.file);
+      const questionsData = await fetchJsonWithCache(areaUrl);
       if (currentLoadingAreaRef.current !== loadingId) return;
-      setAllQuestions(questionsWithIndex);
-      let parsedStatus: Record<number, 'correct' | 'fail' | 'pending'> = {};
-      if (savedStatus) {
-        parsedStatus = savedStatus;
-      } else {
-        parsedStatus = questionsWithIndex.reduce(
-          (acc: Record<number, 'correct' | 'fail' | 'pending'>, q: QuestionType) => {
-            acc[q.index] = 'pending';
-            return acc;
-          },
-          {}
-        );
-      }
-      setStatus(parsedStatus);
+      if (questionsData) {
+        const normalizedQuestions = normalizeQuestionsPayload(questionsData);
+        const questionsWithIndex = normalizedQuestions.map((q: QuestionType, idx: number) => ({
+          ...q,
+          index: idx,
+        }));
+        if (currentLoadingAreaRef.current !== loadingId) return;
+        setAllQuestions(questionsWithIndex);
+        let parsedStatus: Record<number, 'correct' | 'fail' | 'pending'> = {};
+        if (savedStatus) {
+          parsedStatus = savedStatus;
+        } else {
+          parsedStatus = questionsWithIndex.reduce(
+            (acc: Record<number, 'correct' | 'fail' | 'pending'>, q: QuestionType) => {
+              acc[q.index] = 'pending';
+              return acc;
+            },
+            {}
+          );
+        }
+        setStatus(parsedStatus);
 
-      // Load shuffle preference for this area from localStorage
-      const savedShuffleQuestions = storage.getAreaShuffleQuestions(areaKey);
-      const shouldShuffleQuestions =
-        savedShuffleQuestions !== undefined ? savedShuffleQuestions : true;
+        // Load shuffle preference for this area from localStorage
+        const savedShuffleQuestions = storage.getAreaShuffleQuestions(areaKey);
+        const shouldShuffleQuestions =
+          savedShuffleQuestions !== undefined ? savedShuffleQuestions : true;
 
-      // Order questions according to shuffle preference
-      let orderedQuestions = [...questionsWithIndex];
-      if (!shouldShuffleQuestions) {
-        orderedQuestions.sort((a, b) => a.number - b.number);
-      } else {
-        // Replace Math.random() with Fisher-Yates shuffle for stable randomization
-        function fisherYatesShuffle<T>(array: T[]): T[] {
-          const shuffled = [...array];
-          for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        // Order questions according to shuffle preference
+        let orderedQuestions = [...questionsWithIndex];
+        if (!shouldShuffleQuestions) {
+          orderedQuestions.sort((a, b) => a.number - b.number);
+        } else {
+          // Replace Math.random() with Fisher-Yates shuffle for stable randomization
+          function fisherYatesShuffle<T>(array: T[]): T[] {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
           }
-          return shuffled;
+
+          // Use Fisher-Yates shuffle for random order
+          orderedQuestions = fisherYatesShuffle(orderedQuestions);
         }
 
-        // Use Fisher-Yates shuffle for random order
-        orderedQuestions = fisherYatesShuffle(orderedQuestions);
-      }
+        // If we have saved selected questions, filter to only those questions
+        if (savedSelectedQuestions) {
+          const selectedIndices = savedSelectedQuestions;
+          orderedQuestions = orderedQuestions.filter((q) => selectedIndices.includes(q.index));
+        } else if (savedStatus) {
+          // Legacy session without savedSelectedQuestions - infer from saved status indices
+          const statusIndices = Object.keys(savedStatus).map(Number);
+          orderedQuestions = orderedQuestions.filter((q) => statusIndices.includes(q.index));
+        }
 
-      // If we have saved selected questions, filter to only those questions
-      if (savedSelectedQuestions) {
-        const selectedIndices = savedSelectedQuestions;
-        orderedQuestions = orderedQuestions.filter((q) => selectedIndices.includes(q.index));
-      } else if (savedStatus) {
-        // Legacy session without savedSelectedQuestions - infer from saved status indices
-        const statusIndices = Object.keys(savedStatus).map(Number);
-        orderedQuestions = orderedQuestions.filter((q) => statusIndices.includes(q.index));
-      }
-
-      // If forced via parameter, always show the menu on area change
-      if (forceMenu) {
-        setQuestions([]);
-        setCurrent(null);
-        setShowSelectionMenu(true);
-        setSelectionMode(null);
-        setShowStatus(false);
-        setShowResult(null);
-        return;
-      }
-      // If all questions are answered, show the menu and clean up currentQuestion
-      const allAnswered =
-        Object.values(parsedStatus).length > 0 &&
-        Object.values(parsedStatus).every((s) => s !== 'pending');
-      if (allAnswered) {
-        storage.setAreaCurrentQuestion(areaKey, undefined);
-        setQuestions([]);
-        setCurrent(null);
-        setShowSelectionMenu(true);
-        setSelectionMode(null);
-        setShowStatus(false);
-        setShowResult(null);
-        return;
-      }
-      // If there is no saved progress, show the selection menu
-      if (!savedStatus && !savedCurrent) {
-        setQuestions([]);
-        setCurrent(null);
-        setShowSelectionMenu(true);
-        setSelectionMode(null);
-        setShowStatus(false);
-        setShowResult(null);
-        return;
-      }
-      // Otherwise, resume at the last question or first pending
-      let idx = 0;
-      if (savedCurrent !== null) {
-        const n = Number(savedCurrent);
-        if (!isNaN(n) && n >= 0 && n < orderedQuestions.length) {
-          idx = n;
+        // If forced via parameter, always show the menu on area change
+        if (forceMenu) {
+          setQuestions([]);
+          setCurrent(null);
+          setShowSelectionMenu(true);
+          setSelectionMode(null);
+          setShowStatus(false);
+          setShowResult(null);
+          return;
+        }
+        // If all questions are answered, show the menu and clean up currentQuestion
+        const allAnswered =
+          Object.values(parsedStatus).length > 0 &&
+          Object.values(parsedStatus).every((s) => s !== 'pending');
+        if (allAnswered) {
+          storage.setAreaCurrentQuestion(areaKey, undefined);
+          setQuestions([]);
+          setCurrent(null);
+          setShowSelectionMenu(true);
+          setSelectionMode(null);
+          setShowStatus(false);
+          setShowResult(null);
+          return;
+        }
+        // If there is no saved progress, show the selection menu
+        if (!savedStatus && !savedCurrent) {
+          setQuestions([]);
+          setCurrent(null);
+          setShowSelectionMenu(true);
+          setSelectionMode(null);
+          setShowStatus(false);
+          setShowResult(null);
+          return;
+        }
+        // Otherwise, resume at the last question or first pending
+        let idx = 0;
+        if (savedCurrent !== null) {
+          const n = Number(savedCurrent);
+          if (!isNaN(n) && n >= 0 && n < orderedQuestions.length) {
+            idx = n;
+          } else {
+            // If savedCurrent is out of range, find first pending
+            const nextPending = orderedQuestions.findIndex(
+              (q) => parsedStatus[q.index] === 'pending'
+            );
+            if (nextPending !== -1) {
+              idx = nextPending;
+            }
+          }
         } else {
-          // If savedCurrent is out of range, find first pending
+          // If no saved current, try to resume at first pending
           const nextPending = orderedQuestions.findIndex(
             (q) => parsedStatus[q.index] === 'pending'
           );
@@ -324,21 +432,17 @@ export default function QuizApp() {
             idx = nextPending;
           }
         }
-      } else {
-        // If no saved current, try to resume at first pending
-        const nextPending = orderedQuestions.findIndex((q) => parsedStatus[q.index] === 'pending');
-        if (nextPending !== -1) {
-          idx = nextPending;
-        }
-      }
 
-      setQuestions(orderedQuestions);
-      setCurrent(idx);
-      setShowSelectionMenu(false);
-      setSelectionMode(null);
-      setShowStatus(false);
-      setShowResult(null);
-      return;
+        setQuestions(orderedQuestions);
+        setCurrent(idx);
+        setShowSelectionMenu(false);
+        setSelectionMode(null);
+        setShowStatus(false);
+        setShowResult(null);
+        return;
+      }
+    } catch (error) {
+      console.error('Failed to load questions:', error);
     }
     setShowSelectionMenu(true);
     setQuestions([]);
@@ -451,14 +555,12 @@ export default function QuizApp() {
 
   const loadQuestionsForArea = useCallback(async (area: AreaType) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/${area.file}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const questionsData = await response.json();
+      const areaUrl = buildDataUrl(area.file);
+      const questionsData = await fetchJsonWithCache(areaUrl);
+      const normalizedQuestions = normalizeQuestionsPayload(questionsData);
 
       // Add indices to questions for tracking
-      const questionsWithIndex = questionsData.map((q: QuestionType, idx: number) => ({
+      const questionsWithIndex = normalizedQuestions.map((q: QuestionType, idx: number) => ({
         ...q,
         index: idx,
       }));

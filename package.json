@@ -12,7 +12,7 @@
     "test:frontend": "npm run test --workspace=frontend",
     "test:infra": "npm run test --workspace=infra",
     "test": "npm run test:frontend && npm run test:infra",
-    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:frontend": "./scripts/dev-frontend.sh",
     "dev:infra": "npm run dev --workspace=infra",
     "typecheck": "npm run typecheck --workspace=frontend",
     "format": "npm run format --workspace=frontend",

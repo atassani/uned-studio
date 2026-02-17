@@ -947,7 +947,7 @@
   {
     "section": "CUESTIONES DE LOS APUNTES",
     "number": 35,
-    "question": "(¬s ∧ t) → p ∧ (¬s ∧ t) → r es una fórmula bien formada.", 
+    "question": "(¬s ∧ t) → p ∧ (¬s ∧ t) → r es una fórmula bien formada.",
     "answer": "Falso",
     "explanation": "Se necesitan más paréntesis para desambiguar la fórmula:<ul><li>(¬s ∧ t)→ [p ∧ (¬s ∧ t) → r]</li><li>[(¬s ∧ t) → p ∧ ( ¬s ∧ t)] → r</li><li>[(¬s ∧ t) → p] ∧ [(¬s ∧ t) → r]</li><li>{[(¬s ∧ t) → p] ∧ (¬s ∧ t)} →r</li></ul>"
   },
@@ -1063,7 +1063,7 @@
     "answer": "Verdadero",
     "explanation": "Cuando el antecedente también es una contradicción, la fórmula resultante es una tautología, ya que de ella I(X ∧ ¬X)=0 , será siempre válido el condicional sea cual sea el valor del consecuente I(Y)=0 o I(Y)=1.\n\n Cuando ambos (antecedente y consecuente) son contradicciones, no existen interpretaciones con antecedente verdadero y consecuente falso, sino que todas las interpretaciones dan como resultado lo verdadero.\n\n Un condicional con antecedente contradictorio y consecuente contradictorio es una implicación, una fórmula tautológica. Se puede mostrar un caso con una tabla de verdad."
   },
-  {    
+  {
     "section": "CUESTIONES DE LOS APUNTES",
     "number": 52,
     "question": "Una implicación es un condicional verdadero.",

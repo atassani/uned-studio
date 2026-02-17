@@ -1,6 +1,54 @@
 import { Page, expect } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const homePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const dataBaseUrl = process.env.NEXT_PUBLIC_DATA_BASE_URL || '';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const testdataDir = path.resolve(__dirname, '../testdata');
+
+const dataBasePath = (() => {
+  if (!dataBaseUrl) return '';
+  try {
+    return new URL(dataBaseUrl).pathname.replace(/\/$/, '');
+  } catch {
+    return dataBaseUrl.replace(/\/$/, '');
+  }
+})();
+
+const testDataFiles = [
+  'areas-mcq-tests.json',
+  'questions-mcq-tests.json',
+  'questions-logica1.json',
+  'questions-ipc.json',
+  'questions-fdl.json',
+];
+
+function buildDataRoutePattern(fileName: string) {
+  if (!dataBasePath) {
+    return `**/${fileName}`;
+  }
+  return `**${dataBasePath}/${fileName}`;
+}
+
+export async function setupTestDataRoutes(page: Page) {
+  for (const fileName of testDataFiles) {
+    const pattern = buildDataRoutePattern(fileName);
+    await page.route(pattern, async (route) => {
+      const filePath = path.join(testdataDir, fileName);
+      const body = fs.readFileSync(filePath, 'utf8');
+      await route.fulfill({
+        status: 200,
+        body,
+        headers: {
+          'content-type': 'application/json; charset=utf-8',
+          'cache-control': 'no-store',
+        },
+      });
+    });
+  }
+}
 
 /**
  * Log selected environment variables to the console for debugging.
@@ -33,6 +81,7 @@ function createMockJwt(email: string) {
  * Common test setup - navigate to home and clear state for fresh start
  */
 export async function setupFreshTest(page: Page) {
+  await setupTestDataRoutes(page);
   await page.goto(homePath);
   // Clear localStorage for clean state
   await page.evaluate(() => localStorage.clear());
@@ -42,6 +91,7 @@ export async function setupFreshTest(page: Page) {
  * Common test setup with authenticated user.
  */
 export async function setupFreshTestAuthenticated(page: Page, email = 'e2e@example.com') {
+  await setupTestDataRoutes(page);
   await page.context().clearCookies();
   const token = createMockJwt(email);
   await page.addInitScript(
@@ -68,6 +118,7 @@ export async function setupFreshTestAuthenticated(page: Page, email = 'e2e@examp
  */
 export async function setupSuperFreshTest(page: Page, seed?: string) {
   try {
+    await setupTestDataRoutes(page);
     // Build the URL with seed if provided
     let url = homePath;
     if (seed) {
@@ -108,6 +159,7 @@ export async function setupSuperFreshTestAuthenticated(
   seed?: string,
   email = 'e2e@example.com'
 ) {
+  await setupTestDataRoutes(page);
   await page.context().clearCookies();
   const token = createMockJwt(email);
   let url = homePath;

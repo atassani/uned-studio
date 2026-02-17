@@ -11,6 +11,7 @@ export interface StudioInfraProps {
 
 export class StudioInfra extends Construct {
   public readonly studioBucket: s3.Bucket;
+  public readonly studioDataBucket: s3.Bucket;
   public readonly behaviors: Record<string, cloudfront.BehaviorOptions>;
 
   constructor(scope: Construct, id: string, props: StudioInfraProps = {}) {
@@ -24,10 +25,27 @@ export class StudioInfra extends Construct {
       autoDeleteObjects: false,
     });
 
+    this.studioDataBucket = new s3.Bucket(this, 'HumblyProudStudioDataBucket', {
+      bucketName: 'studio-data.humblyproud.com',
+      publicReadAccess: false,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      autoDeleteObjects: false,
+    });
+
     const codePath = path.join(__dirname, 'cloudfront-functions', 'studio-routing.js');
     const code = fs.readFileSync(codePath, 'utf8');
     const studioRoutingFunction = new cloudfront.Function(this, 'StudioRoutingFunction', {
       code: cloudfront.FunctionCode.fromInline(code),
+    });
+    const studioDataCodePath = path.join(
+      __dirname,
+      'cloudfront-functions',
+      'studio-data-routing.js'
+    );
+    const studioDataCode = fs.readFileSync(studioDataCodePath, 'utf8');
+    const studioDataRoutingFunction = new cloudfront.Function(this, 'StudioDataRoutingFunction', {
+      code: cloudfront.FunctionCode.fromInline(studioDataCode),
     });
 
     const studioOrigin = S3BucketOrigin.withOriginAccessControl(this.studioBucket);
@@ -69,10 +87,26 @@ export class StudioInfra extends Construct {
           ],
         };
 
+    const studioDataOrigin = S3BucketOrigin.withOriginAccessControl(this.studioDataBucket);
+    const studioDataBehavior: cloudfront.BehaviorOptions = {
+      origin: studioDataOrigin,
+      viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      compress: true,
+      allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+      cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+      functionAssociations: [
+        {
+          function: studioDataRoutingFunction,
+          eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+        },
+      ],
+    };
+
     this.behaviors = {
       'studio/_next/*': staticBehavior,
       'studio': behaviorOptions,
       'studio/*': behaviorOptions,
+      'studio-data/*': studioDataBehavior,
     };
   }
 }

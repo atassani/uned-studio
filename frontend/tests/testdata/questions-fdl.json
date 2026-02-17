@@ -51,11 +51,7 @@
     "section": "Tema 1. Introducción",
     "number": 5,
     "question": "Considera el siguiente enunciado: “La neige est blanche” significa en francés que la nieve es blanca. ¿Qué idioma se usa como metalenguaje?",
-    "options": [
-      "Ambos.",
-      "El francés.",
-      "El español"
-    ],
+    "options": ["Ambos.", "El francés.", "El español"],
     "answer": "El español",
     "explanation": ""
   },
@@ -194,11 +190,7 @@
     "section": "Tema 4. Referencia directa y externismo semántico",
     "number": 2,
     "question": "Supongamos que la descripción que asociamos con el nombre ‘Gabriel García Márquez’ es ‘el autor de Cien años de soledad’. Ahora imaginemos que la persona a quien habitualmente atribuimos el mérito de esa obra (Gabriel García Márquez) en realidad no la escribió, sino que se la robó a una conocida llamada Eugenia Pérez. De acuerdo con el descriptivismo, ¿a quién referiría en esta situación imaginaria el nombre ‘Gabriel García Márquez’?",
-    "options": [
-      "A Gabriel García Márquez.",
-      "A Eugenia Pérez.",
-      "A ninguno de los dos."
-    ],
+    "options": ["A Gabriel García Márquez.", "A Eugenia Pérez.", "A ninguno de los dos."],
     "answer": "A Eugenia Pérez.",
     "explanation": ""
   },
@@ -206,10 +198,7 @@
     "section": "Tema 4. Referencia directa y externismo semántico",
     "number": 3,
     "question": "De acuerdo con Kripke, ¿qué expresiones son designadores rígidos?",
-    "options": [
-      "Los nombres propios.",
-      "Las descripciones definidas."
-    ],
+    "options": ["Los nombres propios.", "Las descripciones definidas."],
     "answer": "Los nombres propios.",
     "explanation": ""
   },
@@ -229,11 +218,7 @@
     "section": "Tema 4. Referencia directa y externismo semántico",
     "number": 5,
     "question": "El descriptivismo es una teoría…",
-    "options": [
-      "Ambas.",
-      "Internista.",
-      "Externista."
-    ],
+    "options": ["Ambas.", "Internista.", "Externista."],
     "answer": "Internista.",
     "explanation": ""
   },
@@ -313,11 +298,7 @@
     "section": "Tema 6. Indéxicos y demostrativos",
     "number": 2,
     "question": "Un ejemplo de indéxico puro o automático podría ser…",
-    "options": [
-      "'Él'.",
-      "‘Esto’.",
-      "'Yo'."
-    ],
+    "options": ["'Él'.", "‘Esto’.", "'Yo'."],
     "answer": "'Yo'.",
     "explanation": ""
   },

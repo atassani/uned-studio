@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { setupTestDataRoutes } from './helpers';
 
 const getStudioUrls = (baseURL?: string) => {
   const fallbackBase = 'http://localhost:3000/studio/';
@@ -20,6 +21,8 @@ const ensureGuestLoginIfPresent = async (page: Page) => {
 
 test.describe('Studio root access', () => {
   test('accessing /studio should work without trailing slash', async ({ page }) => {
+    await setupTestDataRoutes(page);
+
     // Go to the root /studio path (without trailing slash)
     const { rootNoSlash } = getStudioUrls(test.info().project.use.baseURL as string | undefined);
     const response = await page.goto(rootNoSlash);
