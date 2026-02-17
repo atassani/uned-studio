@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.4.8] - 2026-02-17
+
+- Tests pass
+- Cognito SSO with Google works
 - test: avoid clearing localStorage on authenticated reloads in e2e helpers
 - test: make area persistence reload assertion resilient to resume state
 - test: make studio root access e2e use local baseURL
