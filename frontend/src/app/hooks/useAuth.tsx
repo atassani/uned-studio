@@ -245,7 +245,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
     setUser(null);
     storage.clearState();
-    window.location.href = '/studio/logout';
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('jwt');
+    }
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    const signOutRedirect = process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT || `${basePath || '/'}`;
+    const signOutRedirectUrl = new URL(
+      signOutRedirect,
+      typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+    );
+    signOutRedirectUrl.searchParams.set('logged_out', Date.now().toString());
+    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+    const isLocalDevHost =
+      hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1';
+
+    // In local dev there is no /studio/logout backend route.
+    // Use Cognito logout directly when available so the Hosted UI session is actually closed.
+    if (isLocalDevHost) {
+      if (!user?.isGuest && domain && clientId) {
+        window.location.href =
+          `${domain}/logout?client_id=${encodeURIComponent(clientId)}` +
+          `&logout_uri=${encodeURIComponent(signOutRedirect)}`;
+        return;
+      }
+      window.location.href = signOutRedirectUrl.toString();
+      return;
+    }
+
+    window.location.href = `${basePath}/logout`;
   };
 
   return (

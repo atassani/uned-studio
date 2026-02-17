@@ -38,6 +38,15 @@ export class StudioInfra extends Construct {
     const studioRoutingFunction = new cloudfront.Function(this, 'StudioRoutingFunction', {
       code: cloudfront.FunctionCode.fromInline(code),
     });
+    const studioDataCodePath = path.join(
+      __dirname,
+      'cloudfront-functions',
+      'studio-data-routing.js'
+    );
+    const studioDataCode = fs.readFileSync(studioDataCodePath, 'utf8');
+    const studioDataRoutingFunction = new cloudfront.Function(this, 'StudioDataRoutingFunction', {
+      code: cloudfront.FunctionCode.fromInline(studioDataCode),
+    });
 
     const studioOrigin = S3BucketOrigin.withOriginAccessControl(this.studioBucket);
     const htmlBehaviorOptions: cloudfront.BehaviorOptions = {
@@ -85,6 +94,12 @@ export class StudioInfra extends Construct {
       compress: true,
       allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
       cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+      functionAssociations: [
+        {
+          function: studioDataRoutingFunction,
+          eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+        },
+      ],
     };
 
     this.behaviors = {

@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:data": "serve --listen 4173 ../../learning-studio-data/data",
+    "dev:data": "serve --cors --listen 4173 ../../learning-studio-data/data",
     "dev:playwright": "NODE_ENV=test next dev",
     "build": "next build",
     "start": "next start",

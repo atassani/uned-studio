@@ -39,5 +39,5 @@ test('passes edge lambdas to studio behaviors', () => {
   expect(studio.behaviors['studio'].functionAssociations).toBeUndefined();
   expect(studio.behaviors['studio/*'].functionAssociations).toBeUndefined();
   expect(studio.behaviors['studio-data/*'].edgeLambdas).toBeUndefined();
-  expect(studio.behaviors['studio-data/*'].functionAssociations).toBeUndefined();
+  expect(studio.behaviors['studio-data/*'].functionAssociations).toHaveLength(1);
 });
