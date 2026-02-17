@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.4.9] - 2026-02-17
+
+- tech: JSON files retrieved from project learning-studio-data to simplify management
+- tech: Data is public for ease of access
+- tech: JSON files have new structure to allow versioning
+
 ## [1.4.8] - 2026-02-17
 
 - Tests pass
