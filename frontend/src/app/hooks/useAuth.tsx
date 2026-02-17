@@ -36,6 +36,22 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export function getCognitoLoginUrl(): string | null {
+  const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
+  const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
+  const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+  const prompt = process.env.NEXT_PUBLIC_COGNITO_PROMPT;
+  if (!domain || !clientId || !redirectUri) {
+    return null;
+  }
+  const promptParam = prompt ? `&prompt=${encodeURIComponent(prompt)}` : '';
+  return (
+    `${domain}/oauth2/authorize?response_type=code&client_id=${clientId}` +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+    `&identity_provider=Google&scope=openid+email+profile${promptParam}`
+  );
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +61,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Restore auth state from localStorage JWT on load, or handle OAuth code
   useEffect(() => {
     const jwt = typeof window !== 'undefined' ? localStorage.getItem('jwt') : null;
+    const authCookie =
+      typeof document !== 'undefined'
+        ? document.cookie.split(';').some((part) => part.trim() === 'auth=1')
+        : false;
     const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
     const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
     const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
@@ -72,7 +92,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    // 1. If JWT exists, restore user
+    const removeCodeParam = () => {
+      if (typeof window === 'undefined') return;
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('code')) {
+        urlParams.delete('code');
+        const newUrl =
+          window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+        window.history.replaceState({}, '', newUrl);
+      }
+    };
+
+    const fetchCurrentUser = async () => {
+      const response = await fetch('/studio/me', { credentials: 'same-origin' });
+      if (!response.ok) {
+        return null;
+      }
+      return (await response.json()) as UserWithAttributes['attributes'];
+    };
+
+    // 1. If auth cookie exists, load user from /studio/me
+    if (authCookie) {
+      setIsLoading(true);
+      fetchCurrentUser()
+        .then((payload) => {
+          if (!payload) {
+            setUser(null);
+            setIsAuthenticated(false);
+            return;
+          }
+          setUser({
+            username: payload.email || payload.name || payload.sub || 'google-user',
+            attributes: payload,
+            isGuest: false,
+          });
+          setIsAuthenticated(true);
+        })
+        .catch(() => {
+          setUser(null);
+          setIsAuthenticated(false);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          removeCodeParam();
+        });
+      return;
+    }
+
+    // 2. If JWT exists, restore user
     if (jwt) {
       const userInfo = parseJwt(jwt);
       if (userInfo) {
@@ -88,10 +155,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsAuthenticated(false);
         setIsLoading(false);
       }
+      removeCodeParam();
       return;
     }
 
-    // 2. If code param exists, exchange for tokens
+    // 3. If code param exists, exchange for tokens (fallback for local dev)
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
@@ -130,11 +198,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setUser(null);
                 setIsLoading(false);
               }
-              // Remove code param from URL
-              urlParams.delete('code');
-              const newUrl =
-                window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
-              window.history.replaceState({}, '', newUrl);
+              removeCodeParam();
             } else {
               setIsAuthenticated(false);
               setUser(null);
@@ -158,17 +222,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithGoogle = () => {
     // Redirect to Cognito Hosted UI for Google login
-    const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
-    const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
-    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
-    if (!domain || !clientId || !redirectUri) {
+    const url = getCognitoLoginUrl();
+    if (!url) {
       alert('Cognito config missing.');
       return;
     }
-    const url =
-      `${domain}/oauth2/authorize?response_type=code&client_id=${clientId}` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&identity_provider=Google&scope=openid+email+profile`;
     window.location.href = url;
   };
 
@@ -187,6 +245,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
     setUser(null);
     storage.clearState();
+    window.location.href = '/studio/logout';
   };
 
   return (

@@ -54,6 +54,8 @@ NEXT_PUBLIC_COGNITO_CLIENT_ID=
 NEXT_PUBLIC_COGNITO_DOMAIN=
 NEXT_PUBLIC_REDIRECT_SIGN_IN=https://domain.com/studio
 NEXT_PUBLIC_REDIRECT_SIGN_OUT=https://domain.com/studio
+# Opcional: fuerza comportamiento de login (login, select_account)
+NEXT_PUBLIC_COGNITO_PROMPT=
 
 # El tracking ID de Google Analytics 4 o el texto 'disabled' para desactivar analytics
 NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX```

@@ -17,6 +17,13 @@
 - test: extend startQuizByTestId options and refactor specs
 - test: refactor additional specs to startQuizByTestId
 - test: add selection menu helper for e2e
+- fix: render google login as hosted ui link
+- fix: remove index.html route alias to allow export
+- fix: deploy studio assets at bucket root for /studio path
+- fix: treat auth cookie as authenticated session
+- feat: load current user via /studio/me and trigger edge logout
+- test: clear cookies in authenticated e2e setup
+- feat: add Cognito prompt env toggle for login behavior
 
 ## [1.4.7] - 2026-02-03
 

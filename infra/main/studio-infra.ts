@@ -5,11 +5,15 @@ import { aws_cloudfront as cloudfront, aws_s3 as s3 } from 'aws-cdk-lib';
 import { S3BucketOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Construct } from 'constructs';
 
+export interface StudioInfraProps {
+  edgeLambdas?: cloudfront.EdgeLambda[];
+}
+
 export class StudioInfra extends Construct {
   public readonly studioBucket: s3.Bucket;
   public readonly behaviors: Record<string, cloudfront.BehaviorOptions>;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: StudioInfraProps = {}) {
     super(scope, id);
 
     this.studioBucket = new s3.Bucket(this, 'HumblyProudStudioBucket', {
@@ -26,21 +30,47 @@ export class StudioInfra extends Construct {
       code: cloudfront.FunctionCode.fromInline(code),
     });
 
-    const behaviorOptions: cloudfront.BehaviorOptions = {
-      origin: S3BucketOrigin.withOriginAccessControl(this.studioBucket),
+    const studioOrigin = S3BucketOrigin.withOriginAccessControl(this.studioBucket);
+    const htmlBehaviorOptions: cloudfront.BehaviorOptions = {
+      origin: studioOrigin,
+      viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      compress: true,
+      allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+      cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+    };
+    const behaviorOptions: cloudfront.BehaviorOptions = props.edgeLambdas
+      ? { ...htmlBehaviorOptions, edgeLambdas: props.edgeLambdas }
+      : {
+          ...htmlBehaviorOptions,
+          functionAssociations: [
+            {
+              function: studioRoutingFunction,
+              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+            },
+          ],
+        };
+
+    const staticBehaviorOptions: cloudfront.BehaviorOptions = {
+      origin: studioOrigin,
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       compress: true,
       allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
       cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
-      functionAssociations: [
-        {
-          function: studioRoutingFunction,
-          eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-        },
-      ],
     };
+    const staticBehavior: cloudfront.BehaviorOptions = props.edgeLambdas
+      ? { ...staticBehaviorOptions, edgeLambdas: props.edgeLambdas }
+      : {
+          ...staticBehaviorOptions,
+          functionAssociations: [
+            {
+              function: studioRoutingFunction,
+              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+            },
+          ],
+        };
 
     this.behaviors = {
+      'studio/_next/*': staticBehavior,
       'studio': behaviorOptions,
       'studio/*': behaviorOptions,
     };

@@ -42,6 +42,7 @@ export async function setupFreshTest(page: Page) {
  * Common test setup with authenticated user.
  */
 export async function setupFreshTestAuthenticated(page: Page, email = 'e2e@example.com') {
+  await page.context().clearCookies();
   const token = createMockJwt(email);
   await page.addInitScript(
     ({ jwt }) => {
@@ -107,6 +108,7 @@ export async function setupSuperFreshTestAuthenticated(
   seed?: string,
   email = 'e2e@example.com'
 ) {
+  await page.context().clearCookies();
   const token = createMockJwt(email);
   let url = homePath;
   if (seed) {

@@ -34,16 +34,11 @@ test.describe('Studio root access', () => {
     await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 10000 });
   });
 
-  test('accessing /studio/index.html should also work', async ({ page }) => {
-    // Go to the explicit index.html path (this already works)
+  test('accessing /studio/index.html should return 404', async ({ page }) => {
+    // We no longer generate an index.html route in Next export.
     const { rootIndex } = getStudioUrls(test.info().project.use.baseURL as string | undefined);
     const response = await page.goto(rootIndex);
 
-    expect(response?.status()).toBe(200);
-
-    await ensureGuestLoginIfPresent(page);
-
-    // Should load the actual app content
-    await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 10000 });
+    expect(response?.status()).toBe(404);
   });
 });
