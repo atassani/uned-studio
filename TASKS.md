@@ -19,21 +19,33 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### BUG-008 — Sign out is not removing jwt from localStorage: use Cognito
+### TECH-003 — Separate application from data
+
+- **Status:** backlog
+- **Priority:** P3
+- **Reported:** 2025-01-17
+- **Reporter:** TT
+- **Notes:**
+  - Find a solution to separate app code from question data (e.g., JSON files).
+  - This would allow updating questions without redeploying the app.
+  - Protect data in the server, with JWT validation
+  - Consider versioning data, even changing the JSON structure, adding a field with a version number and, maybe, the date of the last update. Or only the date.
+  - Make tests pass.
+  - Separate data from the learing-studio repository, only keeping test data, and removing the need to prepare the environment.
+  - Pull data at deployment time or at runtime from a protected endpoint, instead of keeping it in the frontend code.
+  - Consider different ways to retrieve areas.json or even building it dynamically depending on permissions or configuration.
+
+### FEAT-011 - Use authentication to save progress per user
 
 - **Status:** backlog
 - **Priority:** P1
-- **Reported:** 2026-02-01
+- **Reported:** 2025-01-24
 - **Reporter:** TT
-- **Notes:**
-
-### BUG-009 — Allow to log out and switch user
-
-- **Status:** backlog
-- **Priority:** P1
-- **Reported:** 2026-02-01
-- **Reporter:** TT
-- **Notes:**
+- **Notes:** Once users are authenticated, save their quiz progress and settings in a database (e.g., DynamoDB) instead of localStorage, allowing them to resume on any device.
+  - Study where to store the Lambda that writes to the database, and how to secure it with JWT validation.
+  - Consider also saving the date of the last update, to be able to show it in the UI and to know when to update the data in the frontend.
+  - Make sure to handle the case when the user is not authenticated, falling back to localStorage and allowing them to migrate their progress when they sign in.
+  - Restore progress from the database and remove everything at logout, allowing guest users to use the app.
 
 ---
 
@@ -52,34 +64,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 - **Status:** backlog
 - **Priority:** P3
 - **Reported:** 2026-02-01
-- **Reporter:** TT
-- **Notes:**
-
-### TECH-003 — Separate application from data
-
-- **Status:** backlog
-- **Priority:** P3
-- **Reported:** 2025-01-17
-- **Reporter:** TT
-- **Notes:**
-  - Find a solution to separate app code from question data (e.g., JSON files).
-  - This would allow updating questions without redeploying the app.
-  - Protect data in the server, with JWT validation
-  - Consider versioning data, even changing the JSON structure
-
-### FEAT-011 - Use authentication to save progress per user
-
-- **Status:** backlog
-- **Priority:** P1
-- **Reported:** 2025-01-24
-- **Reporter:** TT
-- **Notes:** Once users are authenticated, save their quiz progress and settings in a database (e.g., DynamoDB) instead of localStorage, allowing them to resume on any device.
-
-### TECH-008 — Make e2e test independent of text on the screen with data-testid
-
-- **Status:** backlog
-- **Priority:** P3
-- **Reported:** 2025-01-25
 - **Reporter:** TT
 - **Notes:**
 
@@ -142,6 +126,30 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ---
 
 ## Done
+
+### ✅ TECH-008 — Make e2e test independent of text on the screen with data-testid
+
+- **Status:** CLOSED Automatically (when making tests pass)
+- **Priority:** P3
+- **Reported:** 2025-01-25
+- **Reporter:** TT
+- **Notes:**
+
+### ✅ BUG-008 — Sign out is not removing jwt from localStorage: use Cognito
+
+- **Status:** CLOSED Automatically
+- **Priority:** P1
+- **Reported:** 2026-02-01
+- **Reporter:** TT
+- **Notes:**
+
+### ✅ BUG-009 — Allow to log out and switch user
+
+- **Status:** DISCARDED (I don't see the need to switch user)
+- **Priority:** P1
+- **Reported:** 2026-02-01
+- **Reporter:** TT
+- **Notes:**
 
 ### ✅ TECH-010 - Fix tests
 
