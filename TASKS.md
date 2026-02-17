@@ -19,22 +19,6 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 
 ## Now
 
-### TECH-003 — Separate application from data
-
-- **Status:** backlog
-- **Priority:** P3
-- **Reported:** 2025-01-17
-- **Reporter:** TT
-- **Notes:**
-  - Find a solution to separate app code from question data (e.g., JSON files).
-  - This would allow updating questions without redeploying the app.
-  - Protect data in the server, with JWT validation
-  - Consider versioning data, even changing the JSON structure, adding a field with a version number and, maybe, the date of the last update. Or only the date.
-  - Make tests pass.
-  - Separate data from the learing-studio repository, only keeping test data, and removing the need to prepare the environment.
-  - Pull data at deployment time or at runtime from a protected endpoint, instead of keeping it in the frontend code.
-  - Consider different ways to retrieve areas.json or even building it dynamically depending on permissions or configuration.
-
 ### FEAT-011 - Use authentication to save progress per user
 
 - **Status:** backlog
@@ -126,6 +110,24 @@ Lightweight backlog for this repo (we keep it in the repo instead of GitHub Issu
 ---
 
 ## Done
+
+### ✅ TECH-003 — Separate application from data
+
+- **Status:** done
+- **Priority:** P3
+- **Reported:** 2025-01-17
+- **Completed:** 2026-02-17
+- **Reporter:** TT
+- **PR:** [Use data from learning-studio-data #23](
+- **Notes:**
+  - Find a solution to separate app code from question data (e.g., JSON files).
+  - This would allow updating questions without redeploying the app.
+  - Protect data in the server, with JWT validation
+  - Consider versioning data, even changing the JSON structure, adding a field with a version number and, maybe, the date of the last update. Or only the date.
+  - Make tests pass.
+  - Separate data from the learing-studio repository, only keeping test data, and removing the need to prepare the environment.
+  - Pull data at deployment time or at runtime from a protected endpoint, instead of keeping it in the frontend code.
+  - Consider different ways to retrieve areas.json or even building it dynamically depending on permissions or configuration.
 
 ### ✅ TECH-008 — Make e2e test independent of text on the screen with data-testid
 
