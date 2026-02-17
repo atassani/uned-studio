@@ -14,6 +14,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       // eslint-disable-next-line no-console
       console.log('Runtime env:', {
         NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
+        NEXT_PUBLIC_DATA_BASE_URL: process.env.NEXT_PUBLIC_DATA_BASE_URL,
         NEXT_PUBLIC_AREAS_FILE: process.env.NEXT_PUBLIC_AREAS_FILE,
         NEXT_PUBLIC_COGNITO_USER_POOL_ID: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID,
         NEXT_PUBLIC_COGNITO_CLIENT_ID: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID,

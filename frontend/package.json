@@ -5,16 +5,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:data": "serve --listen 4173 ../../learning-studio-data/data",
     "dev:playwright": "NODE_ENV=test next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
-    "test:prepare-e2e": "cp tests/testdata/areas-mcq-tests.json public/areas-mcq-tests.json && cp tests/testdata/questions-mcq-tests.json public/questions-mcq-tests.json",
-    "test:cleanup-e2e": "rm -f public/areas-mcq-tests.json public/questions-mcq-tests.json",
-    "test:e2e:withdata": "npm run test:prepare-e2e && playwright test && npm run test:cleanup-e2e",
     "test:unit": "jest",
     "test:e2e": "playwright test",
-    "test": "npm run test:unit && npm run test:e2e:withdata",
+    "test": "npm run test:unit && npm run test:e2e",
     "typecheck": "tsc --noEmit",
     "format": "prettier --check .",
     "check": "npm run typecheck && npm run format && npm run test"

@@ -11,6 +11,7 @@ export interface StudioInfraProps {
 
 export class StudioInfra extends Construct {
   public readonly studioBucket: s3.Bucket;
+  public readonly studioDataBucket: s3.Bucket;
   public readonly behaviors: Record<string, cloudfront.BehaviorOptions>;
 
   constructor(scope: Construct, id: string, props: StudioInfraProps = {}) {
@@ -18,6 +19,14 @@ export class StudioInfra extends Construct {
 
     this.studioBucket = new s3.Bucket(this, 'HumblyProudStudioBucket', {
       bucketName: 'studio.humblyproud.com',
+      publicReadAccess: false,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      autoDeleteObjects: false,
+    });
+
+    this.studioDataBucket = new s3.Bucket(this, 'HumblyProudStudioDataBucket', {
+      bucketName: 'studio-data.humblyproud.com',
       publicReadAccess: false,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -69,10 +78,20 @@ export class StudioInfra extends Construct {
           ],
         };
 
+    const studioDataOrigin = S3BucketOrigin.withOriginAccessControl(this.studioDataBucket);
+    const studioDataBehavior: cloudfront.BehaviorOptions = {
+      origin: studioDataOrigin,
+      viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      compress: true,
+      allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
+      cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+    };
+
     this.behaviors = {
       'studio/_next/*': staticBehavior,
       'studio': behaviorOptions,
       'studio/*': behaviorOptions,
+      'studio-data/*': studioDataBehavior,
     };
   }
 }
