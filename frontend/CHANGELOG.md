@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.4.10] - 2026-02-20
+
+- feat: persistence implemented using a dynamoDB table
+
 ## [1.4.9] - 2026-02-17
 
 - tech: JSON files retrieved from project learning-studio-data to simplify management
