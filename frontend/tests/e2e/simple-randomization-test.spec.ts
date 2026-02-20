@@ -11,7 +11,7 @@ test.describe('Simple Randomization Test', () => {
     await startQuizByTestId(page, 'ipc', { order: 'random' });
 
     // Wait for the quiz to load completely
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.question-text', { timeout: 10000 });
 
     // Get the first question number - first attempt
@@ -27,13 +27,13 @@ test.describe('Simple Randomization Test', () => {
     await page.getByTestId('reset-quiz-button').first().click();
 
     // Wait for page to reset completely
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(1000); // Allow state to clear
 
     await page.getByTestId('quiz-all-button').click();
 
     // Wait for new quiz to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.question-text', { timeout: 10000 });
 
     // Get the first question number - second attempt
@@ -53,10 +53,10 @@ test.describe('Simple Randomization Test', () => {
       for (let i = 0; i < 3; i++) {
         await page.getByTestId('options-button').click();
         await page.getByTestId('reset-quiz-button').first().click();
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         await page.waitForTimeout(500);
         await page.getByTestId('quiz-all-button').click();
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
         await page.waitForSelector('.question-text', { timeout: 10000 });
 
         const questionElement = await page.locator('.question-text').first();

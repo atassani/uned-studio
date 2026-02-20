@@ -87,6 +87,23 @@ export class StudioInfra extends Construct {
           ],
         };
 
+    const learningStateBehaviorOptions: cloudfront.BehaviorOptions = {
+      origin: studioOrigin,
+      viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      compress: true,
+      allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+      cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+    };
+    const learningStateBehavior: cloudfront.BehaviorOptions = props.edgeLambdas
+      ? {
+          ...learningStateBehaviorOptions,
+          edgeLambdas: props.edgeLambdas.map((edgeLambda) => ({
+            ...edgeLambda,
+            includeBody: true,
+          })),
+        }
+      : learningStateBehaviorOptions;
+
     const studioDataOrigin = S3BucketOrigin.withOriginAccessControl(this.studioDataBucket);
     const studioDataBehavior: cloudfront.BehaviorOptions = {
       origin: studioDataOrigin,
@@ -103,6 +120,7 @@ export class StudioInfra extends Construct {
     };
 
     this.behaviors = {
+      'studio/learning-state*': learningStateBehavior,
       'studio/_next/*': staticBehavior,
       'studio': behaviorOptions,
       'studio/*': behaviorOptions,

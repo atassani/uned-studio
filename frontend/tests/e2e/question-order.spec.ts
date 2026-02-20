@@ -59,7 +59,7 @@ test.describe('Question Order Control', () => {
     await startQuizByTestId(page, 'ipc', { order: 'sequential', mode: 'sections' });
 
     // Wait for section selection to load completely
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     try {
       await page.waitForSelector('text=/Tema/', { timeout: 5000 });
@@ -72,7 +72,7 @@ test.describe('Question Order Control', () => {
     await page.getByTestId('start-quiz-button').click();
 
     // Wait for question to load
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.question-text', { timeout: 10000 });
 
     // Should start with the first question number in that section

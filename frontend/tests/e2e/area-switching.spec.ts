@@ -9,7 +9,7 @@ test('Test area switching preserves progress', async ({ page }) => {
   await startQuizByTestId(page, 'log1');
 
   // Wait for quiz to load completely
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   // Wait for V button to be available
   await page.getByTestId('tf-answer-true').waitFor({ timeout: 20000 });

@@ -6,6 +6,19 @@ import * as https from 'https';
 import * as fs from 'fs';
 import * as path from 'path';
 
+type LearningStateValue = Record<string, unknown> | unknown[] | string | number | boolean | null;
+
+interface LearningStateStore {
+  get(userId: string, scope: string): Promise<{ state: LearningStateValue; updatedAt: string } | null>;
+  put(params: {
+    userId: string;
+    scope: string;
+    state: LearningStateValue;
+    updatedAt: string;
+    clientUpdatedAt?: string;
+  }): Promise<void>;
+}
+
 // Minimal Cognito JWT validation
 function getCognitoConfig() {
   const fileConfig = readEdgeAuthConfig();
@@ -15,6 +28,10 @@ function getCognitoConfig() {
   const clientId = fileConfig?.clientId ?? process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
   const redirectSignIn = fileConfig?.redirectSignIn ?? process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
   const redirectSignOut = fileConfig?.redirectSignOut ?? process.env.NEXT_PUBLIC_REDIRECT_SIGN_OUT;
+  const learningStateTable =
+    fileConfig?.learningStateTable ?? process.env.STUDIO_LEARNING_STATE_TABLE;
+  const learningStateRegion =
+    fileConfig?.learningStateRegion ?? process.env.STUDIO_LEARNING_STATE_REGION ?? region;
   const issuer =
     region && userPoolId ? `https://cognito-idp.${region}.amazonaws.com/${userPoolId}` : undefined;
   const jwksUrl = issuer ? `${issuer}/.well-known/jwks.json` : undefined;
@@ -26,6 +43,8 @@ function getCognitoConfig() {
     clientId,
     redirectSignIn,
     redirectSignOut,
+    learningStateTable,
+    learningStateRegion,
     issuer,
     jwksUrl,
   };
@@ -39,6 +58,8 @@ function readEdgeAuthConfig():
       clientId?: string;
       redirectSignIn?: string;
       redirectSignOut?: string;
+      learningStateTable?: string;
+      learningStateRegion?: string;
     }
   | null {
   const configPath =
@@ -147,6 +168,113 @@ export function setGetJwtPayloadImpl(impl: typeof getJwtPayload | null): void {
   getJwtPayloadImpl = impl ?? getJwtPayload;
 }
 
+let learningStateStoreImpl: LearningStateStore | null | undefined;
+
+export function setLearningStateStoreImpl(impl: LearningStateStore | null): void {
+  learningStateStoreImpl = impl;
+}
+
+function getLearningStateStore(): LearningStateStore | null {
+  if (learningStateStoreImpl !== undefined) {
+    return learningStateStoreImpl;
+  }
+  learningStateStoreImpl = createDynamoLearningStateStore();
+  return learningStateStoreImpl;
+}
+
+function createDynamoLearningStateStore(): LearningStateStore | null {
+  const { learningStateTable, learningStateRegion } = getCognitoConfig();
+  if (!learningStateTable || !learningStateRegion) {
+    return null;
+  }
+
+  // First try AWS SDK v3 (available in modern Lambda runtimes).
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { DynamoDBClient, GetItemCommand, PutItemCommand } = require('@aws-sdk/client-dynamodb');
+    const client = new DynamoDBClient({ region: learningStateRegion });
+    return {
+      async get(userId: string, scope: string) {
+        const out = await client.send(
+          new GetItemCommand({
+            TableName: learningStateTable,
+            Key: {
+              pk: { S: `USER#${userId}` },
+              sk: { S: `SCOPE#${scope}` },
+            },
+          })
+        );
+
+        const item = out.Item;
+        if (!item || !item.state?.S) {
+          return null;
+        }
+        const updatedAt = item.updatedAt?.S ?? '';
+        return { state: JSON.parse(item.state.S), updatedAt };
+      },
+      async put({ userId, scope, state, updatedAt, clientUpdatedAt }) {
+        await client.send(
+          new PutItemCommand({
+            TableName: learningStateTable,
+            Item: {
+              pk: { S: `USER#${userId}` },
+              sk: { S: `SCOPE#${scope}` },
+              state: { S: JSON.stringify(state) },
+              updatedAt: { S: updatedAt },
+              ...(clientUpdatedAt ? { clientUpdatedAt: { S: clientUpdatedAt } } : {}),
+            },
+          })
+        );
+      },
+    };
+  } catch (error) {
+    // Try AWS SDK v2 as fallback.
+  }
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const AWS = require('aws-sdk');
+    const docClient = new AWS.DynamoDB.DocumentClient({ region: learningStateRegion });
+
+    return {
+      async get(userId: string, scope: string) {
+        const out = await docClient
+          .get({
+            TableName: learningStateTable,
+            Key: {
+              pk: `USER#${userId}`,
+              sk: `SCOPE#${scope}`,
+            },
+          })
+          .promise();
+        if (!out.Item) {
+          return null;
+        }
+        return {
+          state: out.Item.state as LearningStateValue,
+          updatedAt: (out.Item.updatedAt as string) ?? '',
+        };
+      },
+      async put({ userId, scope, state, updatedAt, clientUpdatedAt }) {
+        await docClient
+          .put({
+            TableName: learningStateTable,
+            Item: {
+              pk: `USER#${userId}`,
+              sk: `SCOPE#${scope}`,
+              state,
+              updatedAt,
+              ...(clientUpdatedAt ? { clientUpdatedAt } : {}),
+            },
+          })
+          .promise();
+      },
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
 const LOGIN_URL = '/studio/login';
 
 function isStaticAsset(uri: string): boolean {
@@ -173,9 +301,40 @@ function maybeRewriteSpaPath(request: CloudFrontRequest): void {
   request.uri = stripped + '/index.html';
 }
 
+function jsonResponse(status: string, body: unknown): CloudFrontRequestResult {
+  return {
+    status,
+    headers: {
+      'content-type': [{ key: 'Content-Type', value: 'application/json' }],
+      'cache-control': [{ key: 'Cache-Control', value: 'no-store' }],
+    },
+    body: JSON.stringify(body),
+  };
+}
+
+function parseRequestJsonBody(request: CloudFrontRequest): Record<string, unknown> | null {
+  const reqBody = (request as any).body;
+  if (!reqBody || typeof reqBody.data !== 'string') {
+    return null;
+  }
+
+  try {
+    const raw =
+      reqBody.encoding === 'base64' ? Buffer.from(reqBody.data, 'base64').toString('utf8') : reqBody.data;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return null;
+    }
+    return parsed as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
 export async function handler(event: CloudFrontRequestEvent): Promise<CloudFrontRequestResult> {
   const request: CloudFrontRequest = event.Records[0].cf.request;
   const uri = request.uri;
+  const method = request.method ?? 'GET';
   const cookieHeader = request.headers.cookie?.[0]?.value;
   const querystring = request.querystring || '';
   const queryParams = new URLSearchParams(querystring);
@@ -214,6 +373,59 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
       },
       body: JSON.stringify(user),
     };
+  }
+
+  if (uri.startsWith('/studio/learning-state')) {
+    const payload = await getJwtPayloadImpl(cookieHeader);
+    if (!payload?.sub) {
+      return jsonResponse('401', { error: 'unauthorized' });
+    }
+
+    const store = getLearningStateStore();
+    if (!store) {
+      return jsonResponse('503', { error: 'learning_state_store_unavailable' });
+    }
+
+    const scope = queryParams.get('scope') ?? 'global';
+    if (method === 'GET') {
+      try {
+        const state = await store.get(String(payload.sub), scope);
+        if (!state) {
+          return jsonResponse('404', { error: 'not_found' });
+        }
+        return jsonResponse('200', {
+          scope,
+          state: state.state,
+          updatedAt: state.updatedAt,
+        });
+      } catch {
+        return jsonResponse('500', { error: 'learning_state_read_failed' });
+      }
+    }
+
+    if (method === 'PUT') {
+      const body = parseRequestJsonBody(request);
+      if (!body || !('state' in body)) {
+        return jsonResponse('400', { error: 'invalid_payload' });
+      }
+
+      try {
+        const updatedAt = new Date().toISOString();
+        await store.put({
+          userId: String(payload.sub),
+          scope,
+          state: body.state as LearningStateValue,
+          updatedAt,
+          clientUpdatedAt:
+            typeof body.clientUpdatedAt === 'string' ? body.clientUpdatedAt : undefined,
+        });
+        return jsonResponse('200', { scope, updatedAt });
+      } catch {
+        return jsonResponse('500', { error: 'learning_state_write_failed' });
+      }
+    }
+
+    return jsonResponse('405', { error: 'method_not_allowed' });
   }
 
   if (uri.startsWith('/studio/logout')) {

@@ -36,6 +36,7 @@ import * as path from 'path';
 describe('Lambda@Edge Auth Handler', () => {
   beforeEach(() => {
     process.env.EDGE_AUTH_CONFIG_PATH = path.join(os.tmpdir(), 'edge-auth-config-missing.json');
+    authModule.setLearningStateStoreImpl(null);
   });
 
   beforeAll(() => {
@@ -45,15 +46,29 @@ describe('Lambda@Edge Auth Handler', () => {
       return cookie === 'jwt=valid';
     });
   });
-  function makeEvent({ uri, cookie }: { uri: string; cookie?: string }) {
+  function makeEvent({
+    uri,
+    cookie,
+    method = 'GET',
+    querystring = '',
+    body,
+  }: {
+    uri: string;
+    cookie?: string;
+    method?: string;
+    querystring?: string;
+    body?: { data: string; encoding?: 'base64' | 'text' };
+  }) {
     return {
       Records: [
         {
           cf: {
             request: {
               uri,
-              querystring: '',
+              method,
+              querystring,
               headers: cookie ? { cookie: [{ key: 'Cookie', value: cookie }] } : {},
+              ...(body ? { body: { data: body.data, encoding: body.encoding ?? 'text' } } : {}),
             },
           },
         },
@@ -258,6 +273,80 @@ describe('Lambda@Edge Auth Handler', () => {
       throw new Error('Expected a response');
     }
 
+    authModule.setGetJwtPayloadImpl(null);
+  });
+
+  it('should return 401 for /studio/learning-state when jwt is missing', async () => {
+    authModule.setGetJwtPayloadImpl(async () => null);
+
+    const event = makeEvent({ uri: '/studio/learning-state', cookie: undefined });
+    const result = await authModule.handler(event as any);
+
+    if (result && 'status' in result) {
+      expect(result.status).toBe('401');
+      expect(result.body).toContain('unauthorized');
+    } else {
+      throw new Error('Expected a response');
+    }
+
+    authModule.setGetJwtPayloadImpl(null);
+  });
+
+  it('should support PUT then GET for /studio/learning-state', async () => {
+    const db = new Map<string, { state: any; updatedAt: string }>();
+    authModule.setGetJwtPayloadImpl(async () => ({ sub: 'user-123' }));
+    authModule.setLearningStateStoreImpl({
+      async get(userId, scope) {
+        return db.get(`${userId}:${scope}`) ?? null;
+      },
+      async put({ userId, scope, state, updatedAt }) {
+        db.set(`${userId}:${scope}`, { state, updatedAt });
+      },
+    });
+
+    const putEvent = makeEvent({
+      uri: '/studio/learning-state',
+      cookie: 'jwt=valid',
+      method: 'PUT',
+      querystring: 'scope=global',
+      body: {
+        data: JSON.stringify({
+          state: {
+            currentArea: 'fdl',
+            areas: {
+              fdl: {
+                currentQuestion: 2,
+              },
+            },
+          },
+        }),
+      },
+    });
+
+    const putResult = await authModule.handler(putEvent as any);
+    if (putResult && 'status' in putResult) {
+      expect(putResult.status).toBe('200');
+    } else {
+      throw new Error('Expected PUT response');
+    }
+
+    const getEvent = makeEvent({
+      uri: '/studio/learning-state',
+      cookie: 'jwt=valid',
+      method: 'GET',
+      querystring: 'scope=global',
+    });
+
+    const getResult = await authModule.handler(getEvent as any);
+    if (getResult && 'status' in getResult) {
+      expect(getResult.status).toBe('200');
+      expect(getResult.body).toContain('"currentArea":"fdl"');
+      expect(getResult.body).toContain('"currentQuestion":2');
+    } else {
+      throw new Error('Expected GET response');
+    }
+
+    authModule.setLearningStateStoreImpl(null);
     authModule.setGetJwtPayloadImpl(null);
   });
 

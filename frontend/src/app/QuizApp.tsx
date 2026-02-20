@@ -23,11 +23,12 @@ import {
 import { useQuizPersistence } from './hooks/useQuizPersistence';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useQuizLogic } from './hooks/useQuizLogic';
+import { useLearningStateSync } from './hooks/useLearningStateSync';
 import { storage } from './storage';
 
 export default function QuizApp() {
   // Auth hook
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated, isLoading } = useAuth();
 
   // Track user answers for each question (index -> answer string)
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
@@ -282,6 +283,17 @@ export default function QuizApp() {
         );
       });
   };
+
+  const handleServerStateApplied = useCallback(() => {
+    loadAreas();
+  }, [loadAreas]);
+
+  const isTestRuntime = process.env.NODE_ENV === 'test';
+
+  useLearningStateSync({
+    enabled: !isTestRuntime && !isLoading && isAuthenticated && !user?.isGuest,
+    onServerStateApplied: handleServerStateApplied,
+  });
 
   useEffect(() => {
     previousAnswerOrderRef.current = {};

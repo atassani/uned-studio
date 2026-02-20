@@ -1,4 +1,5 @@
 const LOCAL_STORAGE_KEY = 'learningStudio';
+export const LEARNING_STUDIO_STATE_CHANGED_EVENT = 'learning-studio-state-changed';
 
 type QuizStatus = { [key: number]: 'correct' | 'fail' | 'pending' };
 interface AreaState {
@@ -9,7 +10,7 @@ interface AreaState {
   selectedSections: string[];
   selectedQuestions: number[];
 }
-interface AppState {
+export interface AppState {
   currentArea?: string;
   areas: {
     [areaKey: string]: Partial<AreaState>;
@@ -79,6 +80,8 @@ export const storage = {
     const areaState = getAreaState(areaKey);
     return areaState.selectedQuestions;
   },
+  getStateSnapshot: getStoredState,
+  replaceState: setStoredState,
   clearState,
   clearAreaState,
 };
@@ -104,6 +107,7 @@ function setStoredState(state: AppState) {
   }
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+    dispatchStateChanged(state);
   } catch (e) {
     console.error('Failed to save state to localStorage', e);
   }
@@ -134,6 +138,7 @@ function clearState() {
     return;
   }
   localStorage.removeItem(LOCAL_STORAGE_KEY);
+  dispatchStateChanged({ areas: {} });
 }
 
 function clearAreaState(areaKey: string) {
@@ -142,4 +147,15 @@ function clearAreaState(areaKey: string) {
     delete state.areas[areaKey];
     setStoredState(state);
   }
+}
+
+function dispatchStateChanged(state: AppState) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  window.dispatchEvent(
+    new CustomEvent(LEARNING_STUDIO_STATE_CHANGED_EVENT, {
+      detail: state,
+    })
+  );
 }

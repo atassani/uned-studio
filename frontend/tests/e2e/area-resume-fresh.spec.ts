@@ -8,7 +8,7 @@ test.describe('Resume Quiz Fresh Experience', () => {
 
   test('Clicking area resumes at last question if progress exists', async ({ page }) => {
     // Go to IPC (Multiple Choice), answer 2 questions
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await page.getByTestId('area-ipc').waitFor();
     await page.getByTestId('area-ipc').click();
     await page.getByTestId('order-sequential-button').click();
