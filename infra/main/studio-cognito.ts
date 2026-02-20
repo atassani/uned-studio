@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { aws_cognito as cognito } from 'aws-cdk-lib';
+import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export class StudioCognito extends cdk.Stack {
@@ -130,6 +131,17 @@ export class StudioCognito extends cdk.Stack {
       userPoolClient.node.addDependency(googleIdp);
     }
 
+    const learningStateTable = new dynamodb.Table(this, 'StudioLearningStateTable', {
+      tableName: 'studio-learning-state',
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'sk', type: dynamodb.AttributeType.STRING },
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+      },
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
     // Cognito outputs for frontend and Lambda@Edge configuration
     new cdk.CfnOutput(this, 'CognitoUserPoolId', {
       value: userPool.userPoolId,
@@ -149,6 +161,12 @@ export class StudioCognito extends cdk.Stack {
     new cdk.CfnOutput(this, 'CognitoRegion', {
       value: this.region,
       description: 'AWS Region for Cognito configuration (used by frontend and Lambda@Edge)',
+    });
+
+    new cdk.CfnOutput(this, 'LearningStateTableName', {
+      value: learningStateTable.tableName,
+      description:
+        'DynamoDB table used by /studio/learning-state endpoint (set STUDIO_LEARNING_STATE_TABLE in edge runtime)',
     });
   }
 }

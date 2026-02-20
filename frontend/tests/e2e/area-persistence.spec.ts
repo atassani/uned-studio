@@ -22,7 +22,7 @@ async function clearCurrentArea(page: Page) {
 test.beforeEach(async ({ page }) => {
   await setupFreshTestAuthenticated(page);
   await waitForAppReady(page);
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 });
 
 test('remembers last studied area in localStorage', async ({ page }) => {
@@ -77,15 +77,15 @@ test('remembers last studied area in localStorage going throu Options', async ({
 }, 20000);
 
 test('automatically returns to last studied area on app reload', async ({ page }) => {
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   await page.getByTestId('area-log1').waitFor({ timeout: 15000 });
   await page.getByTestId('area-log1').click({ timeout: 10000 });
   await page.getByTestId('change-area-button').first().click({ timeout: 10000 });
   await page.getByTestId('area-ipc').waitFor({ timeout: 15000 });
   await page.getByTestId('area-ipc').click({ timeout: 10000 });
   // Reload page with increased timeout
-  await page.reload({ waitUntil: 'networkidle', timeout: 20000 });
-  await page.waitForLoadState('networkidle');
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
+  await waitForAppReady(page);
   // Should remember IPC in storage and land either on selection menu or quiz
   await expect
     .poll(async () => getCurrentAreaFromLocalStorage(page), { timeout: 15000 })
@@ -110,7 +110,7 @@ test('automatically returns to last studied area on app reload', async ({ page }
 test('restores to area selection if no previous area stored', async ({ page }) => {
   await clearCurrentArea(page);
   await page.reload();
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
 });
 
@@ -118,8 +118,21 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   await page.evaluate(() => {
     localStorage.clear();
   });
-  // Wait for page to stabilize after localStorage clear
-  await page.waitForLoadState('networkidle');
+  // Reload so app state is rebuilt from cleared storage
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
+  await waitForAppReady(page);
+  if (
+    !(await page
+      .getByTestId('area-log1')
+      .isVisible()
+      .catch(() => false))
+  ) {
+    const optionsButton = page.getByTestId('options-button');
+    if (await optionsButton.isVisible().catch(() => false)) {
+      await optionsButton.click();
+      await page.getByTestId('change-area-button').first().click();
+    }
+  }
 
   // await page.getByRole('button', { name: 'Cambiar área' }).first().click();
   // Start Lógica I quiz and answer a question
@@ -136,7 +149,7 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   }
 
   // Wait for quiz to load properly
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   await page
     .waitForSelector('[data-testid="loading-spinner"]', { state: 'detached', timeout: 20000 })
@@ -181,7 +194,7 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   await page.getByTestId('quiz-all-button').click({ timeout: 15000 });
 
   // Wait for IPC quiz to load properly
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   await page.getByTestId('mcq-answer-A').waitFor({ timeout: 15000 });
 
   // Answer a question in IPC
@@ -193,7 +206,7 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   await page.getByTestId('area-log1').waitFor({ timeout: 15000 });
   await page.getByTestId('area-log1').click({ timeout: 15000 });
   // Wait for the area to load completely - look for quiz elements
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   await page.waitForSelector('text=❓', { timeout: 15000 });
   // Should restore the last question and there should be the same amount of questions pending
   const pageTextAfter = await page.locator('body').innerText();

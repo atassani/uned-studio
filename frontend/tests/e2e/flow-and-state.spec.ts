@@ -36,18 +36,18 @@ test('remembers last studied area in localStorage', async ({ page }) => {
 
 test('automatically returns to last studied area on app reload', async ({ page }) => {
   // Set up: study an area first
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   await startQuizByTestId(page, 'ipc');
 
   // Wait for quiz to load - look for any quiz indicator
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   await page.waitForTimeout(1500);
 
   // Reload the page
-  await page.reload({ waitUntil: 'networkidle', timeout: 25000 });
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 25000 });
 
   // Wait a moment for everything to initialize
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   // Give Firefox extra time to restore state after reload
   await page.waitForTimeout(3000);
@@ -104,7 +104,7 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   await expect(page.getByText('🎓 Área: Lógica I')).toBeVisible({ timeout: 5000 });
 
   // Wait for quiz to load with network idle first
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   // Wait for quiz interface to be ready - try question text first, fallback to answer buttons
   try {
@@ -170,7 +170,7 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
     timeout: 5000,
   });
   // Wait for quiz to load with network idle first
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   // Wait for quiz interface to be ready - try question text first, fallback to answer buttons
   try {
@@ -197,7 +197,7 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   await expect(page.getByText('🎓 Área: Lógica I')).toBeVisible({ timeout: 5000 });
 
   // Wait for quiz to load with network idle first
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   // Wait for quiz interface to be ready - try question text first, fallback to answer buttons
   try {

@@ -62,7 +62,7 @@ test('selects one section and starts quiz in Lógica I area', async ({ page }) =
   await page.getByTestId('quiz-sections-button').click({ timeout: 15000 });
 
   // Wait for the checkbox section to load, with debug if not found
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   try {
     await page
       .getByRole('checkbox', { name: 'CUESTIONES DE LOS APUNTES' })
@@ -96,7 +96,7 @@ test('MCQ shows expected answer in correct format when wrong answer is selected'
   await page.getByTestId('quiz-all-button').click({ timeout: 15000 });
 
   // Wait for quiz to load completely
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   // Wait for quiz interface to be ready - try question text first, fallback to answer buttons
   try {

@@ -12,7 +12,7 @@ const getStudioUrls = (baseURL?: string) => {
 };
 
 const ensureGuestLoginIfPresent = async (page: Page) => {
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
   const guestLogin = page.getByTestId('guest-login-btn');
   if (await guestLogin.count()) {
     await guestLogin.click();

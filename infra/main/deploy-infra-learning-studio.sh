@@ -5,7 +5,7 @@ set -e
 STACK_INFRA=StudioCognito
 
 # Load frontend envs if available (for existing Cognito import)
-FRONTEND_ENV_FILE="../frontend/.env.production"
+FRONTEND_ENV_FILE="../../frontend/.env.production"
 if [ -f "$FRONTEND_ENV_FILE" ]; then
   set -a
   # shellcheck disable=SC1090
@@ -30,4 +30,3 @@ npm run build
 #npx cdk diff $STACK_INFRA
 
 npx cdk deploy $STACK_INFRA
-

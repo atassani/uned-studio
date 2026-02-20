@@ -4,39 +4,29 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const homePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-const dataBaseUrl = process.env.NEXT_PUBLIC_DATA_BASE_URL || '';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const testdataDir = path.resolve(__dirname, '../testdata');
 
-const dataBasePath = (() => {
-  if (!dataBaseUrl) return '';
-  try {
-    return new URL(dataBaseUrl).pathname.replace(/\/$/, '');
-  } catch {
-    return dataBaseUrl.replace(/\/$/, '');
-  }
-})();
-
-const testDataFiles = [
-  'areas-mcq-tests.json',
-  'questions-mcq-tests.json',
-  'questions-logica1.json',
-  'questions-ipc.json',
-  'questions-fdl.json',
+const testDataRoutes: Array<{ requestFile: string; fixtureFile: string }> = [
+  // Always serve test areas, even if app asks for default areas.json.
+  { requestFile: 'areas.json', fixtureFile: 'areas-mcq-tests.json' },
+  { requestFile: 'areas-mcq-tests.json', fixtureFile: 'areas-mcq-tests.json' },
+  { requestFile: 'questions-mcq-tests.json', fixtureFile: 'questions-mcq-tests.json' },
+  { requestFile: 'questions-logica1.json', fixtureFile: 'questions-logica1.json' },
+  { requestFile: 'questions-ipc.json', fixtureFile: 'questions-ipc.json' },
+  { requestFile: 'questions-fdl.json', fixtureFile: 'questions-fdl.json' },
 ];
 
 function buildDataRoutePattern(fileName: string) {
-  if (!dataBasePath) {
-    return `**/${fileName}`;
-  }
-  return `**${dataBasePath}/${fileName}`;
+  // Match fixture requests regardless of base path/host and tolerate query/trailing-slash variants.
+  return `**/${fileName}*`;
 }
 
 export async function setupTestDataRoutes(page: Page) {
-  for (const fileName of testDataFiles) {
-    const pattern = buildDataRoutePattern(fileName);
+  for (const routeDef of testDataRoutes) {
+    const pattern = buildDataRoutePattern(routeDef.requestFile);
     await page.route(pattern, async (route) => {
-      const filePath = path.join(testdataDir, fileName);
+      const filePath = path.join(testdataDir, routeDef.fixtureFile);
       const body = fs.readFileSync(filePath, 'utf8');
       await route.fulfill({
         status: 200,
@@ -93,62 +83,60 @@ export async function setupFreshTest(page: Page) {
 export async function setupFreshTestAuthenticated(page: Page, email = 'e2e@example.com') {
   await setupTestDataRoutes(page);
   await page.context().clearCookies();
-  const token = createMockJwt(email);
+  await bootstrapAuthenticatedPage(page, homePath, email);
+}
+
+async function addAuthenticatedInitScript(page: Page, jwt: string) {
   await page.addInitScript(
-    ({ jwt }) => {
-      if (typeof localStorage !== 'undefined') {
-        const isInitialized = localStorage.getItem('__e2e_setup_done');
-        if (!isInitialized) {
-          localStorage.clear();
-          localStorage.setItem('__e2e_setup_done', 'true');
+    ({ token }) => {
+      const setupKey = '__e2e_setup_done';
+      if (typeof localStorage === 'undefined') return;
+
+      const alreadyInitialized =
+        typeof sessionStorage !== 'undefined' && sessionStorage.getItem(setupKey) === '1';
+      if (!alreadyInitialized) {
+        localStorage.clear();
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem(setupKey, '1');
         }
-        localStorage.setItem('jwt', jwt);
       }
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.clear();
-      }
+      localStorage.setItem('jwt', token);
     },
-    { jwt: token }
+    { token: jwt }
   );
-  await page.goto(homePath, { waitUntil: 'networkidle' });
+}
+
+async function bootstrapAuthenticatedPage(page: Page, url: string, email: string) {
+  const token = createMockJwt(email);
+  await addAuthenticatedInitScript(page, token);
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  await waitForAppReady(page);
+  await ensureAreaSelectionVisible(page);
 }
 
 /**
  * Test setup that makes sure any previous information is cleared.
  */
 export async function setupSuperFreshTest(page: Page, seed?: string) {
-  try {
-    await setupTestDataRoutes(page);
-    // Build the URL with seed if provided
-    let url = homePath;
-    if (seed) {
-      url += (url.includes('?') ? '&' : '?') + `seed=${encodeURIComponent(seed)}`;
-    }
-
-    // Go to the URL (with or without seed)
-    //await page.goto(url, { waitUntil: 'domcontentloaded' });
-    await page.goto(url, { waitUntil: 'networkidle' });
-
-    // Clear localStorage, sessionStorage, and cookies if accessible
-    await page.evaluate(() => {
-      if (typeof localStorage !== 'undefined') {
-        localStorage.clear();
-      }
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.clear();
-      }
-    });
-    await page.context().clearCookies();
-
-    // Reload the page to reset the app state, with the seed param if provided
-    await page.goto(url, { waitUntil: 'networkidle' });
-    await page.getByTestId('guest-login-btn').click();
-
-    // Verify the app is in the initial state (area selection screen)
-    await page.waitForSelector('text=¿Qué quieres estudiar?', { timeout: 10000 });
-  } catch (error) {
-    throw error; // Re-throw the error to ensure test fails with context
+  await setupTestDataRoutes(page);
+  let url = homePath;
+  if (seed) {
+    url += (url.includes('?') ? '&' : '?') + `seed=${encodeURIComponent(seed)}`;
   }
+
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.clear();
+    }
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.clear();
+    }
+  });
+  await page.context().clearCookies();
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  await page.getByTestId('guest-login-btn').click();
+  await page.waitForSelector('text=¿Qué quieres estudiar?', { timeout: 10000 });
 }
 
 /**
@@ -161,29 +149,11 @@ export async function setupSuperFreshTestAuthenticated(
 ) {
   await setupTestDataRoutes(page);
   await page.context().clearCookies();
-  const token = createMockJwt(email);
   let url = homePath;
   if (seed) {
     url += (url.includes('?') ? '&' : '?') + `seed=${encodeURIComponent(seed)}`;
   }
-  await page.context().clearCookies();
-  await page.addInitScript(
-    ({ jwt }) => {
-      if (typeof localStorage !== 'undefined') {
-        const isInitialized = localStorage.getItem('__e2e_setup_done');
-        if (!isInitialized) {
-          localStorage.clear();
-          localStorage.setItem('__e2e_setup_done', 'true');
-        }
-        localStorage.setItem('jwt', jwt);
-      }
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.clear();
-      }
-    },
-    { jwt: token }
-  );
-  await page.goto(url, { waitUntil: 'networkidle' });
+  await bootstrapAuthenticatedPage(page, url, email);
 }
 
 /**
@@ -192,7 +162,7 @@ export async function setupSuperFreshTestAuthenticated(
  */
 export async function waitForAppReady(page: Page) {
   // Wait for the page to be fully loaded
-  await page.waitForLoadState('networkidle');
+  await page.waitForLoadState('domcontentloaded');
 
   // Wait for the main app container to be visible
   await expect(page.locator('body')).toBeVisible();
@@ -207,20 +177,81 @@ export async function waitForAppReady(page: Page) {
  */
 export async function waitForQuizReady(page: Page) {
   await waitForAppReady(page);
+  await expect(
+    page
+      .getByText('¿Qué quieres estudiar?')
+      .or(page.getByText('¿Cómo quieres las preguntas?'))
+      .or(page.locator('.question-text'))
+      .first()
+  ).toBeVisible();
+}
 
-  try {
-    // Wait for either area selection or quiz interface to appear
-    await expect(
-      page
-        .getByText('¿Qué quieres estudiar?')
-        .or(page.getByText('¿Cómo quieres las preguntas?'))
-        .or(page.locator('.question-text'))
-        .first() // Take the first match to avoid strict mode violations
-    ).toBeVisible();
-  } catch (error) {
-    // Optionally log error for debugging
-    throw error; // Re-throw the error to ensure test fails with context
+async function ensureAreaSelectionVisible(page: Page) {
+  const areaButton = page.getByTestId('area-log1');
+  const selectionMenu = page.getByTestId('selection-menu');
+  const optionsButton = page.getByTestId('options-button');
+  const changeAreaButton = page.getByTestId('change-area-button').first();
+  const loadingSpinner = page.getByTestId('loading-spinner');
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (await areaButton.isVisible().catch(() => false)) {
+      return;
+    }
+
+    if (await selectionMenu.isVisible().catch(() => false)) {
+      await changeAreaButton.click();
+      await areaButton.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+      if (await areaButton.isVisible().catch(() => false)) {
+        return;
+      }
+    } else if (await optionsButton.isVisible().catch(() => false)) {
+      await optionsButton.click();
+      await changeAreaButton.click();
+      await areaButton.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+      if (await areaButton.isVisible().catch(() => false)) {
+        return;
+      }
+    } else if (await loadingSpinner.isVisible().catch(() => false)) {
+      await page.waitForTimeout(1000);
+    } else {
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
+      await waitForAppReady(page);
+    }
   }
+  await areaButton.waitFor({ state: 'visible', timeout: 30000 });
+}
+
+async function ensureSelectionMenuForArea(page: Page, areaShortName: string) {
+  const areaButton = page.getByTestId(`area-${areaShortName}`);
+  const selectionMenu = page.getByTestId('selection-menu');
+  const optionsButton = page.getByTestId('options-button');
+  const questionView = page.getByTestId('question-view');
+
+  if (await selectionMenu.isVisible().catch(() => false)) {
+    return;
+  }
+
+  if (await areaButton.isVisible().catch(() => false)) {
+    await areaButton.click();
+    await selectionMenu.waitFor({ timeout: 20000 });
+    return;
+  }
+
+  if (
+    (await optionsButton.isVisible().catch(() => false)) ||
+    (await questionView.isVisible().catch(() => false))
+  ) {
+    await optionsButton.click();
+    await page.getByTestId('change-area-button').first().click();
+    await areaButton.waitFor({ timeout: 20000 });
+    await areaButton.click();
+    await selectionMenu.waitFor({ timeout: 20000 });
+    return;
+  }
+
+  await ensureAreaSelectionVisible(page);
+  await areaButton.click();
+  await selectionMenu.waitFor({ timeout: 20000 });
 }
 
 /**
@@ -271,12 +302,7 @@ export async function startQuizByTestId(
   await waitForAppReady(page);
 
   const mode = options.mode ?? 'all';
-  const areaButton = page.getByTestId(`area-${areaShortName}`);
-  const selectionMenu = page.getByTestId('selection-menu');
-  if (await areaButton.isVisible().catch(() => false)) {
-    await areaButton.click();
-  }
-  await selectionMenu.waitFor({ timeout: 20000 });
+  await ensureSelectionMenuForArea(page, areaShortName);
   if (options.order) {
     await page.getByTestId(orderToTestId[options.order]).click();
   }
