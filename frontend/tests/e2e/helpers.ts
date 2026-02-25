@@ -262,6 +262,12 @@ export async function ensureAreaSelectionVisible(page: Page) {
   if (await configView.isVisible().catch(() => false)) {
     await ensureAreaConfigurationResolved(page);
   }
+  const canonicalAreasPath = `${homePath.replace(/\/$/, '')}/areas`;
+  await page.goto(canonicalAreasPath || '/areas', { waitUntil: 'domcontentloaded' });
+  await waitForAppReady(page);
+  if (await configView.isVisible().catch(() => false)) {
+    await ensureAreaConfigurationResolved(page);
+  }
   await anyAreaButton.waitFor({ state: 'visible', timeout: 30000 });
 }
 
