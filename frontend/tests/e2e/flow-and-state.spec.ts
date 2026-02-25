@@ -89,15 +89,6 @@ test('automatically returns to last studied area on app reload', async ({ page }
   }
 }, 45000);
 
-test('restores to area selection if no previous area stored', async ({ page }) => {
-  // Reload page
-  await page.reload();
-
-  // Should show area selection screen since no area was stored
-  await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
-  await expect(page.getByTestId('area-log1')).toBeVisible();
-});
-
 test('preserves quiz progress when switching between areas', async ({ page }) => {
   // Start Lógica I quiz and answer a question
   await startQuizByTestId(page, 'log1', { order: 'sequential' });

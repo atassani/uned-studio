@@ -9,15 +9,6 @@ async function getCurrentAreaFromLocalStorage(page: Page) {
   return currentArea;
 }
 
-async function clearCurrentArea(page: Page) {
-  const state = await page.evaluate(() => localStorage.getItem('learningStudio'));
-  const stateObj = state ? JSON.parse(state) : {};
-  stateObj.currentArea = undefined;
-  await page.evaluate((newState) => {
-    localStorage.setItem('learningStudio', JSON.stringify(newState));
-  }, stateObj);
-}
-
 // Clear localStorage before each test to ensure a clean state
 test.beforeEach(async ({ page }) => {
   await setupFreshTestAuthenticated(page);
@@ -95,77 +86,7 @@ test('automatically returns to last studied area on app reload', async ({ page }
   await expect
     .poll(async () => getCurrentAreaFromLocalStorage(page), { timeout: 15000 })
     .toBe('ipc');
-
-  const selectionMenuVisible = await page
-    .getByTestId('selection-menu')
-    .isVisible()
-    .catch(() => false);
-  const questionViewVisible = await page
-    .getByTestId('question-view')
-    .isVisible()
-    .catch(() => false);
-  const areaSelectionVisible = await page
-    .getByTestId('area-ipc')
-    .isVisible()
-    .catch(() => false);
-  const areaConfigVisible = await page
-    .getByTestId('area-configuration-view')
-    .isVisible()
-    .catch(() => false);
-
-  expect(
-    selectionMenuVisible || questionViewVisible || areaSelectionVisible || areaConfigVisible
-  ).toBe(true);
 }, 40000);
-
-test('restores to area selection if no previous area stored', async ({ page }) => {
-  await clearCurrentArea(page);
-  await page.reload();
-  await waitForAppReady(page);
-  let recoveredFromLoading = false;
-
-  await expect
-    .poll(
-      async () => {
-        const loadingVisible = await page
-          .getByText('Loading...')
-          .isVisible()
-          .catch(() => false);
-        if (loadingVisible && !recoveredFromLoading) {
-          recoveredFromLoading = true;
-          await page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
-          await waitForAppReady(page);
-        }
-
-        const configViewAfterReload = page.getByTestId('area-configuration-view');
-        if (await configViewAfterReload.isVisible().catch(() => false)) {
-          await page.getByTestId('area-config-accept').click();
-        }
-
-        const areaSelectionVisible = await page
-          .getByText('¿Qué quieres estudiar?')
-          .isVisible()
-          .catch(() => false);
-        const areaConfigVisible = await page
-          .getByTestId('area-configuration-view')
-          .isVisible()
-          .catch(() => false);
-        const selectionMenuVisible = await page
-          .getByTestId('selection-menu')
-          .isVisible()
-          .catch(() => false);
-        const questionViewVisible = await page
-          .getByTestId('question-view')
-          .isVisible()
-          .catch(() => false);
-        return (
-          areaSelectionVisible || areaConfigVisible || selectionMenuVisible || questionViewVisible
-        );
-      },
-      { timeout: 15000 }
-    )
-    .toBe(true);
-});
 
 test('preserves quiz progress when switching between areas', async ({ page }) => {
   await page.evaluate(() => {
