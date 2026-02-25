@@ -119,12 +119,12 @@ async function bootstrapAuthenticatedPage(page: Page, url: string, email: string
 async function ensureAreaConfigurationResolved(page: Page) {
   const configView = page.getByTestId('area-configuration-view');
   const acceptButton = page.getByTestId('area-config-accept');
+  const anyAreaSelectionButton = page
+    .locator('[data-testid^="area-"]:not([data-testid^="area-config"])')
+    .first();
   if (await configView.isVisible().catch(() => false)) {
     await acceptButton.click();
-    await page
-      .locator('[data-testid^="area-"]')
-      .first()
-      .waitFor({ state: 'visible', timeout: 20000 });
+    await anyAreaSelectionButton.waitFor({ state: 'visible', timeout: 20000 });
   }
 }
 
@@ -219,8 +219,10 @@ export async function waitForQuizReady(page: Page) {
   ).toBeVisible();
 }
 
-async function ensureAreaSelectionVisible(page: Page) {
-  const anyAreaButton = page.locator('[data-testid^="area-"]').first();
+export async function ensureAreaSelectionVisible(page: Page) {
+  const anyAreaButton = page
+    .locator('[data-testid^="area-"]:not([data-testid^="area-config"])')
+    .first();
   const selectionMenu = page.getByTestId('selection-menu');
   const optionsButton = page.getByTestId('options-button');
   const changeAreaButton = page.getByTestId('change-area-button').first();

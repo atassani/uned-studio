@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForAppReady, startQuizByTestId } from './helpers';
+import {
+  setupFreshTestAuthenticated,
+  waitForAppReady,
+  startQuizByTestId,
+  ensureAreaSelectionVisible,
+} from './helpers';
 
 async function getCurrentAreaFromLocalStorage(page: Page) {
   const learningStudio = await page.evaluate(() => localStorage.getItem('learningStudio'));
@@ -12,8 +17,7 @@ async function getCurrentAreaFromLocalStorage(page: Page) {
 test.beforeEach(async ({ page }) => {
   await setupFreshTestAuthenticated(page);
   await waitForAppReady(page);
-  // Wait for initial page load to complete
-  await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
+  await ensureAreaSelectionVisible(page);
 });
 
 test('remembers last studied area in localStorage', async ({ page }) => {
