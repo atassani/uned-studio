@@ -3,9 +3,16 @@ import { AreaType } from '../types';
 interface AreaSelectionProps {
   areas: AreaType[];
   loadAreaAndQuestions: (area: AreaType) => Promise<void>;
+  canConfigureAreas?: boolean;
+  onConfigureAreas?: () => void;
 }
 
-export function AreaSelection({ areas, loadAreaAndQuestions }: AreaSelectionProps) {
+export function AreaSelection({
+  areas,
+  loadAreaAndQuestions,
+  canConfigureAreas = false,
+  onConfigureAreas,
+}: AreaSelectionProps) {
   return (
     <div className="space-y-8 flex flex-col items-center justify-center">
       <div className="text-2xl font-bold mb-4">¿Qué quieres estudiar?</div>
@@ -29,6 +36,16 @@ export function AreaSelection({ areas, loadAreaAndQuestions }: AreaSelectionProp
             </span>
           </button>
         ))}
+        {canConfigureAreas && onConfigureAreas && (
+          <button
+            className="px-6 py-3 bg-gray-700 hover:bg-gray-800 text-white rounded text-lg text-center mt-4"
+            onClick={onConfigureAreas}
+            aria-label="Configurar áreas"
+            data-testid="configure-areas-button"
+          >
+            Configurar
+          </button>
+        )}
       </div>
     </div>
   );

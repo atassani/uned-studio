@@ -76,4 +76,14 @@ describe('localStorage abstraction', () => {
     const quizStatus = storage.getAreaQuizStatus('the-area');
     expect(quizStatus).toEqual(theQuizStatus);
   });
+
+  it('stores and retrieves user allowed areas preserving order', () => {
+    storage.setUserAllowedAreas('user-123', ['ipc', 'fdl', 'log1']);
+    expect(storage.getUserAllowedAreas('user-123')).toEqual(['ipc', 'fdl', 'log1']);
+  });
+
+  it('deduplicates repeated user allowed areas before storing', () => {
+    storage.setUserAllowedAreas('user-123', ['ipc', 'ipc', 'fdl']);
+    expect(storage.getUserAllowedAreas('user-123')).toEqual(['ipc', 'fdl']);
+  });
 });

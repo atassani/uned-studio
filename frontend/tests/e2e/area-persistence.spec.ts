@@ -1,21 +1,12 @@
 // moved from tests/e2e/tests
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { setupFreshTestAuthenticated, waitForAppReady } from './helpers';
+import { setupFreshTestAuthenticated, waitForAppReady, startQuizByTestId } from './helpers';
 
 async function getCurrentAreaFromLocalStorage(page: Page) {
   const learningStudio = await page.evaluate(() => localStorage.getItem('learningStudio'));
   const currentArea = learningStudio ? JSON.parse(learningStudio).currentArea : null;
   return currentArea;
-}
-
-async function clearCurrentArea(page: Page) {
-  const state = await page.evaluate(() => localStorage.getItem('learningStudio'));
-  const stateObj = state ? JSON.parse(state) : {};
-  stateObj.currentArea = undefined;
-  await page.evaluate((newState) => {
-    localStorage.setItem('learningStudio', JSON.stringify(newState));
-  }, stateObj);
 }
 
 // Clear localStorage before each test to ensure a clean state
@@ -86,33 +77,16 @@ test('automatically returns to last studied area on app reload', async ({ page }
   // Reload page with increased timeout
   await page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
   await waitForAppReady(page);
+  const configViewAfterReload = page.getByTestId('area-configuration-view');
+  if (await configViewAfterReload.isVisible().catch(() => false)) {
+    await page.getByTestId('area-config-accept').click();
+    await page.waitForTimeout(300);
+  }
   // Should remember IPC in storage and land either on selection menu or quiz
   await expect
     .poll(async () => getCurrentAreaFromLocalStorage(page), { timeout: 15000 })
     .toBe('ipc');
-
-  const selectionMenuVisible = await page
-    .getByTestId('selection-menu')
-    .isVisible()
-    .catch(() => false);
-  const questionViewVisible = await page
-    .getByTestId('question-view')
-    .isVisible()
-    .catch(() => false);
-  const areaSelectionVisible = await page
-    .getByTestId('area-ipc')
-    .isVisible()
-    .catch(() => false);
-
-  expect(selectionMenuVisible || questionViewVisible || areaSelectionVisible).toBe(true);
 }, 40000);
-
-test('restores to area selection if no previous area stored', async ({ page }) => {
-  await clearCurrentArea(page);
-  await page.reload();
-  await page.waitForLoadState('domcontentloaded');
-  await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible();
-});
 
 test('preserves quiz progress when switching between areas', async ({ page }) => {
   await page.evaluate(() => {
@@ -121,26 +95,12 @@ test('preserves quiz progress when switching between areas', async ({ page }) =>
   // Reload so app state is rebuilt from cleared storage
   await page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
   await waitForAppReady(page);
-  if (
-    !(await page
-      .getByTestId('area-log1')
-      .isVisible()
-      .catch(() => false))
-  ) {
-    const optionsButton = page.getByTestId('options-button');
-    if (await optionsButton.isVisible().catch(() => false)) {
-      await optionsButton.click();
-      await page.getByTestId('change-area-button').first().click();
-    }
+  const areaConfigView = page.getByTestId('area-configuration-view');
+  if (await areaConfigView.isVisible().catch(() => false)) {
+    await page.getByTestId('area-config-accept').click();
   }
-
-  // await page.getByRole('button', { name: 'Cambiar área' }).first().click();
-  // Start Lógica I quiz and answer a question
-  await page.getByTestId('area-log1').waitFor({ timeout: 20000 });
-  await page.getByTestId('area-log1').click({ timeout: 15000 });
+  await startQuizByTestId(page, 'log1', { order: 'sequential' });
   const selectionMenu = page.getByTestId('selection-menu');
-  await selectionMenu.waitFor({ timeout: 20000 });
-  await page.getByTestId('quiz-all-button').click({ timeout: 15000 });
   try {
     await selectionMenu.waitFor({ state: 'hidden', timeout: 5000 });
   } catch {

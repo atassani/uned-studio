@@ -10,10 +10,17 @@ interface AreaState {
   selectedSections: string[];
   selectedQuestions: number[];
 }
+
+interface UserAreaConfig {
+  allowedAreaShortNames: string[];
+}
 export interface AppState {
   currentArea?: string;
   areas: {
     [areaKey: string]: Partial<AreaState>;
+  };
+  areaConfigByUser?: {
+    [userKey: string]: UserAreaConfig | undefined;
   };
 }
 
@@ -79,6 +86,26 @@ export const storage = {
   getAreaSelectedQuestions(areaKey: string): number[] | undefined {
     const areaState = getAreaState(areaKey);
     return areaState.selectedQuestions;
+  },
+
+  setUserAllowedAreas(userKey: string, allowedAreaShortNames: string[]) {
+    const state = getStoredState();
+    const existingConfigByUser = state.areaConfigByUser || {};
+    const deduped = Array.from(new Set(allowedAreaShortNames));
+    setStoredState({
+      ...state,
+      areaConfigByUser: {
+        ...existingConfigByUser,
+        [userKey]: {
+          allowedAreaShortNames: deduped,
+        },
+      },
+    });
+  },
+
+  getUserAllowedAreas(userKey: string): string[] | undefined {
+    const state = getStoredState();
+    return state.areaConfigByUser?.[userKey]?.allowedAreaShortNames;
   },
   getStateSnapshot: getStoredState,
   replaceState: setStoredState,
