@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- feat: add `Configurar áreas` UI to choose visible areas and order, including move up/down controls, offered only to registered users and persisted in user state
+- feat: hide area configuration for guests and support guest area allow-list via `guestAllowedAreaShortNames` in areas payload
+- feat: persist user area configuration (`allowedAreaShortNames`) in app state and include it in authenticated learning-state sync
+
 ## [1.4.10] - 2026-02-20
 
 - feat: persistence implemented using a dynamoDB table
