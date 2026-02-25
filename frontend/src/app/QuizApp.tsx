@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { QuestionType, AreaType } from './types';
 import { shuffleOptionsWithMemory, createSeededRng, getUserDisplayName } from './utils';
 import packageJson from '../../package.json';
@@ -48,6 +49,20 @@ function getAreaConfigUserKey(user: AreaConfigUser | null): string | null {
 }
 
 export default function QuizApp() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const normalizedPathname = useMemo(() => {
+    const normalizedInput = (pathname || '/').replace(/\/+$/, '') || '/';
+    const cleanBase = basePath.replace(/\/$/, '');
+    if (cleanBase && normalizedInput.startsWith(cleanBase)) {
+      const trimmed = normalizedInput.slice(cleanBase.length);
+      return trimmed || '/';
+    }
+    return normalizedInput;
+  }, [pathname, basePath]);
+  const isConfigureRoute = normalizedPathname === '/areas/configure';
+
   // Auth hook
   const { user, logout, isAuthenticated, isLoading } = useAuth();
 
@@ -322,6 +337,17 @@ export default function QuizApp() {
     if (isLoading || !areas.length) return;
     if (canConfigureAreas && !userAreaConfigLoaded) return;
 
+    if (isConfigureRoute) {
+      if (!canConfigureAreas) {
+        router.replace('/areas');
+        return;
+      }
+      setShowAreaConfiguration(true);
+      setShowAreaSelection(false);
+      setShowSelectionMenu(false);
+      return;
+    }
+
     const forceConfiguration = shouldForceAreaConfiguration({
       isAuthenticated,
       isGuest: isGuestUser,
@@ -330,6 +356,9 @@ export default function QuizApp() {
     });
 
     if (forceConfiguration) {
+      if (!isConfigureRoute) {
+        router.replace('/areas/configure');
+      }
       setShowAreaConfiguration(true);
       setShowAreaSelection(false);
       setShowSelectionMenu(false);
@@ -380,19 +409,20 @@ export default function QuizApp() {
     userAreaConfigLoaded,
     userAllowedAreaShortNames,
     selectedArea,
+    isConfigureRoute,
+    router,
   ]);
 
   const openAreaConfiguration = useCallback(() => {
     if (!canConfigureAreas) return;
-    setShowAreaConfiguration(true);
-    setShowAreaSelection(false);
-    setShowSelectionMenu(false);
-  }, [canConfigureAreas]);
+    router.replace('/areas/configure');
+  }, [canConfigureAreas, router]);
 
   const closeAreaConfiguration = useCallback(() => {
     setShowAreaConfiguration(false);
     setShowAreaSelection(true);
-  }, []);
+    router.replace('/areas');
+  }, [router]);
 
   const acceptAreaConfiguration = useCallback(
     (shortNames: string[]) => {
@@ -405,8 +435,9 @@ export default function QuizApp() {
       setShowAreaConfiguration(false);
       setShowAreaSelection(true);
       setShowSelectionMenu(false);
+      router.replace('/areas');
     },
-    [canConfigureAreas, areaConfigUserKey, areas]
+    [canConfigureAreas, areaConfigUserKey, areas, router]
   );
 
   const handleServerStateApplied = useCallback(() => {
