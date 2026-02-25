@@ -86,10 +86,10 @@ export async function setupFreshTestAuthenticated(page: Page, email = 'e2e@examp
   await bootstrapAuthenticatedPage(page, homePath, email);
 }
 
-async function addAuthenticatedInitScript(page: Page, jwt: string) {
+async function addAuthenticatedInitScript(page: Page, jwt: string, runId: string) {
   await page.addInitScript(
-    ({ token }) => {
-      const setupKey = '__e2e_setup_done';
+    ({ token, id }) => {
+      const setupKey = `__e2e_setup_done_${id}`;
       if (typeof localStorage === 'undefined') return;
 
       const alreadyInitialized =
@@ -102,16 +102,30 @@ async function addAuthenticatedInitScript(page: Page, jwt: string) {
       }
       localStorage.setItem('jwt', token);
     },
-    { token: jwt }
+    { token: jwt, id: runId }
   );
 }
 
 async function bootstrapAuthenticatedPage(page: Page, url: string, email: string) {
   const token = createMockJwt(email);
-  await addAuthenticatedInitScript(page, token);
+  const runId = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  await addAuthenticatedInitScript(page, token, runId);
   await page.goto(url, { waitUntil: 'domcontentloaded' });
   await waitForAppReady(page);
+  await ensureAreaConfigurationResolved(page);
   await ensureAreaSelectionVisible(page);
+}
+
+async function ensureAreaConfigurationResolved(page: Page) {
+  const configView = page.getByTestId('area-configuration-view');
+  const acceptButton = page.getByTestId('area-config-accept');
+  if (await configView.isVisible().catch(() => false)) {
+    await acceptButton.click();
+    await page
+      .locator('[data-testid^="area-"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 20000 });
+  }
 }
 
 /**
@@ -161,14 +175,33 @@ export async function setupSuperFreshTestAuthenticated(
  * This is a more reliable way to wait than checking for specific DOM elements.
  */
 export async function waitForAppReady(page: Page) {
-  // Wait for the page to be fully loaded
-  await page.waitForLoadState('domcontentloaded');
+  for (let attempt = 0; attempt < 2; attempt++) {
+    // Wait for the page to be fully loaded
+    await page.waitForLoadState('domcontentloaded');
 
-  // Wait for the main app container to be visible
-  await expect(page.locator('body')).toBeVisible();
+    // Wait for the main app container to be visible
+    await expect(page.locator('body')).toBeVisible();
 
-  // Wait a moment for any JavaScript initialization
-  await page.waitForTimeout(500);
+    const runtimeChunkErrorVisible = await page
+      .getByRole('dialog', { name: /Runtime ChunkLoadError/i })
+      .isVisible()
+      .catch(() => false);
+    const applicationErrorVisible = await page
+      .getByRole('heading', { name: /Application error: a client-side exception/i })
+      .isVisible()
+      .catch(() => false);
+
+    if (runtimeChunkErrorVisible || applicationErrorVisible) {
+      if (attempt === 0) {
+        await page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
+        continue;
+      }
+    }
+
+    // Wait a moment for any JavaScript initialization
+    await page.waitForTimeout(500);
+    return;
+  }
 }
 
 /**
@@ -187,28 +220,34 @@ export async function waitForQuizReady(page: Page) {
 }
 
 async function ensureAreaSelectionVisible(page: Page) {
-  const areaButton = page.getByTestId('area-log1');
+  const anyAreaButton = page.locator('[data-testid^="area-"]').first();
   const selectionMenu = page.getByTestId('selection-menu');
   const optionsButton = page.getByTestId('options-button');
   const changeAreaButton = page.getByTestId('change-area-button').first();
   const loadingSpinner = page.getByTestId('loading-spinner');
+  const configView = page.getByTestId('area-configuration-view');
 
   for (let attempt = 0; attempt < 3; attempt++) {
-    if (await areaButton.isVisible().catch(() => false)) {
+    if (await anyAreaButton.isVisible().catch(() => false)) {
       return;
     }
 
-    if (await selectionMenu.isVisible().catch(() => false)) {
+    if (await configView.isVisible().catch(() => false)) {
+      await ensureAreaConfigurationResolved(page);
+      if (await anyAreaButton.isVisible().catch(() => false)) {
+        return;
+      }
+    } else if (await selectionMenu.isVisible().catch(() => false)) {
       await changeAreaButton.click();
-      await areaButton.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
-      if (await areaButton.isVisible().catch(() => false)) {
+      await anyAreaButton.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+      if (await anyAreaButton.isVisible().catch(() => false)) {
         return;
       }
     } else if (await optionsButton.isVisible().catch(() => false)) {
       await optionsButton.click();
       await changeAreaButton.click();
-      await areaButton.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
-      if (await areaButton.isVisible().catch(() => false)) {
+      await anyAreaButton.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+      if (await anyAreaButton.isVisible().catch(() => false)) {
         return;
       }
     } else if (await loadingSpinner.isVisible().catch(() => false)) {
@@ -218,7 +257,10 @@ async function ensureAreaSelectionVisible(page: Page) {
       await waitForAppReady(page);
     }
   }
-  await areaButton.waitFor({ state: 'visible', timeout: 30000 });
+  if (await configView.isVisible().catch(() => false)) {
+    await ensureAreaConfigurationResolved(page);
+  }
+  await anyAreaButton.waitFor({ state: 'visible', timeout: 30000 });
 }
 
 async function ensureSelectionMenuForArea(page: Page, areaShortName: string) {
@@ -250,6 +292,13 @@ async function ensureSelectionMenuForArea(page: Page, areaShortName: string) {
   }
 
   await ensureAreaSelectionVisible(page);
+  if (!(await areaButton.isVisible().catch(() => false))) {
+    const configView = page.getByTestId('area-configuration-view');
+    if (await configView.isVisible().catch(() => false)) {
+      await ensureAreaConfigurationResolved(page);
+    }
+    await areaButton.waitFor({ timeout: 20000 });
+  }
   await areaButton.click();
   await selectionMenu.waitFor({ timeout: 20000 });
 }

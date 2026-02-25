@@ -84,6 +84,35 @@ Esto sirve los datos en `http://localhost:4173`. En `.env.development.local`:
 NEXT_PUBLIC_DATA_BASE_URL=http://localhost:4173
 ```
 
+### Configurar áreas visibles para invitados
+
+Las áreas que ve un usuario invitado se pueden limitar desde el JSON de áreas (el fichero indicado por `NEXT_PUBLIC_AREAS_FILE`).
+
+Campo opcional:
+
+- `guestAllowedAreaShortNames`: array ordenado de `shortName` permitidos para invitados.
+
+Ejemplo:
+
+```json
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-02-25",
+  "guestAllowedAreaShortNames": ["log1", "ipc"],
+  "areas": [
+    { "area": "Lógica I", "file": "questions-logica1.json", "type": "True False", "shortName": "log1" },
+    { "area": "Introducción al Pensamiento Científico", "file": "questions-ipc.json", "type": "Multiple Choice", "shortName": "ipc" },
+    { "area": "Filosofía del Lenguaje I", "file": "questions-fdl.json", "type": "Multiple Choice", "shortName": "fdl" }
+  ]
+}
+```
+
+Comportamiento:
+
+- Si `guestAllowedAreaShortNames` existe y tiene valores válidos, invitados verán solo esas áreas en ese orden.
+- Si no existe (o queda vacío), invitados verán todas las áreas definidas en `areas`.
+- Usuarios autenticados no usan este campo: pueden configurar su propia lista y orden desde `Configurar áreas`.
+
 ### Consideraciones de privacidad
 
 - El tracking respeta la privacidad del usuario

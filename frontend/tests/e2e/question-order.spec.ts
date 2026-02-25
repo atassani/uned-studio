@@ -167,12 +167,8 @@ test.describe('Question Order Control', () => {
   }, 30000);
 
   test('sequential order applies consistently across all quiz modes', async ({ page }) => {
-    // Test all quiz modes use sequential order when selected (Multiple Choice area)
-    await page.getByTestId('area-ipc').click();
-    await page.getByTestId('order-sequential-button').click();
-
-    // Test "Todas las preguntas" mode
-    await page.getByTestId('quiz-all-button').click();
+    // Test "Todas las preguntas" mode with robust area/menu navigation
+    await startQuizByTestId(page, 'ipc', { order: 'sequential', mode: 'all' });
     let questionText = await page.locator('body').innerText();
     expect(questionText).toMatch(/\n1\./);
 

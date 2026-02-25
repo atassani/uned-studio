@@ -4,6 +4,7 @@ import { QuestionType, AreaType } from './types';
 import { shuffleOptionsWithMemory, createSeededRng, getUserDisplayName } from './utils';
 import packageJson from '../../package.json';
 import { AreaSelection } from './components/AreaSelection';
+import { AreaConfiguration } from './components/AreaConfiguration';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { SelectionMenu } from './components/SelectionMenu';
 import { SectionSelection } from './components/SectionSelection';
@@ -25,6 +26,26 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useQuizLogic } from './hooks/useQuizLogic';
 import { useLearningStateSync } from './hooks/useLearningStateSync';
 import { storage } from './storage';
+import {
+  orderAreasByConfiguredShortNames,
+  sanitizeConfiguredAreaShortNames,
+  shouldForceAreaConfiguration,
+} from './areaConfig';
+
+interface AreaConfigUser {
+  username?: string;
+  isGuest?: boolean;
+  attributes?: {
+    sub?: string;
+    email?: string;
+  };
+}
+
+function getAreaConfigUserKey(user: AreaConfigUser | null): string | null {
+  if (!user || user.isGuest) return null;
+  const attributes = user.attributes || {};
+  return attributes.sub || attributes.email || user.username || null;
+}
 
 export default function QuizApp() {
   // Auth hook
@@ -98,6 +119,10 @@ export default function QuizApp() {
     []
   );
 
+  const isGuestUser = Boolean(user?.isGuest);
+  const canConfigureAreas = isAuthenticated && !isGuestUser;
+  const areaConfigUserKey = useMemo(() => getAreaConfigUserKey(user), [user]);
+
   const fetchJsonWithCache = useCallback(
     async (url: string) => {
       const etagKey = `data-etag:${url}`;
@@ -135,13 +160,21 @@ export default function QuizApp() {
     [safeLocalStorage]
   );
 
-  const normalizeAreasPayload = (data: unknown) => {
+  const normalizeAreasPayload = (
+    data: unknown
+  ): { areas: AreaType[]; guestAllowedAreaShortNames: string[] | null } => {
     if (Array.isArray(data)) {
-      return data as AreaType[];
+      return { areas: data as AreaType[], guestAllowedAreaShortNames: null };
     }
     if (data && typeof data === 'object' && 'areas' in data) {
-      const areas = (data as { areas?: AreaType[] }).areas;
-      if (Array.isArray(areas)) return areas;
+      const payload = data as { areas?: AreaType[]; guestAllowedAreaShortNames?: unknown };
+      const areas = payload.areas;
+      const guestAllowedAreaShortNames = Array.isArray(payload.guestAllowedAreaShortNames)
+        ? payload.guestAllowedAreaShortNames.filter(
+            (shortName): shortName is string => typeof shortName === 'string'
+          )
+        : null;
+      if (Array.isArray(areas)) return { areas, guestAllowedAreaShortNames };
     }
     throw new Error('Invalid areas payload');
   };
@@ -159,9 +192,18 @@ export default function QuizApp() {
 
   // New area-related state
   const [areas, setAreas] = useState<AreaType[]>([]);
+  const [visibleAreas, setVisibleAreas] = useState<AreaType[]>([]);
   const [areasError, setAreasError] = useState<string | null>(null);
+  const [guestAllowedAreaShortNames, setGuestAllowedAreaShortNames] = useState<string[] | null>(
+    null
+  );
+  const [userAllowedAreaShortNames, setUserAllowedAreaShortNames] = useState<string[] | undefined>(
+    undefined
+  );
+  const [userAreaConfigLoaded, setUserAreaConfigLoaded] = useState(false);
   const [selectedArea, setSelectedArea] = useState<AreaType | null>(null);
   const [showAreaSelection, setShowAreaSelection] = useState<boolean>(true);
+  const [showAreaConfiguration, setShowAreaConfiguration] = useState<boolean>(false);
   const [currentQuizType, setCurrentQuizType] = useState<'True False' | 'Multiple Choice' | null>(
     null
   );
@@ -180,17 +222,6 @@ export default function QuizApp() {
       !Array.isArray(questions[current].options)
     ) {
       return [];
-    }
-
-    // Helper to get user display name (full name, fallback to email, username, or 'Invitado')
-    function getUserDisplayName(user: any) {
-      if (!user) return '';
-      const attr = user.attributes || {};
-      if (attr.name) return attr.name;
-      if (attr.given_name && attr.family_name) return `${attr.given_name} ${attr.family_name}`;
-      if (attr.email) return attr.email;
-      if (user.username) return user.username;
-      return 'Invitado';
     }
 
     const q = questions[current];
@@ -225,11 +256,6 @@ export default function QuizApp() {
     questions.length
   );
 
-  // Load areas on component mount and migrate any old global quizStatus to per-area keys
-  useEffect(() => {
-    loadAreas();
-  }, []);
-
   const loadAreas = () => {
     setAreasError(null); // Clear any previous errors
 
@@ -244,37 +270,10 @@ export default function QuizApp() {
     const areasUrl = buildDataUrl(areasFile);
     fetchJsonWithCache(areasUrl)
       .then((areasData: unknown) => {
-        const normalizedAreas = normalizeAreasPayload(areasData);
-        setAreas(normalizedAreas);
+        const normalized = normalizeAreasPayload(areasData);
+        setAreas(normalized.areas);
+        setGuestAllowedAreaShortNames(normalized.guestAllowedAreaShortNames);
         setAreasError(null);
-        // Only show area selection if no area is selected
-        const currentAreaShortName = storage.getCurrentArea();
-        if (currentAreaShortName) {
-          const areaToRestore = normalizedAreas.find(
-            (area) => area.shortName === currentAreaShortName
-          );
-          if (areaToRestore) {
-            setSelectedArea(areaToRestore);
-            setCurrentQuizType(areaToRestore.type);
-            // Restore shuffleQuestions for this area
-            const savedShuffleQuestions = storage.getAreaShuffleQuestions(areaToRestore.shortName);
-            if (typeof savedShuffleQuestions === 'boolean') {
-              setShuffleQuestions(savedShuffleQuestions);
-            } else {
-              setShuffleQuestions(true);
-            }
-            // Restore shuffleAnswers for this area
-            const savedShuffleAnswers = storage.getAreaShuffleAnswers(areaToRestore.shortName);
-            if (typeof savedShuffleAnswers === 'boolean') {
-              setShuffleAnswers(savedShuffleAnswers);
-            } else {
-              setShuffleAnswers(false);
-            }
-            setShowAreaSelection(false);
-            return;
-          }
-        }
-        setShowAreaSelection(true);
       })
       .catch((err) => {
         console.error('Failed to load areas:', err);
@@ -283,6 +282,132 @@ export default function QuizApp() {
         );
       });
   };
+
+  // Load areas on component mount
+  useEffect(() => {
+    loadAreas();
+  }, []);
+
+  useEffect(() => {
+    if (isLoading || !canConfigureAreas || !areaConfigUserKey) {
+      setUserAllowedAreaShortNames(undefined);
+      setUserAreaConfigLoaded(!canConfigureAreas);
+      return;
+    }
+    setUserAllowedAreaShortNames(storage.getUserAllowedAreas(areaConfigUserKey));
+    setUserAreaConfigLoaded(true);
+  }, [isLoading, canConfigureAreas, areaConfigUserKey]);
+
+  useEffect(() => {
+    if (!areas.length) {
+      setVisibleAreas([]);
+      return;
+    }
+
+    if (!canConfigureAreas) {
+      if (!guestAllowedAreaShortNames || guestAllowedAreaShortNames.length === 0) {
+        setVisibleAreas(areas);
+        return;
+      }
+      const guestShortNames = sanitizeConfiguredAreaShortNames(guestAllowedAreaShortNames, areas);
+      setVisibleAreas(orderAreasByConfiguredShortNames(areas, guestShortNames));
+      return;
+    }
+
+    const configuredShortNames = sanitizeConfiguredAreaShortNames(userAllowedAreaShortNames, areas);
+    setVisibleAreas(orderAreasByConfiguredShortNames(areas, configuredShortNames));
+  }, [areas, canConfigureAreas, guestAllowedAreaShortNames, userAllowedAreaShortNames]);
+
+  useEffect(() => {
+    if (isLoading || !areas.length) return;
+    if (canConfigureAreas && !userAreaConfigLoaded) return;
+
+    const forceConfiguration = shouldForceAreaConfiguration({
+      isAuthenticated,
+      isGuest: isGuestUser,
+      configuredShortNames: userAllowedAreaShortNames,
+      catalogAreas: areas,
+    });
+
+    if (forceConfiguration) {
+      setShowAreaConfiguration(true);
+      setShowAreaSelection(false);
+      setShowSelectionMenu(false);
+      return;
+    }
+
+    setShowAreaConfiguration(false);
+
+    if (!selectedArea) {
+      const currentAreaShortName = storage.getCurrentArea();
+      const areaToRestore = currentAreaShortName
+        ? visibleAreas.find((area) => area.shortName === currentAreaShortName)
+        : null;
+
+      if (areaToRestore) {
+        setSelectedArea(areaToRestore);
+        setCurrentQuizType(areaToRestore.type);
+        const savedShuffleQuestions = storage.getAreaShuffleQuestions(areaToRestore.shortName);
+        setShuffleQuestions(
+          typeof savedShuffleQuestions === 'boolean' ? savedShuffleQuestions : true
+        );
+
+        const savedShuffleAnswers = storage.getAreaShuffleAnswers(areaToRestore.shortName);
+        setShuffleAnswers(typeof savedShuffleAnswers === 'boolean' ? savedShuffleAnswers : false);
+        setShowAreaSelection(false);
+        return;
+      }
+      setShowAreaSelection(true);
+      return;
+    }
+
+    if (!visibleAreas.some((area) => area.shortName === selectedArea.shortName)) {
+      storage.setCurrentArea(undefined);
+      setSelectedArea(null);
+      setCurrentQuizType(null);
+      setQuestions([]);
+      setCurrent(null);
+      setShowSelectionMenu(false);
+      setShowAreaSelection(true);
+    }
+  }, [
+    isLoading,
+    areas,
+    visibleAreas,
+    isAuthenticated,
+    isGuestUser,
+    canConfigureAreas,
+    userAreaConfigLoaded,
+    userAllowedAreaShortNames,
+    selectedArea,
+  ]);
+
+  const openAreaConfiguration = useCallback(() => {
+    if (!canConfigureAreas) return;
+    setShowAreaConfiguration(true);
+    setShowAreaSelection(false);
+    setShowSelectionMenu(false);
+  }, [canConfigureAreas]);
+
+  const closeAreaConfiguration = useCallback(() => {
+    setShowAreaConfiguration(false);
+    setShowAreaSelection(true);
+  }, []);
+
+  const acceptAreaConfiguration = useCallback(
+    (shortNames: string[]) => {
+      if (!canConfigureAreas || !areaConfigUserKey) return;
+      const sanitized = sanitizeConfiguredAreaShortNames(shortNames, areas);
+      if (sanitized.length === 0) return;
+
+      storage.setUserAllowedAreas(areaConfigUserKey, sanitized);
+      setUserAllowedAreaShortNames(sanitized);
+      setShowAreaConfiguration(false);
+      setShowAreaSelection(true);
+      setShowSelectionMenu(false);
+    },
+    [canConfigureAreas, areaConfigUserKey, areas]
+  );
 
   const handleServerStateApplied = useCallback(() => {
     loadAreas();
@@ -635,7 +760,37 @@ export default function QuizApp() {
       );
     }
 
-    return <AreaSelection areas={areas} loadAreaAndQuestions={loadAreaAndQuestions} />;
+    return (
+      <AreaSelection
+        areas={visibleAreas}
+        loadAreaAndQuestions={loadAreaAndQuestions}
+        canConfigureAreas={canConfigureAreas}
+        onConfigureAreas={openAreaConfiguration}
+      />
+    );
+  }
+
+  function renderAreaConfiguration() {
+    return (
+      <AreaConfiguration
+        areas={areas}
+        initialSelectedShortNames={
+          canConfigureAreas
+            ? sanitizeConfiguredAreaShortNames(userAllowedAreaShortNames, areas)
+            : []
+        }
+        onAccept={acceptAreaConfiguration}
+        onCancel={closeAreaConfiguration}
+        allowCancel={
+          !shouldForceAreaConfiguration({
+            isAuthenticated,
+            isGuest: isGuestUser,
+            configuredShortNames: userAllowedAreaShortNames,
+            catalogAreas: areas,
+          })
+        }
+      />
+    );
   }
 
   // Selection menu UI
@@ -871,7 +1026,7 @@ export default function QuizApp() {
   // Use keyboard shortcuts custom hook
   useKeyboardShortcuts({
     showAreaSelection,
-    areas,
+    areas: visibleAreas,
     setSelectedArea,
     setCurrentQuizType,
     setShowAreaSelection,
@@ -903,6 +1058,9 @@ export default function QuizApp() {
     // Show spinner if areas are not loaded yet
     if (!areas.length && !areasError) {
       return <LoadingSpinner />;
+    }
+    if (showAreaConfiguration) {
+      return renderAreaConfiguration();
     }
     // Show spinner if questions are loading after area selection
     if (
