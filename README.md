@@ -84,6 +84,52 @@ Esto sirve los datos en `http://localhost:4173`. En `.env.development.local`:
 NEXT_PUBLIC_DATA_BASE_URL=http://localhost:4173
 ```
 
+### Sincronización DynamoDB en desarrollo local
+
+En `NODE_ENV=development`, existe un endpoint local `GET/PUT /studio/learning-state` implementado por Next.js para validar lectura/escritura real en DynamoDB sin desplegar CloudFront/Lambda@Edge.
+
+El frontend permite activar/desactivar acceso a DynamoDB para controlar coste en desarrollo:
+
+- `NEXT_PUBLIC_STORAGE_MODE=local|dynamodb|hybrid`
+: `local` usa solo `localStorage`, `dynamodb` usa lectura/escritura remota, `hybrid` lee remoto y guarda local (escritura remota opcional).
+- `NEXT_PUBLIC_ENABLE_DYNAMODB=true|false`
+: interruptor global para cortar cualquier llamada remota.
+- `NEXT_PUBLIC_SYNC_WRITES=true|false`
+: en `hybrid`, habilita/deshabilita escrituras remotas.
+- `NEXT_PUBLIC_MAX_DDB_CALLS_PER_SESSION=<n>`
+: presupuesto máximo de llamadas remotas por sesión de navegador.
+- `NEXT_PUBLIC_STUDIO_LEARNING_STATE_TABLE=<name>` (opcional)
+: nombre de tabla solo para logging del cliente.
+
+Ejemplo recomendado para desarrollo sin coste:
+
+```bash
+NEXT_PUBLIC_STORAGE_MODE=local
+NEXT_PUBLIC_ENABLE_DYNAMODB=false
+NEXT_PUBLIC_MAX_DDB_CALLS_PER_SESSION=50
+```
+
+Ejemplo para experimentar lecturas reales sin escrituras:
+
+```bash
+NEXT_PUBLIC_STORAGE_MODE=hybrid
+NEXT_PUBLIC_ENABLE_DYNAMODB=true
+NEXT_PUBLIC_SYNC_WRITES=false
+NEXT_PUBLIC_MAX_DDB_CALLS_PER_SESSION=100
+```
+
+Cada llamada remota queda trazada en consola del navegador con `op`, `table`, `pk` y `sk`.
+
+Requisitos:
+
+- Credenciales AWS válidas en tu entorno local.
+- Variables para tabla/región (si no usas los defaults):
+: `STUDIO_LEARNING_STATE_TABLE`, `STUDIO_LEARNING_STATE_REGION`
+- Opcional para tabla admin de identidad:
+: `STUDIO_USER_IDENTITY_ADMIN_TABLE`, `STUDIO_USER_IDENTITY_ADMIN_REGION`
+
+Fuera de `development`, este endpoint local devuelve `404`.
+
 ### Configurar áreas visibles para invitados
 
 Las áreas que ve un usuario invitado se pueden limitar desde el JSON de áreas (el fichero indicado por `NEXT_PUBLIC_AREAS_FILE`).
