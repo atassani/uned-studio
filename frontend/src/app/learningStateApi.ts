@@ -14,6 +14,13 @@ interface LearningStateResponse {
   updatedAt: string;
 }
 
+function getLearningStateEndpoint(scope: string): string {
+  if (process.env.NODE_ENV === 'development') {
+    return `/api/learning-state?scope=${encodeURIComponent(scope)}`;
+  }
+  return `/studio/learning-state/?scope=${encodeURIComponent(scope)}`;
+}
+
 function normalizeLearningState(input: unknown): AppState {
   let candidate: unknown = input;
 
@@ -62,7 +69,7 @@ export async function getLearningState(scope = 'global'): Promise<LearningStateR
   }
   logDynamoDbCall('GET', scope, 'attempt');
 
-  const response = await fetch(`/studio/learning-state/?scope=${encodeURIComponent(scope)}`, {
+  const response = await fetch(getLearningStateEndpoint(scope), {
     method: 'GET',
     credentials: 'same-origin',
     cache: 'no-store',
@@ -106,7 +113,7 @@ export async function putLearningState(
   }
   logDynamoDbCall('PUT', scope, 'attempt');
 
-  const response = await fetch(`/studio/learning-state/?scope=${encodeURIComponent(scope)}`, {
+  const response = await fetch(getLearningStateEndpoint(scope), {
     method: 'PUT',
     credentials: 'same-origin',
     cache: 'no-store',

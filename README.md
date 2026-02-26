@@ -86,7 +86,7 @@ NEXT_PUBLIC_DATA_BASE_URL=http://localhost:4173
 
 ### Sincronización DynamoDB en desarrollo local
 
-En `NODE_ENV=development`, existe un endpoint local `GET/PUT /studio/learning-state` implementado por Next.js para validar lectura/escritura real en DynamoDB sin desplegar CloudFront/Lambda@Edge.
+En `NODE_ENV=development`, existe un endpoint local `GET/PUT /api/learning-state` implementado por Next.js para validar lectura/escritura real en DynamoDB sin desplegar CloudFront/Lambda@Edge.
 
 El frontend permite activar/desactivar acceso a DynamoDB para controlar coste en desarrollo:
 

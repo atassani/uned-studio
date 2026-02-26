@@ -1,6 +1,6 @@
 'use client';
 
-import QuizApp from '../../../../QuizApp';
+import QuizApp from '../../../QuizApp';
 
 export default function QuizStatusQuestionPage() {
   return (

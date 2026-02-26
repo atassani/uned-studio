@@ -52,6 +52,7 @@ function getAreaConfigUserKey(user: AreaConfigUser | null): string | null {
 export default function QuizApp() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const [clientPathname, setClientPathname] = useState<string>('/');
+  const [clientSearch, setClientSearch] = useState<string>('');
   const normalizePathname = useCallback(
     (pathInput: string) => {
       const normalizedInput = (pathInput || '/').replace(/\/+$/, '') || '/';
@@ -69,6 +70,7 @@ export default function QuizApp() {
     if (typeof window === 'undefined') return;
     const syncPathFromLocation = () => {
       setClientPathname(window.location.pathname || '/');
+      setClientSearch(window.location.search || '');
     };
     syncPathFromLocation();
     window.addEventListener('popstate', syncPathFromLocation);
@@ -78,19 +80,23 @@ export default function QuizApp() {
   }, []);
 
   const replaceStudioPath = useCallback(
-    (targetPath: string) => {
+    (targetPath: string, search = '') => {
       if (typeof window === 'undefined') return;
       const cleanBase = basePath.replace(/\/$/, '');
       const normalizedTargetPath = targetPath.startsWith('/') ? targetPath : `/${targetPath}`;
       const nextPathname = cleanBase ? `${cleanBase}${normalizedTargetPath}` : normalizedTargetPath;
+      const nextSearch = search ? (search.startsWith('?') ? search : `?${search}`) : '';
       if (window.location.pathname !== nextPathname) {
         window.history.replaceState(
           window.history.state,
           '',
-          `${nextPathname}${window.location.search}${window.location.hash}`
+          `${nextPathname}${nextSearch}${window.location.hash}`
         );
+      } else if (window.location.search !== nextSearch) {
+        window.history.replaceState(window.history.state, '', `${nextPathname}${nextSearch}`);
       }
       setClientPathname(nextPathname);
+      setClientSearch(nextSearch);
     },
     [basePath]
   );
@@ -102,12 +108,18 @@ export default function QuizApp() {
   const isAreasRoute = normalizedPathname === '/areas';
   const isQuizSectionsRoute = normalizedPathname === '/quiz/sections';
   const isQuizQuestionsRoute = normalizedPathname === '/quiz/questions';
-  const statusQuestionRouteMatch = normalizedPathname.match(/^\/quiz\/status\/question\/(\d+)$/);
-  const statusQuestionNumberFromRoute = statusQuestionRouteMatch
-    ? Number(statusQuestionRouteMatch[1])
-    : null;
-  const isQuizStatusRoute =
-    normalizedPathname === '/quiz/status' || statusQuestionNumberFromRoute !== null;
+  const isQuizStatusQuestionRoute = normalizedPathname === '/quiz/status/question';
+  const statusQuestionNumberFromRoute = useMemo(() => {
+    if (!isQuizStatusQuestionRoute) return null;
+    try {
+      const params = new URLSearchParams(clientSearch);
+      const value = Number(params.get('questionNumber'));
+      return Number.isFinite(value) && value > 0 ? value : null;
+    } catch {
+      return null;
+    }
+  }, [clientSearch, isQuizStatusQuestionRoute]);
+  const isQuizStatusRoute = normalizedPathname === '/quiz/status' || isQuizStatusQuestionRoute;
 
   // Auth hook
   const { user, logout, isAuthenticated, isLoading } = useAuth();
@@ -1404,7 +1416,7 @@ export default function QuizApp() {
       setShowSelectionMenu(false);
       setShowStatus(true);
       setShowResult(null);
-      replaceStudioPath(`/quiz/status/question/${questionNumber}`);
+      replaceStudioPath('/quiz/status/question', `questionNumber=${questionNumber}`);
     },
     [replaceStudioPath]
   );
