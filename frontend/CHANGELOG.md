@@ -2,9 +2,24 @@
 
 ## [Unreleased]
 
+## [1.4.11] - 2026-02-26
+
 - feat: add `Configurar áreas` UI to choose visible areas and order, including move up/down controls, offered only to registered users and persisted in user state
 - feat: hide area configuration for guests and support guest area allow-list via `guestAllowedAreaShortNames` in areas payload
 - feat: persist user area configuration (`allowedAreaShortNames`) in app state and include it in authenticated learning-state sync
+- feat: allow studio infra to accept edge lambdas for CloudFront behaviors
+- feat: exchange cognito oauth codes at edge and set auth cookie
+- feat: add edge logout redirect and failure handling tests
+- feat: support edge auth config via local json file
+- feat: add edge /studio/me endpoint for current user info
+- feat: add route for failed status question detail (`/quiz/status/question/:number`)
+- feat: add local dev `/learning-state` API route backed by DynamoDB
+- feat: add scripts to pull/push/diff Cognito app client config snapshots
+- feat: add script to decode local JWT and print DynamoDB pk/sk delete command
+- feat: add admin identity mapping table (`studio-user-identity-admin`) and best-effort email upsert
+- fix: stabilize startup route/state bootstrap to reduce configure/areas flicker
+- fix: canonicalize deep quiz routes to `/areas` when no area is selected
+- fix: resolve unit test regressions around router/auth and persistence mode env typing
 
 ## [1.4.10] - 2026-02-20
 
