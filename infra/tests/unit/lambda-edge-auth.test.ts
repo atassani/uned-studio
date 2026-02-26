@@ -350,6 +350,54 @@ describe('Lambda@Edge Auth Handler', () => {
     authModule.setGetJwtPayloadImpl(null);
   });
 
+  it('should pass jwt email to learning-state store on PUT', async () => {
+    const putSpy = jest.fn(async (params: any) => params);
+    authModule.setGetJwtPayloadImpl(async () => ({
+      sub: 'user-123',
+      email: 'user@example.com',
+    }));
+    authModule.setLearningStateStoreImpl({
+      async get() {
+        return null;
+      },
+      put: putSpy as any,
+    });
+
+    const putEvent = makeEvent({
+      uri: '/studio/learning-state',
+      cookie: 'jwt=valid',
+      method: 'PUT',
+      querystring: 'scope=global',
+      body: {
+        data: JSON.stringify({
+          state: {
+            currentArea: 'log1',
+            areas: {},
+          },
+        }),
+      },
+    });
+
+    const putResult = await authModule.handler(putEvent as any);
+    if (putResult && 'status' in putResult) {
+      expect(putResult.status).toBe('200');
+    } else {
+      throw new Error('Expected PUT response');
+    }
+
+    expect(putSpy).toHaveBeenCalledTimes(1);
+    const putArgs = putSpy.mock.calls.at(0)?.[0];
+    if (!putArgs) {
+      throw new Error('Expected put to be called with params');
+    }
+    expect(putArgs.userId).toBe('user-123');
+    expect(putArgs.scope).toBe('global');
+    expect(putArgs.userEmail).toBe('user@example.com');
+
+    authModule.setLearningStateStoreImpl(null);
+    authModule.setGetJwtPayloadImpl(null);
+  });
+
   it('should read edge auth config from file when present', async () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'edge-auth-'));
     const configPath = path.join(tempDir, 'edge-auth-config.json');

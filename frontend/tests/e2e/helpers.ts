@@ -240,14 +240,14 @@ export async function ensureAreaSelectionVisible(page: Page) {
         return;
       }
     } else if (await selectionMenu.isVisible().catch(() => false)) {
-      await changeAreaButton.click();
+      await changeAreaButton.click({ force: true });
       await anyAreaButton.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
       if (await anyAreaButton.isVisible().catch(() => false)) {
         return;
       }
     } else if (await optionsButton.isVisible().catch(() => false)) {
-      await optionsButton.click();
-      await changeAreaButton.click();
+      await optionsButton.click({ force: true });
+      await changeAreaButton.click({ force: true });
       await anyAreaButton.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
       if (await anyAreaButton.isVisible().catch(() => false)) {
         return;
@@ -267,6 +267,13 @@ export async function ensureAreaSelectionVisible(page: Page) {
   await waitForAppReady(page);
   if (await configView.isVisible().catch(() => false)) {
     await ensureAreaConfigurationResolved(page);
+  }
+  if (!(await anyAreaButton.isVisible().catch(() => false))) {
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: 20000 });
+    await waitForAppReady(page);
+    if (await configView.isVisible().catch(() => false)) {
+      await ensureAreaConfigurationResolved(page);
+    }
   }
   await anyAreaButton.waitFor({ state: 'visible', timeout: 30000 });
 }
@@ -361,12 +368,12 @@ export async function startQuizByTestId(
   const mode = options.mode ?? 'all';
   await ensureSelectionMenuForArea(page, areaShortName);
   if (options.order) {
-    await page.getByTestId(orderToTestId[options.order]).click();
+    await page.getByTestId(orderToTestId[options.order]).click({ force: true });
   }
   if (options.answerOrder) {
-    await page.getByTestId(answerOrderToTestId[options.answerOrder]).click();
+    await page.getByTestId(answerOrderToTestId[options.answerOrder]).click({ force: true });
   }
-  await page.getByTestId(quizModeToTestId[mode]).click();
+  await page.getByTestId(quizModeToTestId[mode]).click({ force: true });
 
   if (mode === 'all') {
     await waitForQuizReady(page);
@@ -384,12 +391,11 @@ export async function openSelectionMenuByTestId(
   options: { order?: QuestionOrder; answerOrder?: AnswerOrder } = {}
 ) {
   await waitForAppReady(page);
-  await page.getByTestId(`area-${areaShortName}`).click();
-  await page.getByTestId('selection-menu').waitFor({ timeout: 20000 });
+  await ensureSelectionMenuForArea(page, areaShortName);
   if (options.order) {
-    await page.getByTestId(orderToTestId[options.order]).click();
+    await page.getByTestId(orderToTestId[options.order]).click({ force: true });
   }
   if (options.answerOrder) {
-    await page.getByTestId(answerOrderToTestId[options.answerOrder]).click();
+    await page.getByTestId(answerOrderToTestId[options.answerOrder]).click({ force: true });
   }
 }

@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { useState } from 'react';
 import { StatusGrid } from '../../src/app/components/StatusGrid';
 import { AreaType, QuestionType } from '../../src/app/types';
 
@@ -34,21 +35,33 @@ describe('StatusGrid overlay behavior', () => {
   ];
 
   it('shows and hides the question details overlay when clicking a failed question', () => {
+    function Wrapper() {
+      const [selectedFailedQuestionNumber, setSelectedFailedQuestionNumber] = useState<
+        number | null
+      >(null);
+      return (
+        <StatusGrid
+          selectedArea={mockArea}
+          questions={mockQuestions}
+          status={{ 0: 'fail', 1: 'correct' }}
+          userAnswers={{ 0: '3', 1: '4' }}
+          currentQuizType="Multiple Choice"
+          handleContinue={jest.fn()}
+          pendingQuestions={jest.fn(() => [] as [number, QuestionType][])}
+          resetQuiz={jest.fn()}
+          setShowAreaSelection={jest.fn()}
+          setShowStatus={jest.fn()}
+          setShowResult={jest.fn()}
+          originalSectionOrder={['Section A']}
+          selectedFailedQuestionNumber={selectedFailedQuestionNumber}
+          onOpenFailedQuestion={setSelectedFailedQuestionNumber}
+          onCloseFailedQuestion={() => setSelectedFailedQuestionNumber(null)}
+        />
+      );
+    }
+
     render(
-      <StatusGrid
-        selectedArea={mockArea}
-        questions={mockQuestions}
-        status={{ 0: 'fail', 1: 'correct' }}
-        userAnswers={{ 0: '3', 1: '4' }}
-        currentQuizType="Multiple Choice"
-        handleContinue={jest.fn()}
-        pendingQuestions={jest.fn(() => [] as [number, QuestionType][])}
-        resetQuiz={jest.fn()}
-        setShowAreaSelection={jest.fn()}
-        setShowStatus={jest.fn()}
-        setShowResult={jest.fn()}
-        originalSectionOrder={['Section A']}
-      />
+      <Wrapper />
     );
 
     // Initially, the overlay should not be visible

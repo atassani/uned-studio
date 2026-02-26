@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { QuestionType, AreaType } from '../types';
 import { groupBySection, formatRichText } from '../utils';
 import {
@@ -23,6 +23,9 @@ interface StatusGridProps {
   setShowStatus: (show: boolean) => void;
   setShowResult: (result: null | { correct: boolean; explanation: string }) => void;
   originalSectionOrder: string[];
+  selectedFailedQuestionNumber: number | null;
+  onOpenFailedQuestion: (questionNumber: number) => void;
+  onCloseFailedQuestion: () => void;
 }
 
 // Helper to display MCQ answer as "A) Option 1."
@@ -50,8 +53,17 @@ export function StatusGrid({
   setShowStatus,
   setShowResult,
   originalSectionOrder,
+  selectedFailedQuestionNumber,
+  onOpenFailedQuestion,
+  onCloseFailedQuestion,
 }: StatusGridProps) {
-  const [selectedQuestion, setSelectedQuestion] = useState<QuestionType | null>(null);
+  const selectedQuestion =
+    selectedFailedQuestionNumber === null
+      ? null
+      : questions.find(
+          (question) =>
+            question.number === selectedFailedQuestionNumber && status[question.index] === 'fail'
+        ) || null;
 
   // Prevent body scroll when overlay is open
   useEffect(() => {
@@ -71,7 +83,7 @@ export function StatusGrid({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && selectedQuestion) {
-        setSelectedQuestion(null);
+        onCloseFailedQuestion();
       }
     };
 
@@ -83,7 +95,7 @@ export function StatusGrid({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedQuestion]);
+  }, [selectedQuestion, onCloseFailedQuestion]);
 
   const grouped = groupBySection(questions);
   const correctCount = Object.values(status).filter((s) => s === 'correct').length;
@@ -131,7 +143,7 @@ export function StatusGrid({
       {selectedQuestion && (
         <div
           className="fixed inset-0 w-screen h-screen flex items-center justify-center z-[9999] bg-black/50"
-          onClick={() => setSelectedQuestion(null)}
+          onClick={onCloseFailedQuestion}
         >
           <div
             className="bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto border-2 border-gray-300"
@@ -143,7 +155,7 @@ export function StatusGrid({
               </h2>
               <button
                 className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
-                onClick={() => setSelectedQuestion(null)}
+                onClick={onCloseFailedQuestion}
                 aria-label="Cerrar"
               >
                 ×
@@ -273,7 +285,7 @@ export function StatusGrid({
             <div className="mt-6 flex justify-end">
               <button
                 className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                onClick={() => setSelectedQuestion(null)}
+                onClick={onCloseFailedQuestion}
               >
                 Cerrar
               </button>
@@ -320,7 +332,7 @@ export function StatusGrid({
                     <div
                       key={q.index}
                       className="flex flex-col items-center cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors"
-                      onClick={() => setSelectedQuestion(q)}
+                      onClick={() => onOpenFailedQuestion(q.number)}
                       title={`Ver detalles de la pregunta ${q.number}`}
                     >
                       <span className="text-2xl">

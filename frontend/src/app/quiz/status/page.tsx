@@ -1,8 +1,8 @@
 'use client';
 
-import QuizApp from '../QuizApp';
+import QuizApp from '../../QuizApp';
 
-export default function QuizPage() {
+export default function QuizStatusPage() {
   return (
     <div className="relative min-h-screen">
       <QuizApp />
