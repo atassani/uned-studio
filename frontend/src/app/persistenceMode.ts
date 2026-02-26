@@ -132,4 +132,3 @@ export function logDynamoDbCall(
   // Keep cost visibility explicit in local development and diagnostics.
   console.info(`[DDB ${outcome}] op=${operation} table=${tableName} pk=${pk} sk=${sk}`);
 }
-

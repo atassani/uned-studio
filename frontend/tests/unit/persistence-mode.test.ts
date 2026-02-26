@@ -24,7 +24,7 @@ describe('persistenceMode', () => {
   });
 
   it('defaults to local mode in development', () => {
-    process.env.NODE_ENV = 'development';
+    (process.env as any).NODE_ENV = 'development';
     expect(getStorageMode()).toBe('local');
   });
 
@@ -61,4 +61,3 @@ describe('persistenceMode', () => {
     expect(consumeDynamoDbCallAllowance('PUT', 'global')).toBe(false);
   });
 });
-

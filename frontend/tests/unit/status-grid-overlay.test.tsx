@@ -60,9 +60,7 @@ describe('StatusGrid overlay behavior', () => {
       );
     }
 
-    render(
-      <Wrapper />
-    );
+    render(<Wrapper />);
 
     // Initially, the overlay should not be visible
     expect(screen.queryByText(/Pregunta 1 - Fallada/)).not.toBeInTheDocument();

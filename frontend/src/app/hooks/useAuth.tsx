@@ -37,13 +37,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function getCognitoLoginUrl(): string | null {
-  if (typeof window === 'undefined') {
-    return null;
-  }
   const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
   const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-  const redirectUri = new URL(basePath || '/', window.location.origin).toString();
+  const redirectUri =
+    process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN ||
+    (typeof window !== 'undefined'
+      ? new URL(basePath || '/', window.location.origin).toString()
+      : null);
   const prompt = process.env.NEXT_PUBLIC_COGNITO_PROMPT;
   if (!domain || !clientId || !redirectUri) {
     return null;
@@ -73,9 +74,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
     const redirectUri =
-      typeof window !== 'undefined'
+      process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN ||
+      (typeof window !== 'undefined'
         ? new URL(basePath || '/', window.location.origin).toString()
-        : process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+        : undefined);
     if (!domain || !clientId || !redirectUri) {
       setIsLoading(false);
       return;

@@ -60,9 +60,7 @@ describe('StatusGrid overlay BUG-007', () => {
       );
     }
 
-    render(
-      <Wrapper />
-    );
+    render(<Wrapper />);
 
     // Click on the failed question
     fireEvent.click(screen.getByText('1❌'));

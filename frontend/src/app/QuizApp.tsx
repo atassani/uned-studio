@@ -82,9 +82,7 @@ export default function QuizApp() {
       if (typeof window === 'undefined') return;
       const cleanBase = basePath.replace(/\/$/, '');
       const normalizedTargetPath = targetPath.startsWith('/') ? targetPath : `/${targetPath}`;
-      const nextPathname = cleanBase
-        ? `${cleanBase}${normalizedTargetPath}`
-        : normalizedTargetPath;
+      const nextPathname = cleanBase ? `${cleanBase}${normalizedTargetPath}` : normalizedTargetPath;
       if (window.location.pathname !== nextPathname) {
         window.history.replaceState(
           window.history.state,
@@ -403,11 +401,7 @@ export default function QuizApp() {
       return;
     }
 
-    if (
-      canConfigureAreas &&
-      remoteLearningStateReadEnabled &&
-      !learningStateBootstrapCompleted
-    ) {
+    if (canConfigureAreas && remoteLearningStateReadEnabled && !learningStateBootstrapCompleted) {
       setUserAreaConfigLoaded(false);
       return;
     }
@@ -572,6 +566,15 @@ export default function QuizApp() {
         setInitialRouteResolved(true);
         return;
       }
+
+      setShowAreaConfiguration(false);
+      setShowAreaSelection(true);
+      setShowSelectionMenu(false);
+      setShowStatus(false);
+      setShowResult(null);
+      setInitialRouteResolved(true);
+      replaceStudioPath('/areas');
+      return;
     }
 
     if (forceConfiguration) {
