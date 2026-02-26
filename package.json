@@ -20,6 +20,9 @@
     "test:prepare-e2e": "npm run test:prepare-e2e --workspace=frontend",
     "test:cleanup-e2e": "npm run test:cleanup-e2e --workspace=frontend",
     "test:e2e": "npm run test:e2e --workspace=frontend",
-    "test:unit": "npm run test:unit --workspace=frontend"
+    "test:unit": "npm run test:unit --workspace=frontend",
+    "cognito:pull": "node ./scripts/cognito-user-pool-client-sync.mjs pull",
+    "cognito:push": "node ./scripts/cognito-user-pool-client-sync.mjs push",
+    "cognito:diff": "node ./scripts/cognito-user-pool-client-sync.mjs diff"
   }
 }

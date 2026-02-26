@@ -113,6 +113,37 @@ Comportamiento:
 - Si no existe (o queda vacío), invitados verán todas las áreas definidas en `areas`.
 - Usuarios autenticados no usan este campo: pueden configurar su propia lista y orden desde `Configurar áreas`.
 
+### Sincronizar configuración de Cognito (sin IaC)
+
+Si gestionas manualmente el App Client de Cognito y quieres versionar su configuración en el repo:
+
+1. Exportar configuración live a snapshot:
+
+```bash
+npm run cognito:pull
+```
+
+2. Ver diferencias snapshot vs live:
+
+```bash
+npm run cognito:diff
+```
+
+3. Aplicar snapshot al App Client live:
+
+```bash
+npm run cognito:push
+```
+
+Detalles:
+
+- Snapshot por defecto: `infra/config/cognito-user-pool-client.json`.
+- Los scripts leen por defecto `frontend/.env.production.local` y luego `frontend/.env.production`.
+- Reutiliza automáticamente `NEXT_PUBLIC_COGNITO_USER_POOL_ID`, `NEXT_PUBLIC_COGNITO_CLIENT_ID` y `NEXT_PUBLIC_AWS_REGION`.
+- Variables de shell (`COGNITO_USER_POOL_ID`, `COGNITO_USER_POOL_CLIENT_ID`, `AWS_REGION`) tienen prioridad si las defines.
+- Puedes cambiar la ruta con `COGNITO_SNAPSHOT_PATH`.
+- Recomendado: después de cambios manuales en AWS Console, ejecutar `cognito:pull` y commitear el snapshot.
+
 ### Consideraciones de privacidad
 
 - El tracking respeta la privacidad del usuario
