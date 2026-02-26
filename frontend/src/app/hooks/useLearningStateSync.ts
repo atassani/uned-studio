@@ -7,21 +7,28 @@ import { getLearningState, putLearningState } from '../learningStateApi';
 interface UseLearningStateSyncOptions {
   enabled: boolean;
   onServerStateApplied?: () => void;
+  onBootstrapCompleted?: () => void;
 }
 
 export function useLearningStateSync({
   enabled,
   onServerStateApplied,
+  onBootstrapCompleted,
 }: UseLearningStateSyncOptions) {
   const initializedRef = useRef(false);
   const bootstrappedRef = useRef(false);
   const suppressNextSyncRef = useRef(false);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onServerStateAppliedRef = useRef(onServerStateApplied);
+  const onBootstrapCompletedRef = useRef(onBootstrapCompleted);
 
   useEffect(() => {
     onServerStateAppliedRef.current = onServerStateApplied;
   }, [onServerStateApplied]);
+
+  useEffect(() => {
+    onBootstrapCompletedRef.current = onBootstrapCompleted;
+  }, [onBootstrapCompleted]);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,6 +67,7 @@ export function useLearningStateSync({
         console.error('Failed to bootstrap learning state sync', error);
       } finally {
         initializedRef.current = true;
+        onBootstrapCompletedRef.current?.();
       }
     };
 

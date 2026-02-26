@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo, useLayoutEffect } from 'react';
 import { QuestionType, AreaType } from './types';
 import { shuffleOptionsWithMemory, createSeededRng, getUserDisplayName } from './utils';
 import packageJson from '../../package.json';
@@ -142,6 +142,8 @@ export default function QuizApp() {
   const resumeQuestionRef = useRef<number | null>(null);
   const currentLoadingAreaRef = useRef<string | null>(null);
   const autoConfigureRedirectRef = useRef(false);
+  const manualConfigureNavigationRef = useRef(false);
+  const directBootstrapAttemptedRef = useRef(false);
 
   const dataBaseUrl =
     process.env.NEXT_PUBLIC_DATA_BASE_URL || process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -185,6 +187,7 @@ export default function QuizApp() {
 
   const isGuestUser = Boolean(user?.isGuest);
   const canConfigureAreas = isAuthenticated && !isGuestUser;
+  const remoteLearningStateReadEnabled = isRemoteLearningStateReadEnabled();
   const areaConfigUserKey = useMemo(() => getAreaConfigUserKey(user), [user]);
 
   const fetchJsonWithCache = useCallback(
@@ -400,6 +403,15 @@ export default function QuizApp() {
       return;
     }
 
+    if (
+      canConfigureAreas &&
+      remoteLearningStateReadEnabled &&
+      !learningStateBootstrapCompleted
+    ) {
+      setUserAreaConfigLoaded(false);
+      return;
+    }
+
     syncUserAreaConfigFromStorage();
 
     const onStateChanged = () => {
@@ -413,7 +425,13 @@ export default function QuizApp() {
         window.removeEventListener(LEARNING_STUDIO_STATE_CHANGED_EVENT, onStateChanged);
       }
     };
-  }, [isLoading, syncUserAreaConfigFromStorage]);
+  }, [
+    isLoading,
+    canConfigureAreas,
+    remoteLearningStateReadEnabled,
+    learningStateBootstrapCompleted,
+    syncUserAreaConfigFromStorage,
+  ]);
 
   useEffect(() => {
     if (!areas.length) {
@@ -450,6 +468,42 @@ export default function QuizApp() {
     setVisibleAreasReady(true);
   }, [areas, canConfigureAreas, guestAllowedAreaShortNames, userAllowedAreaShortNames]);
 
+  useLayoutEffect(() => {
+    if (!isConfigureRoute) return;
+    if (!canConfigureAreas) return;
+    if (manualConfigureNavigationRef.current) return;
+    if (isLoading || !areas.length || !visibleAreasReady) return;
+    if (canConfigureAreas && !userAreaConfigLoaded) return;
+    if (canConfigureAreas && isAuthenticated && !isGuestUser && !learningStateBootstrapCompleted) {
+      return;
+    }
+
+    const forceConfiguration = shouldForceAreaConfiguration({
+      isAuthenticated,
+      isGuest: isGuestUser,
+      configuredShortNames: userAllowedAreaShortNames,
+      catalogAreas: areas,
+      hasExistingLearningState,
+    });
+
+    if (!forceConfiguration) {
+      replaceStudioPath('/areas');
+    }
+  }, [
+    isConfigureRoute,
+    canConfigureAreas,
+    isLoading,
+    areas,
+    visibleAreasReady,
+    userAreaConfigLoaded,
+    isAuthenticated,
+    isGuestUser,
+    learningStateBootstrapCompleted,
+    userAllowedAreaShortNames,
+    hasExistingLearningState,
+    replaceStudioPath,
+  ]);
+
   useEffect(() => {
     if (isLoading || !areas.length) return;
     if (canConfigureAreas && !userAreaConfigLoaded) return;
@@ -468,6 +522,18 @@ export default function QuizApp() {
 
     if (isConfigureRoute) {
       if (!canConfigureAreas) {
+        setInitialRouteResolved(true);
+        replaceStudioPath('/areas');
+        return;
+      }
+      if (
+        !forceConfiguration &&
+        !autoConfigureRedirectRef.current &&
+        !manualConfigureNavigationRef.current
+      ) {
+        setShowAreaConfiguration(false);
+        setShowAreaSelection(true);
+        setShowSelectionMenu(false);
         setInitialRouteResolved(true);
         replaceStudioPath('/areas');
         return;
@@ -509,10 +575,7 @@ export default function QuizApp() {
     }
 
     if (forceConfiguration) {
-      if (!isConfigureRoute) {
-        autoConfigureRedirectRef.current = true;
-        replaceStudioPath('/areas/configure');
-      }
+      autoConfigureRedirectRef.current = false;
       setShowAreaConfiguration(true);
       setShowAreaSelection(false);
       setShowSelectionMenu(false);
@@ -601,10 +664,12 @@ export default function QuizApp() {
 
   const openAreaConfiguration = useCallback(() => {
     if (!canConfigureAreas) return;
+    manualConfigureNavigationRef.current = true;
     replaceStudioPath('/areas/configure');
   }, [canConfigureAreas, replaceStudioPath]);
 
   const closeAreaConfiguration = useCallback(() => {
+    manualConfigureNavigationRef.current = false;
     setShowAreaConfiguration(false);
     setShowAreaSelection(true);
     replaceStudioPath('/areas');
@@ -650,6 +715,7 @@ export default function QuizApp() {
 
       storage.setUserAllowedAreas(areaConfigUserKey, sanitized);
       setUserAllowedAreaShortNames(sanitized);
+      manualConfigureNavigationRef.current = false;
       setShowAreaConfiguration(false);
       setShowAreaSelection(true);
       setShowSelectionMenu(false);
@@ -663,7 +729,6 @@ export default function QuizApp() {
   }, [loadAreas]);
 
   const isTestRuntime = process.env.NODE_ENV === 'test';
-  const remoteLearningStateReadEnabled = isRemoteLearningStateReadEnabled();
 
   useLearningStateSync({
     enabled:
@@ -673,8 +738,40 @@ export default function QuizApp() {
       !user?.isGuest &&
       remoteLearningStateReadEnabled,
     onServerStateApplied: handleServerStateApplied,
-    onBootstrapCompleted: () => setLearningStateBootstrapCompleted(true),
+    onBootstrapCompleted: () => {
+      syncUserAreaConfigFromStorage();
+      setLearningStateBootstrapCompleted(true);
+    },
   });
+
+  useEffect(() => {
+    if (isLoading || !isAuthenticated || user?.isGuest || !remoteLearningStateReadEnabled) {
+      directBootstrapAttemptedRef.current = false;
+      return;
+    }
+    if (directBootstrapAttemptedRef.current) {
+      return;
+    }
+    directBootstrapAttemptedRef.current = true;
+
+    getLearningState('global')
+      .then((remote) => {
+        if (remote?.state) {
+          storage.replaceState(remote.state);
+          syncUserAreaConfigFromStorage();
+          setLearningStateBootstrapCompleted(true);
+        }
+      })
+      .catch((error) => {
+        console.error('Direct bootstrap from remote learning state failed', error);
+      });
+  }, [
+    isLoading,
+    isAuthenticated,
+    user?.isGuest,
+    remoteLearningStateReadEnabled,
+    syncUserAreaConfigFromStorage,
+  ]);
 
   useEffect(() => {
     if (!remoteLearningStateReadEnabled) {
@@ -1389,6 +1486,13 @@ export default function QuizApp() {
   const allAnswered =
     questions.length > 0 && Object.values(status).filter((s) => s === 'pending').length === 0;
   const renderContent = () => {
+    const isAuthBootstrapPending =
+      canConfigureAreas && remoteLearningStateReadEnabled && !learningStateBootstrapCompleted;
+
+    if (isAuthBootstrapPending && isConfigureRoute) {
+      return <LoadingSpinner />;
+    }
+
     if ((!initialRouteResolved || (areas.length > 0 && !visibleAreasReady)) && !areasError) {
       return <LoadingSpinner />;
     }
