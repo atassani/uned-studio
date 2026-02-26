@@ -16,6 +16,7 @@ interface LearningStateStore {
     state: LearningStateValue;
     updatedAt: string;
     clientUpdatedAt?: string;
+    userEmail?: string;
   }): Promise<void>;
 }
 
@@ -32,6 +33,12 @@ function getCognitoConfig() {
     fileConfig?.learningStateTable ?? process.env.STUDIO_LEARNING_STATE_TABLE;
   const learningStateRegion =
     fileConfig?.learningStateRegion ?? process.env.STUDIO_LEARNING_STATE_REGION ?? region;
+  const userIdentityAdminTable =
+    fileConfig?.userIdentityAdminTable ?? process.env.STUDIO_USER_IDENTITY_ADMIN_TABLE;
+  const userIdentityAdminRegion =
+    fileConfig?.userIdentityAdminRegion ??
+    process.env.STUDIO_USER_IDENTITY_ADMIN_REGION ??
+    learningStateRegion;
   const issuer =
     region && userPoolId ? `https://cognito-idp.${region}.amazonaws.com/${userPoolId}` : undefined;
   const jwksUrl = issuer ? `${issuer}/.well-known/jwks.json` : undefined;
@@ -45,6 +52,8 @@ function getCognitoConfig() {
     redirectSignOut,
     learningStateTable,
     learningStateRegion,
+    userIdentityAdminTable,
+    userIdentityAdminRegion,
     issuer,
     jwksUrl,
   };
@@ -60,6 +69,8 @@ function readEdgeAuthConfig():
       redirectSignOut?: string;
       learningStateTable?: string;
       learningStateRegion?: string;
+      userIdentityAdminTable?: string;
+      userIdentityAdminRegion?: string;
     }
   | null {
   const configPath =
@@ -183,7 +194,12 @@ function getLearningStateStore(): LearningStateStore | null {
 }
 
 function createDynamoLearningStateStore(): LearningStateStore | null {
-  const { learningStateTable, learningStateRegion } = getCognitoConfig();
+  const {
+    learningStateTable,
+    learningStateRegion,
+    userIdentityAdminTable,
+    userIdentityAdminRegion,
+  } = getCognitoConfig();
   if (!learningStateTable || !learningStateRegion) {
     return null;
   }
@@ -193,6 +209,10 @@ function createDynamoLearningStateStore(): LearningStateStore | null {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { DynamoDBClient, GetItemCommand, PutItemCommand } = require('@aws-sdk/client-dynamodb');
     const client = new DynamoDBClient({ region: learningStateRegion });
+    const adminClient =
+      userIdentityAdminTable && userIdentityAdminRegion
+        ? new DynamoDBClient({ region: userIdentityAdminRegion })
+        : null;
     return {
       async get(userId: string, scope: string) {
         const out = await client.send(
@@ -212,7 +232,7 @@ function createDynamoLearningStateStore(): LearningStateStore | null {
         const updatedAt = item.updatedAt?.S ?? '';
         return { state: JSON.parse(item.state.S), updatedAt };
       },
-      async put({ userId, scope, state, updatedAt, clientUpdatedAt }) {
+      async put({ userId, scope, state, updatedAt, clientUpdatedAt, userEmail }) {
         await client.send(
           new PutItemCommand({
             TableName: learningStateTable,
@@ -225,6 +245,26 @@ function createDynamoLearningStateStore(): LearningStateStore | null {
             },
           })
         );
+
+        // Best-effort admin mapping for support/debug use cases.
+        if (adminClient && userIdentityAdminTable) {
+          if (typeof userEmail === 'string' && userEmail.length > 0) {
+            try {
+              await adminClient.send(
+                new PutItemCommand({
+                  TableName: userIdentityAdminTable,
+                  Item: {
+                    userId: { S: userId },
+                    lastKnownEmail: { S: userEmail },
+                    updatedAt: { S: updatedAt },
+                  },
+                })
+              );
+            } catch {
+              // Ignore admin mapping failures to avoid blocking primary learning-state writes.
+            }
+          }
+        }
       },
     };
   } catch (error) {
@@ -235,6 +275,10 @@ function createDynamoLearningStateStore(): LearningStateStore | null {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const AWS = require('aws-sdk');
     const docClient = new AWS.DynamoDB.DocumentClient({ region: learningStateRegion });
+    const adminDocClient =
+      userIdentityAdminTable && userIdentityAdminRegion
+        ? new AWS.DynamoDB.DocumentClient({ region: userIdentityAdminRegion })
+        : null;
 
     return {
       async get(userId: string, scope: string) {
@@ -255,7 +299,7 @@ function createDynamoLearningStateStore(): LearningStateStore | null {
           updatedAt: (out.Item.updatedAt as string) ?? '',
         };
       },
-      async put({ userId, scope, state, updatedAt, clientUpdatedAt }) {
+      async put({ userId, scope, state, updatedAt, clientUpdatedAt, userEmail }) {
         await docClient
           .put({
             TableName: learningStateTable,
@@ -268,6 +312,25 @@ function createDynamoLearningStateStore(): LearningStateStore | null {
             },
           })
           .promise();
+
+        if (adminDocClient && userIdentityAdminTable) {
+          if (typeof userEmail === 'string' && userEmail.length > 0) {
+            try {
+              await adminDocClient
+                .put({
+                  TableName: userIdentityAdminTable,
+                  Item: {
+                    userId,
+                    lastKnownEmail: userEmail,
+                    updatedAt,
+                  },
+                })
+                .promise();
+            } catch {
+              // Ignore admin mapping failures to avoid blocking primary learning-state writes.
+            }
+          }
+        }
       },
     };
   } catch (error) {
@@ -418,6 +481,7 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
           updatedAt,
           clientUpdatedAt:
             typeof body.clientUpdatedAt === 'string' ? body.clientUpdatedAt : undefined,
+          userEmail: typeof payload.email === 'string' ? payload.email : undefined,
         });
         return jsonResponse('200', { scope, updatedAt });
       } catch {

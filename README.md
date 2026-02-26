@@ -144,6 +144,35 @@ Detalles:
 - Puedes cambiar la ruta con `COGNITO_SNAPSHOT_PATH`.
 - Recomendado: después de cambios manuales en AWS Console, ejecutar `cognito:pull` y commitear el snapshot.
 
+### Obtener PK de DynamoDB desde JWT
+
+Para imprimir el `pk` exacto (`USER#<sub>`) del usuario actual y un comando de borrado:
+
+```bash
+npm run jwt:pk -- --jwt '<id_token>'
+```
+
+También acepta un JSON con campo `jwt`, `token` o `id_token`:
+
+```bash
+npm run jwt:pk -- --file /ruta/al/archivo.json
+```
+
+Opcionalmente, si usas tabla/región no estándar:
+
+```bash
+npm run jwt:pk -- --jwt '<id_token>' --table studio-learning-state --region eu-west-2
+```
+
+### Tabla admin de identidad (sub -> lastKnownEmail)
+
+El backend puede mantener una tabla de soporte con el último email conocido por `sub` para tareas administrativas (sin mezclarlo en el estado de aprendizaje del usuario).
+
+Variables para runtime de edge auth:
+
+- `STUDIO_USER_IDENTITY_ADMIN_TABLE` (ejemplo: `studio-user-identity-admin`)
+- `STUDIO_USER_IDENTITY_ADMIN_REGION` (ejemplo: `eu-west-2`)
+
 ### Consideraciones de privacidad
 
 - El tracking respeta la privacidad del usuario

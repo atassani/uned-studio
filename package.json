@@ -23,6 +23,7 @@
     "test:unit": "npm run test:unit --workspace=frontend",
     "cognito:pull": "node ./scripts/cognito-user-pool-client-sync.mjs pull",
     "cognito:push": "node ./scripts/cognito-user-pool-client-sync.mjs push",
-    "cognito:diff": "node ./scripts/cognito-user-pool-client-sync.mjs diff"
+    "cognito:diff": "node ./scripts/cognito-user-pool-client-sync.mjs diff",
+    "jwt:pk": "node ./scripts/print-dynamodb-pk-from-jwt.mjs"
   }
 }
