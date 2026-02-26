@@ -51,4 +51,26 @@ describe('area config utilities', () => {
     });
     expect(force).toBe(true);
   });
+
+  it('does not force configuration when user has learning history but no saved config', () => {
+    const force = shouldForceAreaConfiguration({
+      isAuthenticated: true,
+      isGuest: false,
+      configuredShortNames: undefined,
+      catalogAreas,
+      hasExistingLearningState: true,
+    });
+    expect(force).toBe(false);
+  });
+
+  it('does not force configuration when saved config is invalid but user has learning history', () => {
+    const force = shouldForceAreaConfiguration({
+      isAuthenticated: true,
+      isGuest: false,
+      configuredShortNames: ['unknown-area'],
+      catalogAreas,
+      hasExistingLearningState: true,
+    });
+    expect(force).toBe(false);
+  });
 });

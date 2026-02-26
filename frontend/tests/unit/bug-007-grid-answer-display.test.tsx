@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { useState } from 'react';
 import { StatusGrid } from '../../src/app/components/StatusGrid';
 import { AreaType, QuestionType } from '../../src/app/types';
 
@@ -34,22 +35,32 @@ describe('StatusGrid overlay BUG-007', () => {
   ];
 
   it('shows user answer as letter, not full text, when it is a full text string', () => {
-    render(
-      <StatusGrid
-        selectedArea={mockArea}
-        questions={mockQuestions}
-        status={{ 0: 'fail', 1: 'correct' }}
-        userAnswers={{ 0: 'The answer could be 3' }} // User answered with the full text '3'
-        currentQuizType="Multiple Choice"
-        handleContinue={jest.fn()}
-        pendingQuestions={jest.fn(() => [] as [number, QuestionType][])}
-        resetQuiz={jest.fn()}
-        setShowAreaSelection={jest.fn()}
-        setShowStatus={jest.fn()}
-        setShowResult={jest.fn()}
-        originalSectionOrder={['Section A']}
-      />
-    );
+    function Wrapper() {
+      const [selectedFailedQuestionNumber, setSelectedFailedQuestionNumber] = useState<
+        number | null
+      >(null);
+      return (
+        <StatusGrid
+          selectedArea={mockArea}
+          questions={mockQuestions}
+          status={{ 0: 'fail', 1: 'correct' }}
+          userAnswers={{ 0: 'The answer could be 3' }} // User answered with the full text '3'
+          currentQuizType="Multiple Choice"
+          handleContinue={jest.fn()}
+          pendingQuestions={jest.fn(() => [] as [number, QuestionType][])}
+          resetQuiz={jest.fn()}
+          setShowAreaSelection={jest.fn()}
+          setShowStatus={jest.fn()}
+          setShowResult={jest.fn()}
+          originalSectionOrder={['Section A']}
+          selectedFailedQuestionNumber={selectedFailedQuestionNumber}
+          onOpenFailedQuestion={setSelectedFailedQuestionNumber}
+          onCloseFailedQuestion={() => setSelectedFailedQuestionNumber(null)}
+        />
+      );
+    }
+
+    render(<Wrapper />);
 
     // Click on the failed question
     fireEvent.click(screen.getByText('1❌'));

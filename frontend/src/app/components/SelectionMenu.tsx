@@ -8,8 +8,9 @@ interface SelectionMenuProps {
   setShuffleQuestions: (shuffle: boolean) => void;
   shuffleAnswers: boolean;
   setShuffleAnswers: (shuffle: boolean) => void;
-  setSelectionMode: (mode: null | 'all' | 'sections' | 'questions') => void;
   startQuizAll: () => void;
+  openSectionsSelection: () => void;
+  openQuestionsSelection: () => void;
   setShowAreaSelection: (show: boolean) => void;
   setShowSelectionMenu: (show: boolean) => void;
 }
@@ -21,8 +22,9 @@ export function SelectionMenu({
   setShuffleQuestions,
   shuffleAnswers,
   setShuffleAnswers,
-  setSelectionMode,
   startQuizAll,
+  openSectionsSelection,
+  openQuestionsSelection,
   setShowAreaSelection,
   setShowSelectionMenu,
 }: SelectionMenuProps) {
@@ -123,7 +125,6 @@ export function SelectionMenu({
       <button
         className="px-6 py-3 bg-blue-600 text-white rounded text-lg w-64"
         onClick={() => {
-          setSelectionMode('all');
           startQuizAll();
         }}
         aria-label="Todas las preguntas"
@@ -133,9 +134,7 @@ export function SelectionMenu({
       </button>
       <button
         className="px-6 py-3 bg-green-600 text-white rounded text-lg w-64"
-        onClick={() => {
-          setSelectionMode('sections');
-        }}
+        onClick={openSectionsSelection}
         aria-label="Seleccionar secciones"
         data-testid="quiz-sections-button"
       >
@@ -143,9 +142,7 @@ export function SelectionMenu({
       </button>
       <button
         className="px-6 py-3 bg-purple-600 text-white rounded text-lg w-64"
-        onClick={() => {
-          setSelectionMode('questions');
-        }}
+        onClick={openQuestionsSelection}
         aria-label="Seleccionar preguntas"
         data-testid="quiz-questions-button"
       >

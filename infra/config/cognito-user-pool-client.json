@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "region": "eu-west-2",
+    "userPoolId": "eu-west-2_lGf1JmMyv",
+    "clientId": "59h9ffssqtm33tgu47nvopqitf",
+    "pulledAt": "2026-02-26T16:02:27.302Z"
+  },
+  "userPoolClient": {
+    "ClientName": "studio-spa-client",
+    "RefreshTokenValidity": 30,
+    "TokenValidityUnits": {},
+    "ExplicitAuthFlows": [
+      "ALLOW_REFRESH_TOKEN_AUTH",
+      "ALLOW_USER_SRP_AUTH"
+    ],
+    "SupportedIdentityProviders": [
+      "Google"
+    ],
+    "CallbackURLs": [
+      "http://localhost:3000/studio",
+      "http://localhost:3001/studio",
+      "https://humblyproud.com/studio"
+    ],
+    "LogoutURLs": [
+      "http://localhost:3000/studio",
+      "http://localhost:3001/studio",
+      "https://humblyproud.com/studio"
+    ],
+    "AllowedOAuthFlows": [
+      "code"
+    ],
+    "AllowedOAuthScopes": [
+      "email",
+      "openid",
+      "profile"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "EnableTokenRevocation": true,
+    "EnablePropagateAdditionalUserContextData": false,
+    "AuthSessionValidity": 3
+  }
+}

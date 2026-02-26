@@ -9,6 +9,15 @@ jest.mock('../../src/app/hooks/useAuth', () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(() => ({
+    replace: jest.fn(),
+    push: jest.fn(),
+    prefetch: jest.fn(),
+  })),
+  usePathname: jest.fn(() => '/'),
+}));
+
 // Mock other hooks and components that QuizApp depends on
 jest.mock('../../src/app/hooks/useKeyboardShortcuts', () => ({
   useKeyboardShortcuts: jest.fn(),

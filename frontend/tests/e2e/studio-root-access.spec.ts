@@ -8,6 +8,10 @@ const getStudioUrls = (baseURL?: string) => {
   return {
     rootNoSlash: `${resolved.origin}${basePath}`,
     rootIndex: `${resolved.origin}${basePath}/index.html`,
+    quiz: `${resolved.origin}${basePath}/quiz`,
+    quizSections: `${resolved.origin}${basePath}/quiz/sections`,
+    quizQuestions: `${resolved.origin}${basePath}/quiz/questions`,
+    quizStatus: `${resolved.origin}${basePath}/quiz/status`,
   };
 };
 
@@ -43,5 +47,46 @@ test.describe('Studio root access', () => {
     const response = await page.goto(rootIndex);
 
     expect(response?.status()).toBe(404);
+  });
+
+  test('accessing /studio/quiz should return 200', async ({ page }) => {
+    await setupTestDataRoutes(page);
+    const { quiz } = getStudioUrls(test.info().project.use.baseURL as string | undefined);
+    const response = await page.goto(quiz);
+
+    expect(response?.status()).toBe(200);
+
+    await ensureGuestLoginIfPresent(page);
+    await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 10000 });
+  });
+
+  test('accessing /studio/quiz/sections should return 200', async ({ page }) => {
+    await setupTestDataRoutes(page);
+    const { quizSections } = getStudioUrls(test.info().project.use.baseURL as string | undefined);
+    const response = await page.goto(quizSections);
+
+    expect(response?.status()).toBe(200);
+    await ensureGuestLoginIfPresent(page);
+    await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 10000 });
+  });
+
+  test('accessing /studio/quiz/questions should return 200', async ({ page }) => {
+    await setupTestDataRoutes(page);
+    const { quizQuestions } = getStudioUrls(test.info().project.use.baseURL as string | undefined);
+    const response = await page.goto(quizQuestions);
+
+    expect(response?.status()).toBe(200);
+    await ensureGuestLoginIfPresent(page);
+    await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 10000 });
+  });
+
+  test('accessing /studio/quiz/status should return 200', async ({ page }) => {
+    await setupTestDataRoutes(page);
+    const { quizStatus } = getStudioUrls(test.info().project.use.baseURL as string | undefined);
+    const response = await page.goto(quizStatus);
+
+    expect(response?.status()).toBe(200);
+    await ensureGuestLoginIfPresent(page);
+    await expect(page.getByText('¿Qué quieres estudiar?')).toBeVisible({ timeout: 10000 });
   });
 });

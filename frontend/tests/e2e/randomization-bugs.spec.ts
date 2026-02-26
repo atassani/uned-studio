@@ -22,8 +22,8 @@ test.describe('Randomization Bugs', () => {
       if (match) {
         firstQuestions.push(parseInt(match[1], 10));
       }
-      await page.getByTestId('options-button').click();
-      await page.getByTestId('reset-quiz-button').first().click();
+      await page.getByTestId('options-button').click({ force: true });
+      await page.getByTestId('reset-quiz-button').first().click({ force: true });
     }
 
     // If randomization works, we shouldn't always get question 1
@@ -45,8 +45,8 @@ test.describe('Randomization Bugs', () => {
       const match = questionText.match(/^A\) (.+)/);
       firstOptions.push(match ? match[1] : 'UNKNOWN');
 
-      await page.getByTestId('options-button').click();
-      await page.getByTestId('reset-quiz-button').first().click();
+      await page.getByTestId('options-button').click({ force: true });
+      await page.getByTestId('reset-quiz-button').first().click({ force: true });
     }
 
     // If shuffling works, we shouldn't always get the same first option

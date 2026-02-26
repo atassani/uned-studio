@@ -1,8 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { setupFreshTestAuthenticated } from './helpers';
+import { setupFreshTestAuthenticated, ensureAreaSelectionVisible } from './helpers';
 
 test.beforeEach(async ({ page }) => {
   await setupFreshTestAuthenticated(page);
+  await ensureAreaSelectionVisible(page);
 });
 
 test('shows area selection screen first', async ({ page }) => {

@@ -84,6 +84,52 @@ Esto sirve los datos en `http://localhost:4173`. En `.env.development.local`:
 NEXT_PUBLIC_DATA_BASE_URL=http://localhost:4173
 ```
 
+### Sincronización DynamoDB en desarrollo local
+
+En `NODE_ENV=development`, existe un endpoint local `GET/PUT /studio/learning-state` implementado por Next.js para validar lectura/escritura real en DynamoDB sin desplegar CloudFront/Lambda@Edge.
+
+El frontend permite activar/desactivar acceso a DynamoDB para controlar coste en desarrollo:
+
+- `NEXT_PUBLIC_STORAGE_MODE=local|dynamodb|hybrid`
+: `local` usa solo `localStorage`, `dynamodb` usa lectura/escritura remota, `hybrid` lee remoto y guarda local (escritura remota opcional).
+- `NEXT_PUBLIC_ENABLE_DYNAMODB=true|false`
+: interruptor global para cortar cualquier llamada remota.
+- `NEXT_PUBLIC_SYNC_WRITES=true|false`
+: en `hybrid`, habilita/deshabilita escrituras remotas.
+- `NEXT_PUBLIC_MAX_DDB_CALLS_PER_SESSION=<n>`
+: presupuesto máximo de llamadas remotas por sesión de navegador.
+- `NEXT_PUBLIC_STUDIO_LEARNING_STATE_TABLE=<name>` (opcional)
+: nombre de tabla solo para logging del cliente.
+
+Ejemplo recomendado para desarrollo sin coste:
+
+```bash
+NEXT_PUBLIC_STORAGE_MODE=local
+NEXT_PUBLIC_ENABLE_DYNAMODB=false
+NEXT_PUBLIC_MAX_DDB_CALLS_PER_SESSION=50
+```
+
+Ejemplo para experimentar lecturas reales sin escrituras:
+
+```bash
+NEXT_PUBLIC_STORAGE_MODE=hybrid
+NEXT_PUBLIC_ENABLE_DYNAMODB=true
+NEXT_PUBLIC_SYNC_WRITES=false
+NEXT_PUBLIC_MAX_DDB_CALLS_PER_SESSION=100
+```
+
+Cada llamada remota queda trazada en consola del navegador con `op`, `table`, `pk` y `sk`.
+
+Requisitos:
+
+- Credenciales AWS válidas en tu entorno local.
+- Variables para tabla/región (si no usas los defaults):
+: `STUDIO_LEARNING_STATE_TABLE`, `STUDIO_LEARNING_STATE_REGION`
+- Opcional para tabla admin de identidad:
+: `STUDIO_USER_IDENTITY_ADMIN_TABLE`, `STUDIO_USER_IDENTITY_ADMIN_REGION`
+
+Fuera de `development`, este endpoint local devuelve `404`.
+
 ### Configurar áreas visibles para invitados
 
 Las áreas que ve un usuario invitado se pueden limitar desde el JSON de áreas (el fichero indicado por `NEXT_PUBLIC_AREAS_FILE`).
@@ -112,6 +158,66 @@ Comportamiento:
 - Si `guestAllowedAreaShortNames` existe y tiene valores válidos, invitados verán solo esas áreas en ese orden.
 - Si no existe (o queda vacío), invitados verán todas las áreas definidas en `areas`.
 - Usuarios autenticados no usan este campo: pueden configurar su propia lista y orden desde `Configurar áreas`.
+
+### Sincronizar configuración de Cognito (sin IaC)
+
+Si gestionas manualmente el App Client de Cognito y quieres versionar su configuración en el repo:
+
+1. Exportar configuración live a snapshot:
+
+```bash
+npm run cognito:pull
+```
+
+2. Ver diferencias snapshot vs live:
+
+```bash
+npm run cognito:diff
+```
+
+3. Aplicar snapshot al App Client live:
+
+```bash
+npm run cognito:push
+```
+
+Detalles:
+
+- Snapshot por defecto: `infra/config/cognito-user-pool-client.json`.
+- Los scripts leen por defecto `frontend/.env.production.local` y luego `frontend/.env.production`.
+- Reutiliza automáticamente `NEXT_PUBLIC_COGNITO_USER_POOL_ID`, `NEXT_PUBLIC_COGNITO_CLIENT_ID` y `NEXT_PUBLIC_AWS_REGION`.
+- Variables de shell (`COGNITO_USER_POOL_ID`, `COGNITO_USER_POOL_CLIENT_ID`, `AWS_REGION`) tienen prioridad si las defines.
+- Puedes cambiar la ruta con `COGNITO_SNAPSHOT_PATH`.
+- Recomendado: después de cambios manuales en AWS Console, ejecutar `cognito:pull` y commitear el snapshot.
+
+### Obtener PK de DynamoDB desde JWT
+
+Para imprimir el `pk` exacto (`USER#<sub>`) del usuario actual y un comando de borrado:
+
+```bash
+npm run jwt:pk -- --jwt '<id_token>'
+```
+
+También acepta un JSON con campo `jwt`, `token` o `id_token`:
+
+```bash
+npm run jwt:pk -- --file /ruta/al/archivo.json
+```
+
+Opcionalmente, si usas tabla/región no estándar:
+
+```bash
+npm run jwt:pk -- --jwt '<id_token>' --table studio-learning-state --region eu-west-2
+```
+
+### Tabla admin de identidad (sub -> lastKnownEmail)
+
+El backend puede mantener una tabla de soporte con el último email conocido por `sub` para tareas administrativas (sin mezclarlo en el estado de aprendizaje del usuario).
+
+Variables para runtime de edge auth:
+
+- `STUDIO_USER_IDENTITY_ADMIN_TABLE` (ejemplo: `studio-user-identity-admin`)
+- `STUDIO_USER_IDENTITY_ADMIN_REGION` (ejemplo: `eu-west-2`)
 
 ### Consideraciones de privacidad
 

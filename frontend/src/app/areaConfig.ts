@@ -5,6 +5,7 @@ interface AreaConfigDecisionInput {
   isGuest: boolean;
   configuredShortNames?: string[];
   catalogAreas: AreaType[];
+  hasExistingLearningState?: boolean;
 }
 
 export function sanitizeConfiguredAreaShortNames(
@@ -35,14 +36,18 @@ export function shouldForceAreaConfiguration({
   isGuest,
   configuredShortNames,
   catalogAreas,
+  hasExistingLearningState = false,
 }: AreaConfigDecisionInput): boolean {
   if (!isAuthenticated || isGuest) {
     return false;
   }
 
   if (!configuredShortNames) {
-    return true;
+    return !hasExistingLearningState;
   }
 
-  return sanitizeConfiguredAreaShortNames(configuredShortNames, catalogAreas).length === 0;
+  return (
+    sanitizeConfiguredAreaShortNames(configuredShortNames, catalogAreas).length === 0 &&
+    !hasExistingLearningState
+  );
 }

@@ -39,7 +39,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function getCognitoLoginUrl(): string | null {
   const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
   const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
-  const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  const redirectUri =
+    process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN ||
+    (typeof window !== 'undefined'
+      ? new URL(basePath || '/', window.location.origin).toString()
+      : null);
   const prompt = process.env.NEXT_PUBLIC_COGNITO_PROMPT;
   if (!domain || !clientId || !redirectUri) {
     return null;
@@ -67,7 +72,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         : false;
     const domain = process.env.NEXT_PUBLIC_COGNITO_DOMAIN;
     const clientId = process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID;
-    const redirectUri = process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN;
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    const redirectUri =
+      process.env.NEXT_PUBLIC_REDIRECT_SIGN_IN ||
+      (typeof window !== 'undefined'
+        ? new URL(basePath || '/', window.location.origin).toString()
+        : undefined);
     if (!domain || !clientId || !redirectUri) {
       setIsLoading(false);
       return;
@@ -97,9 +107,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has('code')) {
         urlParams.delete('code');
-        const newUrl =
-          window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
-        window.history.replaceState({}, '', newUrl);
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+        const normalizedBasePath = basePath.replace(/\/$/, '');
+        const postLoginPath = `${normalizedBasePath}/areas/`;
+        const newUrl = postLoginPath + (urlParams.toString() ? '?' + urlParams.toString() : '');
+        window.location.replace(newUrl);
       }
     };
 
@@ -110,6 +122,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       return (await response.json()) as UserWithAttributes['attributes'];
     };
+
+    const hasCodeParam =
+      typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('code');
+
+    // Fast-path: if callback code is present but auth is already recoverable from cookie/JWT,
+    // canonicalize URL immediately to avoid rendering transient callback/state routes.
+    if (hasCodeParam && (authCookie || jwt)) {
+      removeCodeParam();
+      return;
+    }
 
     // 1. If auth cookie exists, load user from /studio/me
     if (authCookie) {
@@ -242,10 +264,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    storage.clearState();
     if (typeof window !== 'undefined') {
+      // Clear local client state without dispatching app-wide state change events,
+      // then navigate away immediately to avoid in-app flicker/rebound during logout.
+      window.localStorage.removeItem('learningStudio');
       window.localStorage.removeItem('jwt');
     }
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -265,16 +287,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Use Cognito logout directly when available so the Hosted UI session is actually closed.
     if (isLocalDevHost) {
       if (!user?.isGuest && domain && clientId) {
-        window.location.href =
+        window.location.replace(
           `${domain}/logout?client_id=${encodeURIComponent(clientId)}` +
-          `&logout_uri=${encodeURIComponent(signOutRedirect)}`;
+            `&logout_uri=${encodeURIComponent(signOutRedirect)}`
+        );
         return;
       }
-      window.location.href = signOutRedirectUrl.toString();
+      window.location.replace(signOutRedirectUrl.toString());
       return;
     }
 
-    window.location.href = `${basePath}/logout`;
+    window.location.replace(`${basePath}/logout`);
   };
 
   return (

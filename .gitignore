@@ -68,3 +68,4 @@ cdk.out
 .codex/rules/default.rules
 AGENT*.md
 PLAN*.md
+.tmp-cognito-update-user-pool-client.json

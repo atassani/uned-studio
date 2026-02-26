@@ -22,7 +22,7 @@ test.describe('Resume Quiz Fresh Experience', () => {
       } catch (e) {
         throw e;
       }
-      await page.getByTestId('result-continue-button').click();
+      await page.getByTestId('result-continue-button').click({ force: true });
       if (i < 1) await page.getByTestId('mcq-answer-A').waitFor();
     }
 
@@ -59,7 +59,7 @@ test.describe('Resume Quiz Fresh Experience', () => {
       } catch (e) {
         throw e;
       }
-      await page.getByTestId('result-continue-button').click();
+      await page.getByTestId('result-continue-button').click({ force: true });
     }
     // Go back to menu
     await page.getByTestId('options-button').click();

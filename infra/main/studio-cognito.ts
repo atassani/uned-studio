@@ -118,12 +118,15 @@ export class StudioCognito extends cdk.Stack {
             callbackUrls: [
               'https://humblyproud.com/studio',
               'http://localhost:3000/studio', // For local development
+              'http://localhost:3001/studio', // For local development
             ],
             logoutUrls: [
               'https://humblyproud.com/studio',
               'http://localhost:3000/studio', // For local development
+              'http://localhost:3001/studio', // For local development
             ],
           },
+
           supportedIdentityProviders: [cognito.UserPoolClientIdentityProvider.GOOGLE],
         });
 
@@ -136,6 +139,16 @@ export class StudioCognito extends cdk.Stack {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'sk', type: dynamodb.AttributeType.STRING },
+      pointInTimeRecoverySpecification: {
+        pointInTimeRecoveryEnabled: true,
+      },
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    const userIdentityAdminTable = new dynamodb.Table(this, 'StudioUserIdentityAdminTable', {
+      tableName: 'studio-user-identity-admin',
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
       pointInTimeRecoverySpecification: {
         pointInTimeRecoveryEnabled: true,
       },
@@ -167,6 +180,12 @@ export class StudioCognito extends cdk.Stack {
       value: learningStateTable.tableName,
       description:
         'DynamoDB table used by /studio/learning-state endpoint (set STUDIO_LEARNING_STATE_TABLE in edge runtime)',
+    });
+
+    new cdk.CfnOutput(this, 'UserIdentityAdminTableName', {
+      value: userIdentityAdminTable.tableName,
+      description:
+        'DynamoDB table for admin/debug mapping userId -> lastKnownEmail (set STUDIO_USER_IDENTITY_ADMIN_TABLE in edge runtime)',
     });
   }
 }
