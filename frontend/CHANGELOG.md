@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- feat(i18n): persist `language` in learning state and restore it with remote-state precedence on login/bootstrap
+- feat(i18n): persist area configuration per language using language-scoped user keys in `areaConfigByUser`
+- feat(content): add language-aware content normalization and filter areas by active UI language
+- feat(content): validate question payload language against active UI language when loading an area
+- feat(content): add multilingual mock fixtures (`en`, `ca`) and unit coverage for area/question payload normalization
+- chore(data): add `language` metadata to areas/questions JSON fixtures used by frontend
+- fix(persistence): resolve local dev learning-state endpoint under `NEXT_PUBLIC_BASE_PATH` (`/studio/api/learning-state`)
+- fix(routing): stabilize auth bootstrap sequencing to prevent `/areas -> /areas/configure -> /areas` flicker after login
+- feat(logging): add `NEXT_PUBLIC_DYNAMODB_LOG_ENABLED` to gate DynamoDB diagnostic logs by environment
+
 ## [1.4.11] - 2026-02-26
 
 - feat: add `Configurar áreas` UI to choose visible areas and order, including move up/down controls, offered only to registered users and persisted in user state
