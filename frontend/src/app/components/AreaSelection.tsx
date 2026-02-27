@@ -1,11 +1,15 @@
 import { AreaType } from '../types';
 import { useI18n } from '../i18n/I18nProvider';
+import { AppLanguage, SUPPORTED_LANGUAGES } from '../i18n/config';
 
 interface AreaSelectionProps {
   areas: AreaType[];
   loadAreaAndQuestions: (area: AreaType) => Promise<void>;
   canConfigureAreas?: boolean;
   onConfigureAreas?: () => void;
+  languageSelectionEnabled?: boolean;
+  activeLanguage?: AppLanguage;
+  onLanguageChange?: (language: AppLanguage) => void;
 }
 
 export function AreaSelection({
@@ -13,11 +17,38 @@ export function AreaSelection({
   loadAreaAndQuestions,
   canConfigureAreas = false,
   onConfigureAreas,
+  languageSelectionEnabled = false,
+  activeLanguage = 'es',
+  onLanguageChange,
 }: AreaSelectionProps) {
   const { t } = useI18n();
 
   return (
     <div className="space-y-8 flex flex-col items-center justify-center">
+      {languageSelectionEnabled && onLanguageChange && (
+        <div className="w-64">
+          <label
+            htmlFor="language-selector"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
+          >
+            {t('language.selectorLabel')}
+          </label>
+          <select
+            id="language-selector"
+            className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-white text-gray-900"
+            data-testid="language-selector"
+            aria-label={t('language.selectorAria')}
+            value={activeLanguage}
+            onChange={(event) => onLanguageChange(event.target.value as AppLanguage)}
+          >
+            {SUPPORTED_LANGUAGES.map((language) => (
+              <option key={language} value={language}>
+                {t(`language.option.${language}` as const)}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="text-2xl font-bold mb-4">{t('areas.selection.title')}</div>
       <div className="flex flex-col gap-4 w-64">
         {areas.map((area, index) => (

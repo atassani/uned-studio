@@ -39,6 +39,11 @@ export const caMessages: MessageCatalog = {
   'areas.selection.studyAria': 'Estudiar {{area}}',
   'areas.selection.configureAria': 'Configurar àrees',
   'areas.selection.configureButton': 'Configurar',
+  'language.selectorLabel': 'Idioma',
+  'language.selectorAria': 'Seleccionar idioma',
+  'language.option.es': 'Español',
+  'language.option.en': 'English',
+  'language.option.ca': 'Català',
 
   'areas.config.title': 'Configurar àrees',
   'areas.config.description':

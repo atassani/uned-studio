@@ -5,10 +5,12 @@ import { getCognitoLoginUrl, useAuth } from '../hooks/useAuth';
 import { trackAuth } from '../lib/analytics';
 import packageJson from '../../../package.json';
 import { useI18n } from '../i18n/I18nProvider';
+import { AppLanguage, isLanguageSelectionEnabled, SUPPORTED_LANGUAGES } from '../i18n/config';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, loginWithGoogle, loginAsGuest } = useAuth();
-  const { t } = useI18n();
+  const { t, activeLanguage, setActiveLanguage } = useI18n();
+  const languageSelectionEnabled = isLanguageSelectionEnabled();
 
   useEffect(() => {
     // Only log in development
@@ -42,6 +44,30 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
         <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8 text-center relative">
+          {languageSelectionEnabled && (
+            <div className="mb-6 text-left">
+              <label
+                htmlFor="login-language-selector"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
+              >
+                {t('language.selectorLabel')}
+              </label>
+              <select
+                id="login-language-selector"
+                data-testid="login-language-selector"
+                aria-label={t('language.selectorAria')}
+                className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-white text-gray-900"
+                value={activeLanguage}
+                onChange={(event) => setActiveLanguage(event.target.value as AppLanguage)}
+              >
+                {SUPPORTED_LANGUAGES.map((language) => (
+                  <option key={language} value={language}>
+                    {t(`language.option.${language}` as const)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {t('auth.loginTitle')}

@@ -10,6 +10,7 @@ import { translate } from '../../src/app/i18n/messages';
 
 const PREV_DEFAULT_LANGUAGE = process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE;
 const PREV_LANGUAGE_SELECTION = process.env.NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED;
+const PREV_FORCE_TEST_LANGUAGE = process.env.NEXT_PUBLIC_FORCE_TEST_LANGUAGE;
 
 function Probe() {
   const { activeLanguage, t } = useI18n();
@@ -26,6 +27,7 @@ describe('i18n', () => {
   afterEach(() => {
     process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE = PREV_DEFAULT_LANGUAGE;
     process.env.NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED = PREV_LANGUAGE_SELECTION;
+    process.env.NEXT_PUBLIC_FORCE_TEST_LANGUAGE = PREV_FORCE_TEST_LANGUAGE;
   });
 
   it('translates messages in English and Catalan', () => {
@@ -35,6 +37,7 @@ describe('i18n', () => {
   });
 
   it('initializes provider language from NEXT_PUBLIC_DEFAULT_LANGUAGE', () => {
+    process.env.NEXT_PUBLIC_FORCE_TEST_LANGUAGE = 'true';
     process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE = 'en';
 
     render(
@@ -49,6 +52,7 @@ describe('i18n', () => {
   });
 
   it('falls back to Spanish when NEXT_PUBLIC_DEFAULT_LANGUAGE is invalid', () => {
+    process.env.NEXT_PUBLIC_FORCE_TEST_LANGUAGE = 'true';
     process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE = 'de';
 
     render(
@@ -62,6 +66,7 @@ describe('i18n', () => {
   });
 
   it('parses language config flags correctly', () => {
+    process.env.NEXT_PUBLIC_FORCE_TEST_LANGUAGE = 'true';
     process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE = 'ca';
     process.env.NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED = 'true';
 

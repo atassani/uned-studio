@@ -3,6 +3,12 @@ import LoginPage from '../../src/app/login/page';
 import { AuthProvider } from '../../src/app/hooks/useAuth';
 
 describe('LoginPage', () => {
+  const previousLanguageSelector = process.env.NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED;
+
+  afterEach(() => {
+    process.env.NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED = previousLanguageSelector;
+  });
+
   it('shows Google login and guest login options', () => {
     render(
       <AuthProvider>
@@ -35,5 +41,15 @@ describe('LoginPage', () => {
     );
     fireEvent.click(screen.getByText(/Entrar como invitado/i));
     // expect(loginAsGuest).toHaveBeenCalled();
+  });
+
+  it('shows language selector when language selection is enabled', () => {
+    process.env.NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED = 'true';
+    render(
+      <AuthProvider>
+        <LoginPage />
+      </AuthProvider>
+    );
+    expect(screen.getByTestId('login-page-language-selector')).toBeInTheDocument();
   });
 });

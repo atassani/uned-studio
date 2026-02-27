@@ -35,6 +35,11 @@ export const esMessages = {
   'areas.selection.studyAria': 'Estudiar {{area}}',
   'areas.selection.configureAria': 'Configurar áreas',
   'areas.selection.configureButton': 'Configurar',
+  'language.selectorLabel': 'Idioma',
+  'language.selectorAria': 'Seleccionar idioma',
+  'language.option.es': 'Español',
+  'language.option.en': 'English',
+  'language.option.ca': 'Català',
 
   'areas.config.title': 'Configurar áreas',
   'areas.config.description': 'Selecciona qué áreas quieres ver en "Cambiar área" y en qué orden.',

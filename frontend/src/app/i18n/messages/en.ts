@@ -39,6 +39,11 @@ export const enMessages: MessageCatalog = {
   'areas.selection.studyAria': 'Study {{area}}',
   'areas.selection.configureAria': 'Configure areas',
   'areas.selection.configureButton': 'Configure',
+  'language.selectorLabel': 'Language',
+  'language.selectorAria': 'Select language',
+  'language.option.es': 'Español',
+  'language.option.en': 'English',
+  'language.option.ca': 'Català',
 
   'areas.config.title': 'Configure areas',
   'areas.config.description': 'Choose which areas appear in "Change area" and in what order.',

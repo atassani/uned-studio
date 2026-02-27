@@ -22,6 +22,10 @@ export function normalizeLanguage(input: string | null | undefined): AppLanguage
 }
 
 export function getDefaultLanguage(): AppLanguage {
+  // Keep Playwright/Jest text assertions stable across environments.
+  if (process.env.NODE_ENV === 'test' && process.env.NEXT_PUBLIC_FORCE_TEST_LANGUAGE !== 'true') {
+    return FALLBACK_LANGUAGE;
+  }
   return normalizeLanguage(process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE);
 }
 
