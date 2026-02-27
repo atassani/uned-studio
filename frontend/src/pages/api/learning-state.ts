@@ -41,6 +41,28 @@ function getJwtPayload(req: NextApiRequest): { sub?: string; email?: string } | 
   }
 }
 
+function normalizeCandidate(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function getCandidateUserIds(payload: { sub?: string; email?: string }): string[] {
+  const candidates = [
+    normalizeCandidate(payload.sub),
+    normalizeCandidate(payload.email),
+    payload.email ? normalizeCandidate(`Google_${payload.email}`) : null,
+  ].filter((value): value is string => Boolean(value));
+  return Array.from(new Set(candidates));
+}
+
+function getCandidateScopes(scope: string): string[] {
+  if (scope === 'global') {
+    return ['global', 'default'];
+  }
+  return [scope];
+}
+
 function getStoreConfig() {
   const tableName = process.env.STUDIO_LEARNING_STATE_TABLE || 'studio-learning-state';
   const region =
@@ -71,25 +93,68 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'GET') {
     try {
-      const out = await client.send(
-        new GetItemCommand({
-          TableName: tableName,
-          Key: {
-            pk: { S: `USER#${payload.sub}` },
-            sk: { S: `SCOPE#${scope}` },
-          },
-        })
-      );
+      const candidateUserIds = getCandidateUserIds(payload);
+      const candidateScopes = getCandidateScopes(scope);
 
-      const item = out.Item;
-      if (!item || !item.state?.S) {
+      let found: {
+        userId: string;
+        scope: string;
+        state: string;
+        updatedAt: string;
+      } | null = null;
+
+      for (const candidateUserId of candidateUserIds) {
+        for (const candidateScope of candidateScopes) {
+          const out = await client.send(
+            new GetItemCommand({
+              TableName: tableName,
+              Key: {
+                pk: { S: `USER#${candidateUserId}` },
+                sk: { S: `SCOPE#${candidateScope}` },
+              },
+            })
+          );
+          const item = out.Item;
+          if (item?.state?.S) {
+            found = {
+              userId: candidateUserId,
+              scope: candidateScope,
+              state: item.state.S,
+              updatedAt: item.updatedAt?.S ?? '',
+            };
+            break;
+          }
+        }
+        if (found) break;
+      }
+
+      if (!found) {
         return json(res, 404, { error: 'not_found' });
+      }
+
+      // Best-effort migration to canonical sub/global key.
+      if (found.userId !== payload.sub || found.scope !== scope) {
+        try {
+          await client.send(
+            new PutItemCommand({
+              TableName: tableName,
+              Item: {
+                pk: { S: `USER#${payload.sub}` },
+                sk: { S: `SCOPE#${scope}` },
+                state: { S: found.state },
+                updatedAt: { S: new Date().toISOString() },
+              },
+            })
+          );
+        } catch {
+          // Ignore migration failures; read succeeded.
+        }
       }
 
       return json(res, 200, {
         scope,
-        state: JSON.parse(item.state.S),
-        updatedAt: item.updatedAt?.S ?? '',
+        state: JSON.parse(found.state),
+        updatedAt: found.updatedAt,
       });
     } catch {
       return json(res, 500, { error: 'learning_state_read_failed' });

@@ -26,7 +26,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useQuizLogic } from './hooks/useQuizLogic';
 import { useLearningStateSync } from './hooks/useLearningStateSync';
 import { LEARNING_STUDIO_STATE_CHANGED_EVENT, storage } from './storage';
-import { getLearningState } from './learningStateApi';
+import { getLearningState, getLearningStateForAuthBootstrap } from './learningStateApi';
 import { isRemoteLearningStateReadEnabled } from './persistenceMode';
 import {
   orderAreasByConfiguredShortNames,
@@ -45,15 +45,52 @@ interface AreaConfigUser {
   };
 }
 
+function normalizeUserKey(key: string): string {
+  return key.trim().toLowerCase();
+}
+
+function resolveAllowedAreasForUser(
+  userKey: string,
+  areaConfigEntries: Array<[string, { allowedAreaShortNames?: string[] } | undefined]>
+): string[] | undefined {
+  const exact = areaConfigEntries.find(([key]) => key === userKey)?.[1]?.allowedAreaShortNames;
+  if (exact?.length) return exact;
+
+  const normalizedUserKey = normalizeUserKey(userKey);
+  const prefixed = areaConfigEntries.find(([key]) => key === `USER#${userKey}`)?.[1]
+    ?.allowedAreaShortNames;
+  if (prefixed?.length) return prefixed;
+
+  const migratedLanguageScoped = areaConfigEntries.find(([key]) =>
+    key.startsWith(`${userKey}::lang:`)
+  )?.[1]?.allowedAreaShortNames;
+  if (migratedLanguageScoped?.length) return migratedLanguageScoped;
+
+  const bySuffix = areaConfigEntries.find(([key]) => {
+    const tail = key.split('#').pop();
+    return tail ? normalizeUserKey(tail) === normalizedUserKey : false;
+  })?.[1]?.allowedAreaShortNames;
+  if (bySuffix?.length) return bySuffix;
+
+  if (normalizedUserKey.includes('@')) {
+    const byEmailContainment = areaConfigEntries.find(([key]) =>
+      normalizeUserKey(key).includes(normalizedUserKey)
+    )?.[1]?.allowedAreaShortNames;
+    if (byEmailContainment?.length) return byEmailContainment;
+  }
+
+  if (areaConfigEntries.length === 1) {
+    const only = areaConfigEntries[0][1]?.allowedAreaShortNames;
+    if (only?.length) return only;
+  }
+
+  return undefined;
+}
+
 function getAreaConfigUserKey(user: AreaConfigUser | null): string | null {
   if (!user || user.isGuest) return null;
   const attributes = user.attributes || {};
   return attributes.sub || attributes.email || user.username || null;
-}
-
-function getLanguageScopedAreaConfigUserKey(userKey: string | null, language: AppLanguage) {
-  if (!userKey) return null;
-  return `${userKey}::lang:${language}`;
 }
 
 export default function QuizApp() {
@@ -208,10 +245,6 @@ export default function QuizApp() {
   const canConfigureAreas = isAuthenticated && !isGuestUser;
   const remoteLearningStateReadEnabled = isRemoteLearningStateReadEnabled();
   const areaConfigUserKey = useMemo(() => getAreaConfigUserKey(user), [user]);
-  const areaConfigLanguageScopedUserKey = useMemo(
-    () => getLanguageScopedAreaConfigUserKey(areaConfigUserKey, activeLanguage),
-    [areaConfigUserKey, activeLanguage]
-  );
 
   const fetchJsonWithCache = useCallback(
     async (url: string) => {
@@ -291,7 +324,6 @@ export default function QuizApp() {
   const [userAllowedAreaShortNames, setUserAllowedAreaShortNames] = useState<string[] | undefined>(
     undefined
   );
-  const [hasLanguageAreaConfig, setHasLanguageAreaConfig] = useState(false);
   const [hasExistingLearningState, setHasExistingLearningState] = useState(false);
   const [learningStateBootstrapCompleted, setLearningStateBootstrapCompleted] = useState(false);
   const [userAreaConfigLoaded, setUserAreaConfigLoaded] = useState(false);
@@ -382,9 +414,8 @@ export default function QuizApp() {
   }, []);
 
   const syncUserAreaConfigFromStorage = useCallback(() => {
-    if (!canConfigureAreas || !areaConfigLanguageScopedUserKey) {
+    if (!canConfigureAreas || !areaConfigUserKey) {
       setUserAllowedAreaShortNames(undefined);
-      setHasLanguageAreaConfig(false);
       setHasExistingLearningState(false);
       setUserAreaConfigLoaded(!canConfigureAreas);
       return;
@@ -404,30 +435,20 @@ export default function QuizApp() {
       Boolean(snapshot.currentArea) || hasPersistedAreaState || hasPersistedAreaConfig
     );
 
-    let allowedAreas = storage.getUserAllowedAreas(areaConfigLanguageScopedUserKey);
+    let allowedAreas = storage.getUserAllowedAreas(areaConfigUserKey);
 
-    // Fallback/migration from pre-language configs.
-    if (!allowedAreas && areaConfigUserKey) {
-      const legacyAllowedAreas = storage.getUserAllowedAreas(areaConfigUserKey);
-      if (legacyAllowedAreas?.length) {
-        allowedAreas = legacyAllowedAreas;
-        storage.setUserAllowedAreas(areaConfigLanguageScopedUserKey, allowedAreas);
-      }
-    }
-
-    // Fallback for legacy/key-mismatch scenarios (e.g. prior data stored under a different user key).
-    if (!allowedAreas && areaConfigEntries.length === 1) {
-      const [, onlyConfig] = areaConfigEntries[0];
-      if (onlyConfig?.allowedAreaShortNames?.length) {
-        allowedAreas = onlyConfig.allowedAreaShortNames;
-        storage.setUserAllowedAreas(areaConfigLanguageScopedUserKey, allowedAreas);
+    // Fallback for key-mismatch scenarios (email/sub formats, prefixed keys, prior language-scoped keys).
+    if (!allowedAreas) {
+      const resolved = resolveAllowedAreasForUser(areaConfigUserKey, areaConfigEntries);
+      if (resolved?.length) {
+        allowedAreas = resolved;
+        storage.setUserAllowedAreas(areaConfigUserKey, resolved);
       }
     }
 
     setUserAllowedAreaShortNames(allowedAreas);
-    setHasLanguageAreaConfig(Boolean(allowedAreas && allowedAreas.length > 0));
     setUserAreaConfigLoaded(true);
-  }, [canConfigureAreas, areaConfigLanguageScopedUserKey, areaConfigUserKey]);
+  }, [canConfigureAreas, areaConfigUserKey]);
 
   useEffect(() => {
     if (isLoading) {
@@ -436,7 +457,7 @@ export default function QuizApp() {
       return;
     }
 
-    if (canConfigureAreas && remoteLearningStateReadEnabled && !learningStateBootstrapCompleted) {
+    if (canConfigureAreas && !learningStateBootstrapCompleted) {
       setUserAreaConfigLoaded(false);
       return;
     }
@@ -507,15 +528,13 @@ export default function QuizApp() {
       return;
     }
 
-    const forceConfiguration =
-      shouldForceAreaConfiguration({
-        isAuthenticated,
-        isGuest: isGuestUser,
-        configuredShortNames: userAllowedAreaShortNames,
-        catalogAreas: areas,
-        hasExistingLearningState,
-      }) ||
-      (canConfigureAreas && !isGuestUser && !hasLanguageAreaConfig);
+    const forceConfiguration = shouldForceAreaConfiguration({
+      isAuthenticated,
+      isGuest: isGuestUser,
+      configuredShortNames: userAllowedAreaShortNames,
+      catalogAreas: areas,
+      hasExistingLearningState,
+    });
 
     if (!forceConfiguration) {
       replaceStudioPath('/areas');
@@ -532,7 +551,6 @@ export default function QuizApp() {
     learningStateBootstrapCompleted,
     userAllowedAreaShortNames,
     hasExistingLearningState,
-    hasLanguageAreaConfig,
     replaceStudioPath,
   ]);
 
@@ -544,15 +562,13 @@ export default function QuizApp() {
       return;
     }
 
-    const forceConfiguration =
-      shouldForceAreaConfiguration({
-        isAuthenticated,
-        isGuest: isGuestUser,
-        configuredShortNames: userAllowedAreaShortNames,
-        catalogAreas: areas,
-        hasExistingLearningState,
-      }) ||
-      (canConfigureAreas && !isGuestUser && !hasLanguageAreaConfig);
+    const forceConfiguration = shouldForceAreaConfiguration({
+      isAuthenticated,
+      isGuest: isGuestUser,
+      configuredShortNames: userAllowedAreaShortNames,
+      catalogAreas: areas,
+      hasExistingLearningState,
+    });
 
     if (isConfigureRoute) {
       if (!canConfigureAreas) {
@@ -619,6 +635,11 @@ export default function QuizApp() {
 
     if (forceConfiguration) {
       autoConfigureRedirectRef.current = false;
+      if (!isConfigureRoute) {
+        replaceStudioPath('/areas/configure');
+        setInitialRouteResolved(true);
+        return;
+      }
       setShowAreaConfiguration(true);
       setShowAreaSelection(false);
       setShowSelectionMenu(false);
@@ -695,7 +716,6 @@ export default function QuizApp() {
     visibleAreasReady,
     userAllowedAreaShortNames,
     hasExistingLearningState,
-    hasLanguageAreaConfig,
     selectedArea,
     selectionMode,
     isConfigureRoute,
@@ -753,20 +773,19 @@ export default function QuizApp() {
 
   const acceptAreaConfiguration = useCallback(
     (shortNames: string[]) => {
-      if (!canConfigureAreas || !areaConfigLanguageScopedUserKey) return;
+      if (!canConfigureAreas || !areaConfigUserKey) return;
       const sanitized = sanitizeConfiguredAreaShortNames(shortNames, areas);
       if (sanitized.length === 0) return;
 
-      storage.setUserAllowedAreas(areaConfigLanguageScopedUserKey, sanitized);
+      storage.setUserAllowedAreas(areaConfigUserKey, sanitized);
       setUserAllowedAreaShortNames(sanitized);
-      setHasLanguageAreaConfig(true);
       manualConfigureNavigationRef.current = false;
       setShowAreaConfiguration(false);
       setShowAreaSelection(true);
       setShowSelectionMenu(false);
       replaceStudioPath('/areas');
     },
-    [canConfigureAreas, areaConfigLanguageScopedUserKey, areas, replaceStudioPath]
+    [canConfigureAreas, areaConfigUserKey, areas, replaceStudioPath]
   );
 
   const handleLanguageChange = useCallback(
@@ -776,23 +795,10 @@ export default function QuizApp() {
       setActiveLanguage(language);
       setUserAreaConfigLoaded(false);
       setUserAllowedAreaShortNames(undefined);
-      setHasLanguageAreaConfig(false);
-
-      storage.setCurrentArea(undefined);
-      setSelectedArea(null);
-      setCurrentQuizType(null);
-      setQuestions([]);
-      setAllQuestions([]);
-      setCurrent(null);
-      setShowStatus(false);
-      setShowResult(null);
-      setShowSelectionMenu(false);
-      setSelectionMode(null);
-      setShowAreaConfiguration(false);
-      setShowAreaSelection(true);
+      syncUserAreaConfigFromStorage();
       replaceStudioPath('/areas');
     },
-    [languageSelectionEnabled, setActiveLanguage, replaceStudioPath]
+    [languageSelectionEnabled, setActiveLanguage, syncUserAreaConfigFromStorage, replaceStudioPath]
   );
 
   const handleServerStateApplied = useCallback(() => {
@@ -811,12 +817,11 @@ export default function QuizApp() {
     onServerStateApplied: handleServerStateApplied,
     onBootstrapCompleted: () => {
       syncUserAreaConfigFromStorage();
-      setLearningStateBootstrapCompleted(true);
     },
   });
 
   useEffect(() => {
-    if (isLoading || !isAuthenticated || user?.isGuest || !remoteLearningStateReadEnabled) {
+    if (isLoading || !isAuthenticated || user?.isGuest) {
       directBootstrapAttemptedRef.current = false;
       return;
     }
@@ -825,30 +830,20 @@ export default function QuizApp() {
     }
     directBootstrapAttemptedRef.current = true;
 
-    getLearningState('global')
+    getLearningStateForAuthBootstrap('global')
       .then((remote) => {
         if (remote?.state) {
           storage.replaceState(remote.state);
-          syncUserAreaConfigFromStorage();
-          setLearningStateBootstrapCompleted(true);
         }
+        syncUserAreaConfigFromStorage();
       })
       .catch((error) => {
         console.error('Direct bootstrap from remote learning state failed', error);
+      })
+      .finally(() => {
+        setLearningStateBootstrapCompleted(true);
       });
-  }, [
-    isLoading,
-    isAuthenticated,
-    user?.isGuest,
-    remoteLearningStateReadEnabled,
-    syncUserAreaConfigFromStorage,
-  ]);
-
-  useEffect(() => {
-    if (!remoteLearningStateReadEnabled) {
-      setLearningStateBootstrapCompleted(true);
-    }
-  }, [remoteLearningStateReadEnabled]);
+  }, [isLoading, isAuthenticated, user?.isGuest, syncUserAreaConfigFromStorage]);
 
   useEffect(() => {
     if (isLoading || !isAuthenticated || user?.isGuest) return;
@@ -1253,7 +1248,7 @@ export default function QuizApp() {
             configuredShortNames: userAllowedAreaShortNames,
             catalogAreas: areas,
             hasExistingLearningState,
-          }) && !(canConfigureAreas && !isGuestUser && !hasLanguageAreaConfig)
+          })
         }
       />
     );
@@ -1560,10 +1555,9 @@ export default function QuizApp() {
   const allAnswered =
     questions.length > 0 && Object.values(status).filter((s) => s === 'pending').length === 0;
   const renderContent = () => {
-    const isAuthBootstrapPending =
-      canConfigureAreas && remoteLearningStateReadEnabled && !learningStateBootstrapCompleted;
+    const isAuthBootstrapPending = canConfigureAreas && !learningStateBootstrapCompleted;
 
-    if (isAuthBootstrapPending && isConfigureRoute) {
+    if (isAuthBootstrapPending) {
       return <LoadingSpinner />;
     }
 

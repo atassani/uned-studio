@@ -14,6 +14,58 @@ interface AreaState {
 interface UserAreaConfig {
   allowedAreaShortNames: string[];
 }
+
+function normalizeAllowedAreaShortNames(input: unknown): string[] {
+  if (!Array.isArray(input)) return [];
+  const filtered = input.filter((value): value is string => typeof value === 'string');
+  return Array.from(new Set(filtered));
+}
+
+function normalizeUserAreaConfig(input: unknown): UserAreaConfig | undefined {
+  if (Array.isArray(input)) {
+    const normalized = normalizeAllowedAreaShortNames(input);
+    return normalized.length > 0 ? { allowedAreaShortNames: normalized } : undefined;
+  }
+
+  if (!input || typeof input !== 'object') {
+    return undefined;
+  }
+
+  const allowed = normalizeAllowedAreaShortNames(
+    (input as { allowedAreaShortNames?: unknown }).allowedAreaShortNames
+  );
+  return allowed.length > 0 ? { allowedAreaShortNames: allowed } : undefined;
+}
+
+function normalizeAreaConfigByUser(input: unknown): AppState['areaConfigByUser'] {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return undefined;
+  }
+
+  const normalizedEntries = Object.entries(input).map(
+    ([userKey, config]) => [userKey, normalizeUserAreaConfig(config)] as const
+  );
+
+  const filtered = normalizedEntries.filter(([, config]) => Boolean(config));
+  if (filtered.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(filtered);
+}
+
+function normalizeAppState(input: unknown): AppState {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return { areas: {} };
+  }
+
+  const obj = input as Partial<AppState>;
+  return {
+    currentArea: typeof obj.currentArea === 'string' ? obj.currentArea : undefined,
+    areas: obj.areas && typeof obj.areas === 'object' ? obj.areas : {},
+    areaConfigByUser: normalizeAreaConfigByUser(obj.areaConfigByUser),
+  };
+}
 export interface AppState {
   currentArea?: string;
   areas: {
@@ -120,7 +172,7 @@ function getStoredState(): AppState {
   try {
     const savedState = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (savedState) {
-      return JSON.parse(savedState);
+      return normalizeAppState(JSON.parse(savedState));
     }
   } catch (e) {
     console.error('Failed to parse state from localStorage', e);
@@ -133,8 +185,9 @@ function setStoredState(state: AppState) {
     return;
   }
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
-    dispatchStateChanged(state);
+    const normalizedState = normalizeAppState(state);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(normalizedState));
+    dispatchStateChanged(normalizedState);
   } catch (e) {
     console.error('Failed to save state to localStorage', e);
   }
