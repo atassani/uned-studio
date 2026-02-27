@@ -1,6 +1,17 @@
 import { storage } from '../../src/app/storage';
 
 describe('localStorage abstraction', () => {
+  it('stores and retrieves preferred language', () => {
+    storage.setLanguage('ca');
+    expect(storage.getLanguage()).toBe('ca');
+    expect(JSON.parse(localStorage.getItem('learningStudio') || '{}').language).toBe('ca');
+  });
+
+  it('normalizes stored preferred language when reading state', () => {
+    localStorage.setItem('learningStudio', JSON.stringify({ areas: {}, language: 'EN' }));
+    expect(storage.getLanguage()).toBe('en');
+  });
+
   it('write currentArea using storage module is read directly from localStorage', () => {
     const area = 'Area 42';
     storage.setCurrentArea(area);

@@ -116,6 +116,9 @@ El frontend permite activar/desactivar acceso a DynamoDB para controlar coste en
   : presupuesto máximo de llamadas remotas por sesión de navegador.
 - `NEXT_PUBLIC_STUDIO_LEARNING_STATE_TABLE=<name>` (opcional)
   : nombre de tabla solo para logging del cliente.
+- `NEXT_PUBLIC_DYNAMODB_LOG_ENABLED=true|false` (opcional)
+  : habilita logs de diagnóstico de llamadas DynamoDB en consola del navegador.  
+  Por defecto: `true` en `development`, `false` en `test` y `production`.
 
 Ejemplo recomendado para desarrollo sin coste:
 
@@ -134,7 +137,7 @@ NEXT_PUBLIC_SYNC_WRITES=false
 NEXT_PUBLIC_MAX_DDB_CALLS_PER_SESSION=100
 ```
 
-Cada llamada remota queda trazada en consola del navegador con `op`, `table`, `pk` y `sk`.
+Si `NEXT_PUBLIC_DYNAMODB_LOG_ENABLED=true`, cada llamada remota queda trazada en consola con `op`, `table`, `pk` y `sk`.
 
 Requisitos:
 

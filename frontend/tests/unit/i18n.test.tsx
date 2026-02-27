@@ -28,6 +28,7 @@ describe('i18n', () => {
     process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE = PREV_DEFAULT_LANGUAGE;
     process.env.NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED = PREV_LANGUAGE_SELECTION;
     process.env.NEXT_PUBLIC_FORCE_TEST_LANGUAGE = PREV_FORCE_TEST_LANGUAGE;
+    localStorage.removeItem('learningStudio');
   });
 
   it('translates messages in English and Catalan', () => {
@@ -63,6 +64,21 @@ describe('i18n', () => {
 
     expect(screen.getByTestId('lang').textContent).toBe('es');
     expect(screen.getByTestId('loading').textContent).toBe('Cargando...');
+  });
+
+  it('initializes provider language from persisted state when available', () => {
+    process.env.NEXT_PUBLIC_FORCE_TEST_LANGUAGE = 'true';
+    process.env.NEXT_PUBLIC_DEFAULT_LANGUAGE = 'en';
+    localStorage.setItem('learningStudio', JSON.stringify({ areas: {}, language: 'ca' }));
+
+    render(
+      <I18nProvider>
+        <Probe />
+      </I18nProvider>
+    );
+
+    expect(screen.getByTestId('lang').textContent).toBe('ca');
+    expect(screen.getByTestId('loading').textContent).toBe('Carregant...');
   });
 
   it('parses language config flags correctly', () => {

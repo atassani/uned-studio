@@ -1,3 +1,5 @@
+import { AppLanguage, normalizeLanguage } from './i18n/config';
+
 const LOCAL_STORAGE_KEY = 'learningStudio';
 export const LEARNING_STUDIO_STATE_CHANGED_EVENT = 'learning-studio-state-changed';
 
@@ -61,12 +63,14 @@ function normalizeAppState(input: unknown): AppState {
 
   const obj = input as Partial<AppState>;
   return {
+    language: typeof obj.language === 'string' ? normalizeLanguage(obj.language) : undefined,
     currentArea: typeof obj.currentArea === 'string' ? obj.currentArea : undefined,
     areas: obj.areas && typeof obj.areas === 'object' ? obj.areas : {},
     areaConfigByUser: normalizeAreaConfigByUser(obj.areaConfigByUser),
   };
 }
 export interface AppState {
+  language?: AppLanguage;
   currentArea?: string;
   areas: {
     [areaKey: string]: Partial<AreaState>;
@@ -77,6 +81,18 @@ export interface AppState {
 }
 
 export const storage = {
+  getLanguage(): AppLanguage | undefined {
+    return getStoredState().language;
+  },
+
+  setLanguage(language: AppLanguage | undefined) {
+    const state = getStoredState();
+    setStoredState({
+      ...state,
+      language: language ? normalizeLanguage(language) : undefined,
+    });
+  },
+
   getCurrentArea(): string | undefined {
     return getStoredState().currentArea;
   },

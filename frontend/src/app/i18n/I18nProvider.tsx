@@ -12,8 +12,28 @@ interface I18nContextValue {
 
 const I18nContext = createContext<I18nContextValue | undefined>(undefined);
 
+function getInitialLanguage(): AppLanguage {
+  const fallback = getDefaultLanguage();
+  if (typeof window === 'undefined') {
+    return fallback;
+  }
+
+  try {
+    const raw = window.localStorage.getItem('learningStudio');
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw) as { language?: unknown };
+    if (typeof parsed.language === 'string') {
+      return normalizeLanguage(parsed.language);
+    }
+  } catch {
+    return fallback;
+  }
+
+  return fallback;
+}
+
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [activeLanguage, setActiveLanguageState] = useState<AppLanguage>(getDefaultLanguage());
+  const [activeLanguage, setActiveLanguageState] = useState<AppLanguage>(getInitialLanguage());
 
   const setActiveLanguage = useCallback((language: AppLanguage) => {
     setActiveLanguageState(normalizeLanguage(language));

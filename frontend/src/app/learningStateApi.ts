@@ -1,6 +1,7 @@
 'use client';
 
 import type { AppState } from './storage';
+import { normalizeLanguage } from './i18n/config';
 import {
   consumeDynamoDbCallAllowance,
   isRemoteLearningStateReadEnabled,
@@ -45,6 +46,7 @@ function normalizeLearningState(input: unknown): AppState {
 
   const obj = candidate as Partial<AppState>;
   return {
+    language: typeof obj.language === 'string' ? normalizeLanguage(obj.language) : undefined,
     currentArea: typeof obj.currentArea === 'string' ? obj.currentArea : undefined,
     areas: obj.areas && typeof obj.areas === 'object' ? obj.areas : {},
     areaConfigByUser:
