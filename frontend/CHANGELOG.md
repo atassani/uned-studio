@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-02-27
+
+- Multilanguage / Internationalization (i18n) support
 - feat(i18n): persist `language` in learning state and restore it with remote-state precedence on login/bootstrap
 - feat(i18n): persist area configuration per language using language-scoped user keys in `areaConfigByUser`
 - feat(content): add language-aware content normalization and filter areas by active UI language
