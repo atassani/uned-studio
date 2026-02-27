@@ -1,6 +1,7 @@
 import { QuestionType, AreaType } from '../types';
 import { formatRichText } from '../utils';
 import { EMOJI_SUCCESS, EMOJI_FAIL, EMOJI_ASK, EMOJI_SECTION, EMOJI_PROGRESS } from '../constants';
+import { useI18n } from '../i18n/I18nProvider';
 
 interface QuestionDisplayProps {
   selectedArea: AreaType | null;
@@ -23,6 +24,7 @@ export function QuestionDisplay({
   handleAnswer,
   goToStatusWithResume,
 }: QuestionDisplayProps) {
+  const { t } = useI18n();
   if (current == null) return null;
 
   const q = questions[current];
@@ -34,7 +36,9 @@ export function QuestionDisplay({
     <div className="space-y-6" data-testid="question-view">
       {/* Show area name at top */}
       {selectedArea && (
-        <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
+        <div className="text-lg font-bold text-blue-600 mb-2">
+          🎓 {t('common.areaLabel')}: {selectedArea.area}
+        </div>
       )}
       <div className="flex items-center justify-between mb-2">
         <div className="font-bold text-lg flex-1">
@@ -42,7 +46,7 @@ export function QuestionDisplay({
         </div>
         <button
           className="ml-2 text-2xl"
-          aria-label="Opciones"
+          aria-label={t('quiz.optionsAria')}
           data-testid="options-button"
           onClick={goToStatusWithResume}
           style={{
@@ -87,7 +91,7 @@ export function QuestionDisplay({
           {/* appearsIn bullet list if present */}
           {Array.isArray(q.appearsIn) && q.appearsIn.length > 0 && (
             <div className="mt-2">
-              <div className="text-sm text-gray-500">Aparece en:</div>
+              <div className="text-sm text-gray-500">{t('common.appearsIn')}</div>
               <ul className="list-disc list-inside ml-4 text-sm text-gray-500">
                 {q.appearsIn.map((ref: string, idx: number) => (
                   <li key={idx}>{ref}</li>

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { storage } from '../storage';
+import { tDefault } from '../i18n/translator';
 
 // OAuth logic removed: Amplify/Cognito imports and config
 
@@ -246,7 +247,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Redirect to Cognito Hosted UI for Google login
     const url = getCognitoLoginUrl();
     if (!url) {
-      alert('Cognito config missing.');
+      alert(tDefault('auth.cognitoConfigMissing'));
       return;
     }
     window.location.href = url;
@@ -254,8 +255,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginAsGuest = () => {
     setUser({
-      username: 'Invitado',
-      attributes: { name: 'Invitado' },
+      username: tDefault('auth.guestUsername'),
+      attributes: { name: tDefault('auth.guestUsername') },
       isGuest: true,
     });
     setIsAuthenticated(true);

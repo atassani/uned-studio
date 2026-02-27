@@ -43,6 +43,11 @@ export function isDynamoDbGloballyEnabled(): boolean {
   return parseBoolean(process.env.NEXT_PUBLIC_ENABLE_DYNAMODB, true);
 }
 
+export function isDynamoDbLoggingEnabled(): boolean {
+  const defaultEnabled = process.env.NODE_ENV === 'development';
+  return parseBoolean(process.env.NEXT_PUBLIC_DYNAMODB_LOG_ENABLED, defaultEnabled);
+}
+
 export function isRemoteLearningStateReadEnabled(): boolean {
   const mode = getStorageMode();
   return isDynamoDbGloballyEnabled() && (mode === 'dynamodb' || mode === 'hybrid');
@@ -126,9 +131,11 @@ export function logDynamoDbCall(
   scope: string,
   outcome: 'attempt' | 'success' | 'blocked' | 'error'
 ) {
+  if (!isDynamoDbLoggingEnabled()) {
+    return;
+  }
   const tableName = process.env.NEXT_PUBLIC_STUDIO_LEARNING_STATE_TABLE || DEFAULT_TABLE_NAME;
   const pk = `USER#${getJwtSub()}`;
   const sk = `SCOPE#${scope}`;
-  // Keep cost visibility explicit in local development and diagnostics.
   console.info(`[DDB ${outcome}] op=${operation} table=${tableName} pk=${pk} sk=${sk}`);
 }

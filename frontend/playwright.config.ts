@@ -10,7 +10,8 @@ dotenv.config({ path: path.resolve(__dirname, '.env.test'), quiet: true });
 
 const basePath = (process.env.NEXT_PUBLIC_BASE_PATH || '').replace(/\/$/, '');
 const baseSuffix = basePath ? `${basePath}/` : '/';
-const localOrigin = 'http://localhost:3000';
+const localPort = process.env.PLAYWRIGHT_PORT || '3100';
+const localOrigin = `http://localhost:${localPort}`;
 const baseUrl = `${localOrigin}${baseSuffix}`;
 
 /**
@@ -39,8 +40,14 @@ export default defineConfig({
   },
   webServer: {
     command: 'npm run dev:playwright',
+    env: {
+      ...process.env,
+      PORT: localPort,
+      NEXT_PUBLIC_DEFAULT_LANGUAGE: 'es',
+      NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED: 'false',
+    },
     url: baseUrl.replace(/\/$/, ''),
-    reuseExistingServer: true, // Always reuse existing server to avoid port conflicts
+    reuseExistingServer: false,
     timeout: 120000, // Increase timeout for server startup
   },
   projects: [

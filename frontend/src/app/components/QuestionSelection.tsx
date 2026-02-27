@@ -1,6 +1,7 @@
 import { QuestionType, AreaType } from '../types';
 import { groupBySection } from '../utils';
 import { EMOJI_SECTION } from '../constants';
+import { useI18n } from '../i18n/I18nProvider';
 
 interface QuestionSelectionProps {
   selectedArea: AreaType | null;
@@ -27,6 +28,7 @@ export function QuestionSelection({
   startQuizQuestions,
   resetQuiz,
 }: QuestionSelectionProps) {
+  const { t } = useI18n();
   // Group questions by section
   const grouped = groupBySection(allQuestions);
 
@@ -34,9 +36,11 @@ export function QuestionSelection({
     <div className="space-y-8 flex flex-col items-center justify-center">
       {/* Show area name at top */}
       {selectedArea && (
-        <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
+        <div className="text-lg font-bold text-blue-600 mb-2">
+          🎓 {t('common.areaLabel')}: {selectedArea.area}
+        </div>
       )}
-      <div className="text-2xl font-bold mb-4">Selecciona las preguntas</div>
+      <div className="text-2xl font-bold mb-4">{t('questions.title')}</div>
       <div className="relative w-full">
         <div ref={questionScrollRef} className="max-h-96 overflow-y-auto w-full pr-4">
           {[...grouped.entries()].map(([section, qs]) => (
@@ -61,7 +65,7 @@ export function QuestionSelection({
                         setSelectedQuestions(newSet);
                       }}
                       className="form-checkbox h-5 w-5 text-blue-600"
-                      aria-label={`Seleccionar pregunta ${q.number}`}
+                      aria-label={t('questions.selectQuestionAria', { number: q.number })}
                     />
                   </label>
                 ))}
@@ -86,13 +90,13 @@ export function QuestionSelection({
           className="px-6 py-3 bg-purple-600 text-white rounded text-lg"
           disabled={selectedQuestions.size === 0}
           onClick={startQuizQuestions}
-          aria-label="Empezar"
+          aria-label={t('common.start')}
           data-testid="start-quiz-button"
         >
-          Empezar
+          {t('common.start')}
         </button>
         <button className="px-6 py-3 bg-gray-400 text-white rounded text-lg" onClick={resetQuiz}>
-          Cancelar
+          {t('common.cancel')}
         </button>
       </div>
     </div>

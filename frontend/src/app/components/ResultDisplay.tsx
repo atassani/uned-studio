@@ -10,6 +10,7 @@ import {
   EMOJI_PROGRESS,
   EMOJI_DONE,
 } from '../constants';
+import { useI18n } from '../i18n/I18nProvider';
 
 interface ResultDisplayProps {
   selectedArea: AreaType | null;
@@ -34,6 +35,7 @@ export function ResultDisplay({
   handleContinue,
   resetQuiz,
 }: ResultDisplayProps) {
+  const { t } = useI18n();
   const [reviewIndex, setReviewIndex] = React.useState<number | null>(null);
   const allAnswered =
     questions.length > 0 && Object.values(status).filter((s) => s === 'pending').length === 0;
@@ -44,7 +46,9 @@ export function ResultDisplay({
       <div className="space-y-4">
         {/* Show area name at top */}
         {selectedArea && (
-          <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
+          <div className="text-lg font-bold text-blue-600 mb-2">
+            🎓 {t('common.areaLabel')}: {selectedArea.area}
+          </div>
         )}
         {current !== null && questions[current] && (
           <>
@@ -54,7 +58,7 @@ export function ResultDisplay({
               </div>
               <button
                 className="ml-2 text-2xl"
-                aria-label="Opciones"
+                aria-label={t('quiz.optionsAria')}
                 data-testid="options-button"
                 onClick={() => handleContinue('E')}
                 style={{
@@ -77,7 +81,9 @@ export function ResultDisplay({
           </>
         )}
         <div data-testid="quiz-result-text" className="text-2xl">
-          {showResult.correct ? EMOJI_SUCCESS + ' ¡Correcto!' : EMOJI_FAIL + ' Incorrecto.'}
+          {showResult.correct
+            ? `${EMOJI_SUCCESS} ${t('quiz.correct')}`
+            : `${EMOJI_FAIL} ${t('quiz.incorrect')}`}
         </div>
         <div
           className={`text-base font-semibold mt-2 rich-content ${showResult.correct ? 'text-green-600' : 'text-red-600'}`}
@@ -89,7 +95,7 @@ export function ResultDisplay({
                     const answerIndex = q.options?.findIndex((option) => option === q.answer) ?? -1;
                     const answerLetter =
                       answerIndex >= 0 ? String.fromCharCode(65 + answerIndex) : '';
-                    return `Respuesta esperada ${answerLetter}) ${q.answer}`;
+                    return `${t('quiz.expectedAnswerPrefix')} ${answerLetter}) ${q.answer}`;
                   })()
                 : questions[current].answer
               : ''
@@ -105,7 +111,7 @@ export function ResultDisplay({
           Array.isArray(questions[current].appearsIn) &&
           questions[current].appearsIn.length > 0 && (
             <div className="mt-2">
-              <div className="text-sm text-gray-500">Aparece en:</div>
+              <div className="text-sm text-gray-500">{t('common.appearsIn')}</div>
               <ul className="list-disc list-inside ml-4 text-sm text-gray-500">
                 {questions[current].appearsIn.map((ref: string, idx: number) => (
                   <li key={idx}>{ref}</li>
@@ -119,7 +125,7 @@ export function ResultDisplay({
             data-testid="result-continue-button"
             onClick={() => handleContinue('C')}
           >
-            Continuar
+            {t('common.continue')}
           </button>
         </div>
       </div>
@@ -141,7 +147,7 @@ export function ResultDisplay({
           <div className="space-y-6 mt-8 question-info">
             {selectedArea && (
               <div className="text-lg font-bold text-blue-600 mb-2">
-                🎓 Área: {selectedArea.area}
+                🎓 {t('common.areaLabel')}: {selectedArea.area}
               </div>
             )}
             <div className="font-bold text-lg">
@@ -153,21 +159,23 @@ export function ResultDisplay({
             ></div>
             {/* Show user's answer and correct answer if available */}
             <div className="mt-2">
-              <div className="font-semibold">Tu respuesta:</div>
+              <div className="font-semibold">{t('quiz.yourAnswer')}</div>
               <div className="text-base user-answer">
                 {status[q.index] === 'pending' ? (
-                  <span className="text-gray-500">No respondida</span>
+                  <span className="text-gray-500">{t('quiz.noAnswer')}</span>
                 ) : (
-                  userAnswers[q.index] || <span className="text-gray-500">No respondida</span>
+                  userAnswers[q.index] || (
+                    <span className="text-gray-500">{t('quiz.noAnswer')}</span>
+                  )
                 )}
               </div>
-              <div className="font-semibold mt-2">Respuesta correcta:</div>
+              <div className="font-semibold mt-2">{t('quiz.correctAnswer')}</div>
               <div className="text-base correct-answer">{q.answer}</div>
             </div>
             {/* appearsIn bullet list if present */}
             {Array.isArray(q.appearsIn) && q.appearsIn.length > 0 && (
               <div className="mt-2">
-                <div className="text-sm text-gray-500">Aparece en:</div>
+                <div className="text-sm text-gray-500">{t('common.appearsIn')}</div>
                 <ul className="list-disc list-inside ml-4 text-sm text-gray-500">
                   {q.appearsIn.map((ref: string, idx: number) => (
                     <li key={idx}>{ref}</li>
@@ -181,7 +189,7 @@ export function ResultDisplay({
               className="px-4 py-2 bg-blue-600 text-white rounded"
               onClick={() => setReviewIndex(null)}
             >
-              Volver al resumen
+              {t('quiz.backToSummary')}
             </button>
           </div>
         </>
@@ -192,9 +200,13 @@ export function ResultDisplay({
       <div className="space-y-8 mt-8">
         {/* Show area name at top */}
         {selectedArea && (
-          <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
+          <div className="text-lg font-bold text-blue-600 mb-2">
+            🎓 {t('common.areaLabel')}: {selectedArea.area}
+          </div>
         )}
-        <div className="text-2xl font-bold">{EMOJI_DONE} ¡Quiz completado!</div>
+        <div className="text-2xl font-bold">
+          {EMOJI_DONE} {t('quiz.completed')}
+        </div>
         <div className="mt-2 text-base flex items-center gap-2">
           {EMOJI_PROGRESS} {questions.length}
           <span className="ml-2">
@@ -206,7 +218,7 @@ export function ResultDisplay({
         </div>
         <div className="flex gap-4 mt-4">
           <button className="px-4 py-2 bg-orange-500 text-white rounded" onClick={resetQuiz}>
-            🔄 Volver a empezar
+            {t('quiz.restart')}
           </button>
         </div>
         {[...grouped.entries()].map(([section, qs]) => (
@@ -225,7 +237,7 @@ export function ResultDisplay({
                     className={`flex flex-col items-center focus:outline-none rounded status-box ${status[q.index]}`}
                     style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                     onClick={() => setReviewIndex(q.index)}
-                    aria-label={`Ver pregunta ${q.number}`}
+                    aria-label={t('quiz.viewQuestionAria', { number: q.number })}
                   >
                     <span className="text-2xl">
                       {q.number}
@@ -238,13 +250,19 @@ export function ResultDisplay({
           </div>
         ))}
         <div className="mt-4">
-          <span>{EMOJI_SUCCESS} = Correcta </span>
-          <span>{EMOJI_FAIL} = Fallada </span>
-          <span>{EMOJI_ASK} = Pendiente</span>
+          <span>
+            {EMOJI_SUCCESS} = {t('quiz.legendCorrect')}{' '}
+          </span>
+          <span>
+            {EMOJI_FAIL} = {t('quiz.legendFailed')}{' '}
+          </span>
+          <span>
+            {EMOJI_ASK} = {t('quiz.legendPending')}
+          </span>
         </div>
         <div className="flex gap-4 mt-4">
           <button className="px-4 py-2 bg-orange-500 text-white rounded" onClick={resetQuiz}>
-            🔄 Volver a empezar
+            {t('quiz.restart')}
           </button>
         </div>
       </div>

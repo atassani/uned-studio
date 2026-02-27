@@ -1,6 +1,8 @@
 import React from 'react';
+import { useI18n } from '../i18n/I18nProvider';
 
 export function LoadingSpinner() {
+  const { t } = useI18n();
   return (
     <div className="flex flex-col items-center justify-center py-8" data-testid="loading-spinner">
       <svg
@@ -23,7 +25,7 @@ export function LoadingSpinner() {
           d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
         ></path>
       </svg>
-      <span className="text-gray-600 dark:text-gray-300 text-sm">Cargando…</span>
+      <span className="text-gray-600 dark:text-gray-300 text-sm">{t('common.loading')}</span>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import DOMPurify from 'isomorphic-dompurify';
 import { QuestionType } from './types';
+import { tDefault } from './i18n/translator';
 
 // User type for display name function
 interface UserForDisplay {
@@ -126,7 +127,7 @@ export function getUserDisplayName(user: UserForDisplay | null | undefined): str
 
   // Handle guest users
   if (user.isGuest) {
-    return 'Invitado';
+    return tDefault('auth.guestUsername');
   }
 
   // Try the 'name' attribute first (Google OAuth provides this)

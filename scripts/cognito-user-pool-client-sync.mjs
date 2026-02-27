@@ -233,7 +233,9 @@ function runPush() {
 
   const liveAfterPush = readLiveConfig(region, userPoolId, clientId);
   if (!deepEqual(liveAfterPush, snapshot.userPoolClient)) {
-    console.error('Warning: live config differs from snapshot after push. Run `npm run cognito:diff`.');
+    console.error(
+      'Warning: live config differs from snapshot after push. Run `npm run cognito:diff`.'
+    );
     process.exitCode = 2;
     return;
   }

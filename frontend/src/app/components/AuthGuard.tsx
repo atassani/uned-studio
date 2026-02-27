@@ -4,9 +4,13 @@ import { useEffect } from 'react';
 import { getCognitoLoginUrl, useAuth } from '../hooks/useAuth';
 import { trackAuth } from '../lib/analytics';
 import packageJson from '../../../package.json';
+import { useI18n } from '../i18n/I18nProvider';
+import { AppLanguage, isLanguageSelectionEnabled, SUPPORTED_LANGUAGES } from '../i18n/config';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, loginWithGoogle, loginAsGuest } = useAuth();
+  const { t, activeLanguage, setActiveLanguage } = useI18n();
+  const languageSelectionEnabled = isLanguageSelectionEnabled();
 
   useEffect(() => {
     // Only log in development
@@ -30,7 +34,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
+        <p>{t('common.loading')}</p>
       </div>
     );
   }
@@ -40,20 +44,39 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black p-4">
         <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-8 text-center relative">
+          {languageSelectionEnabled && (
+            <div className="mb-6 text-left">
+              <label
+                htmlFor="login-language-selector"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
+              >
+                {t('language.selectorLabel')}
+              </label>
+              <select
+                id="login-language-selector"
+                data-testid="login-language-selector"
+                aria-label={t('language.selectorAria')}
+                className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-white text-gray-900"
+                value={activeLanguage}
+                onChange={(event) => setActiveLanguage(event.target.value as AppLanguage)}
+              >
+                {SUPPORTED_LANGUAGES.map((language) => (
+                  <option key={language} value={language}>
+                    {t(`language.option.${language}` as const)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">🎓 Studio</h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              Herramientas de estudio para estudiantes.
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              {t('auth.loginTitle')}
+            </h1>
+            <p className="text-gray-600 dark:text-gray-300">{t('auth.loginSubtitle')}</p>
           </div>
           <div className="mb-6">
-            <p className="text-gray-700 dark:text-gray-200 mb-4">
-              Accede a tests de práctica, materiales de estudio y herramientas interactivas para tus
-              asignaturas.
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Inicia sesión para guardar tu progreso, o úsalo como invitado.
-            </p>
+            <p className="text-gray-700 dark:text-gray-200 mb-4">{t('auth.loginDescription')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('auth.loginHint')}</p>
           </div>
           <div className="space-y-3">
             {loginUrl ? (
@@ -83,7 +106,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Iniciar sesión con Google
+                {t('auth.loginWithGoogle')}
               </a>
             ) : (
               <button
@@ -112,7 +135,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Iniciar sesión con Google
+                {t('auth.loginWithGoogle')}
               </button>
             )}
 
@@ -124,15 +147,15 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
               }}
               className="w-full px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-colors duration-200"
             >
-              Continuar como Invitado
+              {t('auth.continueAsGuest')}
             </button>
           </div>
           <div className="mt-4 space-y-2 text-xs text-gray-500 dark:text-gray-400">
             <p>
-              <strong>Con Google:</strong> Progreso guardado entre dispositivos
+              <strong>{t('auth.googleBenefitLabel')}</strong> {t('auth.googleBenefitText')}
             </p>
             <p>
-              <strong>Invitado:</strong> Progreso solo en este navegador
+              <strong>{t('auth.guestBenefitLabel')}</strong> {t('auth.guestBenefitText')}
             </p>
           </div>
 

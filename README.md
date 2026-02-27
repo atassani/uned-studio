@@ -54,6 +54,13 @@ NEXT_PUBLIC_DATA_BASE_URL=
 # Nombre del fichero JSON con las áreas de estudio, el punto de partida de las preguntas de test.
 NEXT_PUBLIC_AREAS_FILE=areas.json
 
+# Idioma por defecto de la UI (es | en | ca)
+NEXT_PUBLIC_DEFAULT_LANGUAGE=es
+
+# Habilita selector de idioma en UI (true | false)
+# En Phase 1 se mantiene en false.
+NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED=false
+
 # Variables de entrorno para AWS Cognito (autenticación)
 NEXT_PUBLIC_COGNITO_USER_POOL_ID=
 NEXT_PUBLIC_COGNITO_CLIENT_ID=
@@ -66,6 +73,15 @@ NEXT_PUBLIC_COGNITO_PROMPT=
 # El tracking ID de Google Analytics 4 o el texto 'disabled' para desactivar analytics
 NEXT_PUBLIC_GA_TRACKING_ID=G-XXXXXXXXXX```
 ````
+
+### Configuración de idioma (multilenguaje)
+
+- `NEXT_PUBLIC_DEFAULT_LANGUAGE`
+  : idioma inicial de la aplicación. Valores soportados: `es`, `en`, `ca`.  
+  Si el valor es inválido o falta, se usa `es`.
+- `NEXT_PUBLIC_LANGUAGE_SELECTION_ENABLED`
+  : habilita o deshabilita el selector de idioma en la interfaz (`true`/`false`).  
+  En la fase actual del rollout se recomienda `false`.
 
 ### Desarrollo local con datos separados
 
@@ -91,15 +107,18 @@ En `NODE_ENV=development`, existe un endpoint local `GET/PUT /api/learning-state
 El frontend permite activar/desactivar acceso a DynamoDB para controlar coste en desarrollo:
 
 - `NEXT_PUBLIC_STORAGE_MODE=local|dynamodb|hybrid`
-: `local` usa solo `localStorage`, `dynamodb` usa lectura/escritura remota, `hybrid` lee remoto y guarda local (escritura remota opcional).
+  : `local` usa solo `localStorage`, `dynamodb` usa lectura/escritura remota, `hybrid` lee remoto y guarda local (escritura remota opcional).
 - `NEXT_PUBLIC_ENABLE_DYNAMODB=true|false`
-: interruptor global para cortar cualquier llamada remota.
+  : interruptor global para cortar cualquier llamada remota.
 - `NEXT_PUBLIC_SYNC_WRITES=true|false`
-: en `hybrid`, habilita/deshabilita escrituras remotas.
+  : en `hybrid`, habilita/deshabilita escrituras remotas.
 - `NEXT_PUBLIC_MAX_DDB_CALLS_PER_SESSION=<n>`
-: presupuesto máximo de llamadas remotas por sesión de navegador.
+  : presupuesto máximo de llamadas remotas por sesión de navegador.
 - `NEXT_PUBLIC_STUDIO_LEARNING_STATE_TABLE=<name>` (opcional)
-: nombre de tabla solo para logging del cliente.
+  : nombre de tabla solo para logging del cliente.
+- `NEXT_PUBLIC_DYNAMODB_LOG_ENABLED=true|false` (opcional)
+  : habilita logs de diagnóstico de llamadas DynamoDB en consola del navegador.  
+  Por defecto: `true` en `development`, `false` en `test` y `production`.
 
 Ejemplo recomendado para desarrollo sin coste:
 
@@ -118,15 +137,15 @@ NEXT_PUBLIC_SYNC_WRITES=false
 NEXT_PUBLIC_MAX_DDB_CALLS_PER_SESSION=100
 ```
 
-Cada llamada remota queda trazada en consola del navegador con `op`, `table`, `pk` y `sk`.
+Si `NEXT_PUBLIC_DYNAMODB_LOG_ENABLED=true`, cada llamada remota queda trazada en consola con `op`, `table`, `pk` y `sk`.
 
 Requisitos:
 
 - Credenciales AWS válidas en tu entorno local.
 - Variables para tabla/región (si no usas los defaults):
-: `STUDIO_LEARNING_STATE_TABLE`, `STUDIO_LEARNING_STATE_REGION`
+  : `STUDIO_LEARNING_STATE_TABLE`, `STUDIO_LEARNING_STATE_REGION`
 - Opcional para tabla admin de identidad:
-: `STUDIO_USER_IDENTITY_ADMIN_TABLE`, `STUDIO_USER_IDENTITY_ADMIN_REGION`
+  : `STUDIO_USER_IDENTITY_ADMIN_TABLE`, `STUDIO_USER_IDENTITY_ADMIN_REGION`
 
 Fuera de `development`, este endpoint local devuelve `404`.
 
@@ -146,9 +165,24 @@ Ejemplo:
   "updatedAt": "2026-02-25",
   "guestAllowedAreaShortNames": ["log1", "ipc"],
   "areas": [
-    { "area": "Lógica I", "file": "questions-logica1.json", "type": "True False", "shortName": "log1" },
-    { "area": "Introducción al Pensamiento Científico", "file": "questions-ipc.json", "type": "Multiple Choice", "shortName": "ipc" },
-    { "area": "Filosofía del Lenguaje I", "file": "questions-fdl.json", "type": "Multiple Choice", "shortName": "fdl" }
+    {
+      "area": "Lógica I",
+      "file": "questions-logica1.json",
+      "type": "True False",
+      "shortName": "log1"
+    },
+    {
+      "area": "Introducción al Pensamiento Científico",
+      "file": "questions-ipc.json",
+      "type": "Multiple Choice",
+      "shortName": "ipc"
+    },
+    {
+      "area": "Filosofía del Lenguaje I",
+      "file": "questions-fdl.json",
+      "type": "Multiple Choice",
+      "shortName": "fdl"
+    }
   ]
 }
 ```

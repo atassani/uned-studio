@@ -9,7 +9,10 @@ import * as path from 'path';
 type LearningStateValue = Record<string, unknown> | unknown[] | string | number | boolean | null;
 
 interface LearningStateStore {
-  get(userId: string, scope: string): Promise<{ state: LearningStateValue; updatedAt: string } | null>;
+  get(
+    userId: string,
+    scope: string
+  ): Promise<{ state: LearningStateValue; updatedAt: string } | null>;
   put(params: {
     userId: string;
     scope: string;
@@ -59,20 +62,18 @@ function getCognitoConfig() {
   };
 }
 
-function readEdgeAuthConfig():
-  | {
-      region?: string;
-      userPoolId?: string;
-      domain?: string;
-      clientId?: string;
-      redirectSignIn?: string;
-      redirectSignOut?: string;
-      learningStateTable?: string;
-      learningStateRegion?: string;
-      userIdentityAdminTable?: string;
-      userIdentityAdminRegion?: string;
-    }
-  | null {
+function readEdgeAuthConfig(): {
+  region?: string;
+  userPoolId?: string;
+  domain?: string;
+  clientId?: string;
+  redirectSignIn?: string;
+  redirectSignOut?: string;
+  learningStateTable?: string;
+  learningStateRegion?: string;
+  userIdentityAdminTable?: string;
+  userIdentityAdminRegion?: string;
+} | null {
   const configPath =
     process.env.EDGE_AUTH_CONFIG_PATH ?? path.join(__dirname, 'edge-auth-config.json');
   try {
@@ -108,9 +109,7 @@ export async function exchangeCodeForTokens(params: {
 
 let exchangeCodeForTokensImpl = exchangeCodeForTokens;
 
-export function setExchangeCodeForTokensImpl(
-  impl: typeof exchangeCodeForTokens | null
-): void {
+export function setExchangeCodeForTokensImpl(impl: typeof exchangeCodeForTokens | null): void {
   exchangeCodeForTokensImpl = impl ?? exchangeCodeForTokens;
 }
 
@@ -383,7 +382,9 @@ function parseRequestJsonBody(request: CloudFrontRequest): Record<string, unknow
 
   try {
     const raw =
-      reqBody.encoding === 'base64' ? Buffer.from(reqBody.data, 'base64').toString('utf8') : reqBody.data;
+      reqBody.encoding === 'base64'
+        ? Buffer.from(reqBody.data, 'base64').toString('utf8')
+        : reqBody.data;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
       return null;
@@ -392,6 +393,32 @@ function parseRequestJsonBody(request: CloudFrontRequest): Record<string, unknow
   } catch {
     return null;
   }
+}
+
+function normalizeCandidate(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function getCandidateUserIdsFromPayload(payload: Record<string, any>): string[] {
+  const sub = normalizeCandidate(payload.sub);
+  const email = normalizeCandidate(payload.email);
+  const preferredUsername = normalizeCandidate(payload.preferred_username);
+  const cognitoUsername = normalizeCandidate(payload['cognito:username']);
+  const legacyGoogleEmail = email ? normalizeCandidate(`Google_${email}`) : null;
+
+  const candidates = [sub, email, preferredUsername, cognitoUsername, legacyGoogleEmail].filter(
+    (value): value is string => Boolean(value)
+  );
+  return Array.from(new Set(candidates));
+}
+
+function getCandidateScopes(scope: string): string[] {
+  if (scope === 'global') {
+    return ['global', 'default'];
+  }
+  return [scope];
 }
 
 export async function handler(event: CloudFrontRequestEvent): Promise<CloudFrontRequestResult> {
@@ -452,10 +479,50 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
     const scope = queryParams.get('scope') ?? 'global';
     if (method === 'GET') {
       try {
-        const state = await store.get(String(payload.sub), scope);
+        const candidateUserIds = getCandidateUserIdsFromPayload(payload as Record<string, any>);
+        const candidateScopes = getCandidateScopes(scope);
+
+        let state: {
+          state: LearningStateValue;
+          updatedAt: string;
+          userId: string;
+          scope: string;
+        } | null = null;
+
+        for (const candidateUserId of candidateUserIds) {
+          for (const candidateScope of candidateScopes) {
+            const found = await store.get(candidateUserId, candidateScope);
+            if (found) {
+              state = {
+                ...found,
+                userId: candidateUserId,
+                scope: candidateScope,
+              };
+              break;
+            }
+          }
+          if (state) break;
+        }
+
         if (!state) {
           return jsonResponse('404', { error: 'not_found' });
         }
+
+        // Best-effort migration to canonical sub/global key.
+        if (state.userId !== String(payload.sub) || state.scope !== scope) {
+          try {
+            await store.put({
+              userId: String(payload.sub),
+              scope,
+              state: state.state,
+              updatedAt: new Date().toISOString(),
+              userEmail: typeof payload.email === 'string' ? payload.email : undefined,
+            });
+          } catch {
+            // Ignore migration failures; read succeeded.
+          }
+        }
+
         return jsonResponse('200', {
           scope,
           state: state.state,

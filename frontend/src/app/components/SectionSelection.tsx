@@ -1,4 +1,5 @@
 import { QuestionType, AreaType } from '../types';
+import { useI18n } from '../i18n/I18nProvider';
 
 interface SectionSelectionProps {
   selectedArea: AreaType | null;
@@ -17,6 +18,7 @@ export function SectionSelection({
   startQuizSections,
   resetQuiz,
 }: SectionSelectionProps) {
+  const { t } = useI18n();
   // Get unique sections
   const sections = Array.from(new Set(allQuestions.map((q) => q.section)));
   const allChecked = selectedSections.size === sections.length;
@@ -28,23 +30,25 @@ export function SectionSelection({
     <div className="space-y-8 flex flex-col items-center justify-center">
       {/* Show area name at top */}
       {selectedArea && (
-        <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
+        <div className="text-lg font-bold text-blue-600 mb-2">
+          🎓 {t('common.areaLabel')}: {selectedArea.area}
+        </div>
       )}
-      <div className="text-2xl font-bold mb-4">Selecciona las secciones</div>
+      <div className="text-2xl font-bold mb-4">{t('sections.title')}</div>
       <div className="flex gap-4 mb-2">
         <button
           className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
           onClick={handleCheckAll}
           disabled={allChecked}
         >
-          Marcar todas
+          {t('sections.checkAll')}
         </button>
         <button
           className="px-3 py-1 bg-gray-500 text-white rounded text-sm"
           onClick={handleUncheckAll}
           disabled={noneChecked}
         >
-          Desmarcar todas
+          {t('sections.uncheckAll')}
         </button>
       </div>
       <div className="flex flex-col gap-2 mb-4">
@@ -69,13 +73,13 @@ export function SectionSelection({
           className="px-6 py-3 bg-green-600 text-white rounded text-lg"
           disabled={selectedSections.size === 0}
           onClick={startQuizSections}
-          aria-label="Empezar"
+          aria-label={t('common.start')}
           data-testid="start-quiz-button"
         >
-          Empezar
+          {t('common.start')}
         </button>
         <button className="px-6 py-3 bg-gray-400 text-white rounded text-lg" onClick={resetQuiz}>
-          Cancelar
+          {t('common.cancel')}
         </button>
       </div>
     </div>

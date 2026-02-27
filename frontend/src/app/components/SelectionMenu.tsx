@@ -1,5 +1,6 @@
 import { AreaType } from '../types';
 import { storage } from '../storage';
+import { useI18n } from '../i18n/I18nProvider';
 
 interface SelectionMenuProps {
   selectedArea: AreaType | null;
@@ -28,6 +29,7 @@ export function SelectionMenu({
   setShowAreaSelection,
   setShowSelectionMenu,
 }: SelectionMenuProps) {
+  const { t } = useI18n();
   return (
     <div
       className="space-y-8 flex flex-col items-center justify-center"
@@ -35,22 +37,24 @@ export function SelectionMenu({
     >
       {/* Show area name at top */}
       {selectedArea && (
-        <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
+        <div className="text-lg font-bold text-blue-600 mb-2">
+          🎓 {t('common.areaLabel')}: {selectedArea.area}
+        </div>
       )}
-      <div className="text-2xl font-bold mb-4">¿Cómo quieres las preguntas?</div>
+      <div className="text-2xl font-bold mb-4">{t('menu.title')}</div>
       {/* Question Order Selection: Available for both True/False and Multiple Choice */}
       <div className="flex flex-col items-center space-y-2 mb-2">
-        <div className="text-lg font-semibold mb-2">Orden de preguntas:</div>
+        <div className="text-lg font-semibold mb-2">{t('menu.questionOrder')}</div>
         <div className="flex items-center justify-center w-64">
           <span
             className={`text-sm font-medium mr-3 cursor-pointer ${shuffleQuestions ? 'text-blue-600' : 'text-gray-500'}`}
             onClick={() => setShuffleQuestions(true)}
             tabIndex={0}
             role="button"
-            aria-label="Orden aleatorio"
+            aria-label={t('menu.randomOrderAria')}
             data-testid="order-random-button"
           >
-            Aleatorio
+            {t('menu.random')}
           </span>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -58,7 +62,7 @@ export function SelectionMenu({
               checked={!shuffleQuestions}
               onChange={(e) => setShuffleQuestions(!e.target.checked)}
               className="sr-only peer"
-              aria-label="Alternar orden de preguntas"
+              aria-label={t('menu.toggleQuestionOrderAria')}
               data-testid="question-order-toggle"
             />
             <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
@@ -72,27 +76,27 @@ export function SelectionMenu({
             onClick={() => setShuffleQuestions(false)}
             tabIndex={0}
             role="button"
-            aria-label="Orden secuencial"
+            aria-label={t('menu.sequentialOrderAria')}
             data-testid="order-sequential-button"
           >
-            Secuencial
+            {t('menu.sequential')}
           </span>
         </div>
       </div>
       {/* Answer Order Selection: Only for Multiple Choice */}
       {currentQuizType === 'Multiple Choice' && (
         <div className="flex flex-col items-center space-y-2 mb-4">
-          <div className="text-lg font-semibold mb-2">Orden de respuestas:</div>
+          <div className="text-lg font-semibold mb-2">{t('menu.answerOrder')}</div>
           <div className="flex items-center justify-center w-64">
             <span
               className={`text-sm font-medium mr-3 cursor-pointer ${shuffleAnswers ? 'text-blue-600' : 'text-gray-500'}`}
               onClick={() => setShuffleAnswers(true)}
               tabIndex={0}
               role="button"
-              aria-label="Aleatorizar respuestas"
+              aria-label={t('menu.randomAnswersAria')}
               data-testid="answer-order-random-button"
             >
-              Aleatorio
+              {t('menu.random')}
             </span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -100,7 +104,7 @@ export function SelectionMenu({
                 checked={!shuffleAnswers}
                 onChange={(e) => setShuffleAnswers(!e.target.checked)}
                 className="sr-only peer"
-                aria-label="Alternar orden de respuestas"
+                aria-label={t('menu.toggleAnswerOrderAria')}
                 data-testid="answer-order-toggle"
               />
               <div className="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-500 transition-all duration-300">
@@ -114,10 +118,10 @@ export function SelectionMenu({
               onClick={() => setShuffleAnswers(false)}
               tabIndex={0}
               role="button"
-              aria-label="Respuestas secuenciales"
+              aria-label={t('menu.sequentialAnswersAria')}
               data-testid="answer-order-sequential-button"
             >
-              Secuencial
+              {t('menu.sequential')}
             </span>
           </div>
         </div>
@@ -127,26 +131,26 @@ export function SelectionMenu({
         onClick={() => {
           startQuizAll();
         }}
-        aria-label="Todas las preguntas"
+        aria-label={t('menu.allQuestionsAria')}
         data-testid="quiz-all-button"
       >
-        Todas las preguntas
+        {t('menu.allQuestions')}
       </button>
       <button
         className="px-6 py-3 bg-green-600 text-white rounded text-lg w-64"
         onClick={openSectionsSelection}
-        aria-label="Seleccionar secciones"
+        aria-label={t('menu.selectSectionsAria')}
         data-testid="quiz-sections-button"
       >
-        Seleccionar secciones
+        {t('menu.selectSections')}
       </button>
       <button
         className="px-6 py-3 bg-purple-600 text-white rounded text-lg w-64"
         onClick={openQuestionsSelection}
-        aria-label="Seleccionar preguntas"
+        aria-label={t('menu.selectQuestionsAria')}
         data-testid="quiz-questions-button"
       >
-        Seleccionar preguntas
+        {t('menu.selectQuestions')}
       </button>
       <button
         className="px-6 py-3 bg-gray-500 text-white rounded text-lg w-64 mt-6"
@@ -156,9 +160,9 @@ export function SelectionMenu({
           setShowSelectionMenu(false);
           storage.setCurrentArea(undefined);
         }}
-        aria-label="Cambiar área"
+        aria-label={t('menu.changeAreaAria')}
       >
-        Cambiar área
+        {t('menu.changeArea')}
       </button>
     </div>
   );

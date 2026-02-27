@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { AreaType } from '../types';
 import { sanitizeConfiguredAreaShortNames } from '../areaConfig';
+import { useI18n } from '../i18n/I18nProvider';
 
 interface AreaConfigurationProps {
   areas: AreaType[];
@@ -22,6 +23,7 @@ export function AreaConfiguration({
   onCancel,
   allowCancel = true,
 }: AreaConfigurationProps) {
+  const { t } = useI18n();
   const [selectedShortNames, setSelectedShortNames] = useState<string[]>(() => {
     if (initialSelectedShortNames && initialSelectedShortNames.length > 0) {
       return sanitizeConfiguredAreaShortNames(initialSelectedShortNames, areas);
@@ -115,16 +117,14 @@ export function AreaConfiguration({
   return (
     <div className="space-y-6" data-testid="area-configuration-view">
       <div className="text-center">
-        <h2 className="text-2xl font-bold">Configurar áreas</h2>
-        <p className="text-sm text-gray-600 mt-2">
-          Selecciona qué áreas quieres ver en &quot;Cambiar área&quot; y en qué orden.
-        </p>
+        <h2 className="text-2xl font-bold">{t('areas.config.title')}</h2>
+        <p className="text-sm text-gray-600 mt-2">{t('areas.config.description')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <section
           className="border border-gray-200 rounded-lg p-4 order-1 md:order-2"
-          aria-label="Áreas seleccionadas"
+          aria-label={t('areas.config.selectedAria')}
           onDragOver={(event) => event.preventDefault()}
           onDrop={(event) => {
             event.preventDefault();
@@ -134,7 +134,7 @@ export function AreaConfiguration({
             setDraggingItem(null);
           }}
         >
-          <h3 className="text-lg font-semibold mb-3">Seleccionadas</h3>
+          <h3 className="text-lg font-semibold mb-3">{t('areas.config.selectedTitle')}</h3>
           <div className="space-y-2" data-testid="selected-areas-list">
             {selectedAreas.map((area, index) => (
               <div
@@ -175,7 +175,7 @@ export function AreaConfiguration({
                   <button
                     className="h-7 w-7 bg-gray-200 rounded text-sm font-bold"
                     onClick={() => moveArea(area.shortName, 'up')}
-                    aria-label={`Subir ${area.area}`}
+                    aria-label={t('areas.config.moveUpAria', { area: area.area })}
                     disabled={index === 0}
                   >
                     ↑
@@ -183,7 +183,7 @@ export function AreaConfiguration({
                   <button
                     className="h-7 w-7 bg-gray-200 rounded text-sm font-bold"
                     onClick={() => moveArea(area.shortName, 'down')}
-                    aria-label={`Bajar ${area.area}`}
+                    aria-label={t('areas.config.moveDownAria', { area: area.area })}
                     disabled={index === selectedAreas.length - 1}
                   >
                     ↓
@@ -191,7 +191,7 @@ export function AreaConfiguration({
                   <button
                     className="h-7 w-7 bg-red-600 text-white rounded text-sm font-bold"
                     onClick={() => removeArea(area.shortName)}
-                    aria-label={`Quitar ${area.area}`}
+                    aria-label={t('areas.config.removeAria', { area: area.area })}
                   >
                     ✕
                   </button>
@@ -203,7 +203,7 @@ export function AreaConfiguration({
 
         <section
           className="border border-gray-200 rounded-lg p-4 order-2 md:order-1"
-          aria-label="Áreas disponibles"
+          aria-label={t('areas.config.availableAria')}
           onDragOver={(event) => event.preventDefault()}
           onDrop={(event) => {
             event.preventDefault();
@@ -213,11 +213,11 @@ export function AreaConfiguration({
             setDraggingItem(null);
           }}
         >
-          <h3 className="text-lg font-semibold mb-3">Disponibles</h3>
+          <h3 className="text-lg font-semibold mb-3">{t('areas.config.availableTitle')}</h3>
           <div className="space-y-2">
             {availableAreas.length === 0 && (
               <p className="text-sm text-gray-500" data-testid="no-available-areas">
-                No hay más áreas disponibles.
+                {t('areas.config.noMoreAvailable')}
               </p>
             )}
             {availableAreas.map((area) => (
@@ -242,7 +242,7 @@ export function AreaConfiguration({
                 <button
                   className="h-8 w-8 bg-green-600 text-white rounded text-lg font-bold"
                   onClick={() => addArea(area.shortName)}
-                  aria-label={`Agregar ${area.area}`}
+                  aria-label={t('areas.config.addAria', { area: area.area })}
                 >
                   +
                 </button>
@@ -254,7 +254,7 @@ export function AreaConfiguration({
 
       {showEmptyError && (
         <p className="text-sm text-red-600" data-testid="area-config-empty-error">
-          Debes seleccionar al menos un área.
+          {t('areas.config.emptyError')}
         </p>
       )}
 
@@ -265,16 +265,16 @@ export function AreaConfiguration({
             onClick={onCancel}
             data-testid="area-config-cancel"
           >
-            Cancelar
+            {t('common.cancel')}
           </button>
         )}
         <button
           className="px-5 py-2 rounded bg-blue-600 text-white"
           onClick={handleAccept}
           data-testid="area-config-accept"
-          aria-label="Aceptar configuración de áreas"
+          aria-label={t('areas.config.acceptAria')}
         >
-          Aceptar
+          {t('areas.config.accept')}
         </button>
       </div>
     </div>

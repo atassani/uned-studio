@@ -11,7 +11,10 @@ const testDataRoutes: Array<{ requestFile: string; fixtureFile: string }> = [
   // Always serve test areas, even if app asks for default areas.json.
   { requestFile: 'areas.json', fixtureFile: 'areas-mcq-tests.json' },
   { requestFile: 'areas-mcq-tests.json', fixtureFile: 'areas-mcq-tests.json' },
+  { requestFile: 'areas-multilang-tests.json', fixtureFile: 'areas-multilang-tests.json' },
   { requestFile: 'questions-mcq-tests.json', fixtureFile: 'questions-mcq-tests.json' },
+  { requestFile: 'questions-mcq-tests-en.json', fixtureFile: 'questions-mcq-tests-en.json' },
+  { requestFile: 'questions-mcq-tests-ca.json', fixtureFile: 'questions-mcq-tests-ca.json' },
   { requestFile: 'questions-logica1.json', fixtureFile: 'questions-logica1.json' },
   { requestFile: 'questions-ipc.json', fixtureFile: 'questions-ipc.json' },
   { requestFile: 'questions-fdl.json', fixtureFile: 'questions-fdl.json' },

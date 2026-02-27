@@ -1,3 +1,5 @@
+import { AppLanguage, normalizeLanguage } from './i18n/config';
+
 const LOCAL_STORAGE_KEY = 'learningStudio';
 export const LEARNING_STUDIO_STATE_CHANGED_EVENT = 'learning-studio-state-changed';
 
@@ -14,7 +16,61 @@ interface AreaState {
 interface UserAreaConfig {
   allowedAreaShortNames: string[];
 }
+
+function normalizeAllowedAreaShortNames(input: unknown): string[] {
+  if (!Array.isArray(input)) return [];
+  const filtered = input.filter((value): value is string => typeof value === 'string');
+  return Array.from(new Set(filtered));
+}
+
+function normalizeUserAreaConfig(input: unknown): UserAreaConfig | undefined {
+  if (Array.isArray(input)) {
+    const normalized = normalizeAllowedAreaShortNames(input);
+    return normalized.length > 0 ? { allowedAreaShortNames: normalized } : undefined;
+  }
+
+  if (!input || typeof input !== 'object') {
+    return undefined;
+  }
+
+  const allowed = normalizeAllowedAreaShortNames(
+    (input as { allowedAreaShortNames?: unknown }).allowedAreaShortNames
+  );
+  return allowed.length > 0 ? { allowedAreaShortNames: allowed } : undefined;
+}
+
+function normalizeAreaConfigByUser(input: unknown): AppState['areaConfigByUser'] {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return undefined;
+  }
+
+  const normalizedEntries = Object.entries(input).map(
+    ([userKey, config]) => [userKey, normalizeUserAreaConfig(config)] as const
+  );
+
+  const filtered = normalizedEntries.filter(([, config]) => Boolean(config));
+  if (filtered.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(filtered);
+}
+
+function normalizeAppState(input: unknown): AppState {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return { areas: {} };
+  }
+
+  const obj = input as Partial<AppState>;
+  return {
+    language: typeof obj.language === 'string' ? normalizeLanguage(obj.language) : undefined,
+    currentArea: typeof obj.currentArea === 'string' ? obj.currentArea : undefined,
+    areas: obj.areas && typeof obj.areas === 'object' ? obj.areas : {},
+    areaConfigByUser: normalizeAreaConfigByUser(obj.areaConfigByUser),
+  };
+}
 export interface AppState {
+  language?: AppLanguage;
   currentArea?: string;
   areas: {
     [areaKey: string]: Partial<AreaState>;
@@ -25,6 +81,18 @@ export interface AppState {
 }
 
 export const storage = {
+  getLanguage(): AppLanguage | undefined {
+    return getStoredState().language;
+  },
+
+  setLanguage(language: AppLanguage | undefined) {
+    const state = getStoredState();
+    setStoredState({
+      ...state,
+      language: language ? normalizeLanguage(language) : undefined,
+    });
+  },
+
   getCurrentArea(): string | undefined {
     return getStoredState().currentArea;
   },
@@ -120,7 +188,7 @@ function getStoredState(): AppState {
   try {
     const savedState = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (savedState) {
-      return JSON.parse(savedState);
+      return normalizeAppState(JSON.parse(savedState));
     }
   } catch (e) {
     console.error('Failed to parse state from localStorage', e);
@@ -133,8 +201,9 @@ function setStoredState(state: AppState) {
     return;
   }
   try {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
-    dispatchStateChanged(state);
+    const normalizedState = normalizeAppState(state);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(normalizedState));
+    dispatchStateChanged(normalizedState);
   } catch (e) {
     console.error('Failed to save state to localStorage', e);
   }

@@ -9,6 +9,7 @@ import {
   EMOJI_PROGRESS,
   EMOJI_DONE,
 } from '../constants';
+import { useI18n } from '../i18n/I18nProvider';
 
 interface StatusGridProps {
   selectedArea: AreaType | null;
@@ -57,6 +58,7 @@ export function StatusGrid({
   onOpenFailedQuestion,
   onCloseFailedQuestion,
 }: StatusGridProps) {
+  const { t } = useI18n();
   const selectedQuestion =
     selectedFailedQuestionNumber === null
       ? null
@@ -109,18 +111,20 @@ export function StatusGrid({
         data-testid="status-continue-button"
         onClick={() => handleContinue('C')}
         disabled={pendingQuestions().length === 0}
-        aria-label="Continuar"
+        aria-label={t('common.continue')}
       >
-        {pendingQuestions().length === 0 ? EMOJI_DONE + ' ¡Completado!' : 'Continuar'}
+        {pendingQuestions().length === 0
+          ? `${EMOJI_DONE} ${t('status.completedButton')}`
+          : t('common.continue')}
       </button>
       <button
         className="px-4 py-2 bg-orange-500 text-white rounded"
         data-testid="reset-quiz-button"
         onClick={resetQuiz}
         onTouchEnd={resetQuiz}
-        aria-label="Volver a empezar"
+        aria-label={t('quiz.restart')}
       >
-        🔄 Volver a empezar
+        {t('quiz.restart')}
       </button>
       <button
         className="px-4 py-2 bg-gray-500 text-white rounded"
@@ -130,9 +134,9 @@ export function StatusGrid({
           setShowStatus(false);
           setShowResult(null);
         }}
-        aria-label="Cambiar área"
+        aria-label={t('menu.changeAreaAria')}
       >
-        Cambiar área
+        {t('menu.changeArea')}
       </button>
     </div>
   );
@@ -151,12 +155,12 @@ export function StatusGrid({
           >
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-xl font-bold text-red-600">
-                {EMOJI_FAIL} Pregunta {selectedQuestion.number} - Fallada
+                {EMOJI_FAIL} {t('status.failedQuestionTitle', { number: selectedQuestion.number })}
               </h2>
               <button
                 className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
                 onClick={onCloseFailedQuestion}
-                aria-label="Cerrar"
+                aria-label={t('common.close')}
               >
                 ×
               </button>
@@ -195,10 +199,14 @@ export function StatusGrid({
                         >
                           <span className="font-bold">{letter})</span> {option}
                           {isCorrect && (
-                            <span className="ml-2 text-green-600 font-semibold">✓ Correcta</span>
+                            <span className="ml-2 text-green-600 font-semibold">
+                              {t('status.correctBadge')}
+                            </span>
                           )}
                           {isUserChoice && !isCorrect && (
-                            <span className="ml-2 text-red-600 font-semibold">✗ Tu respuesta</span>
+                            <span className="ml-2 text-red-600 font-semibold">
+                              {t('status.yourAnswerBadge')}
+                            </span>
                           )}
                         </div>
                       );
@@ -210,7 +218,7 @@ export function StatusGrid({
               {/* True/False Correct Answer */}
               {currentQuizType === 'True False' && (
                 <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Respuesta correcta:</h3>
+                  <h3 className="font-semibold text-gray-700 mb-2">{t('quiz.correctAnswer')}</h3>
                   <div
                     className={`p-3 rounded border-l-4 ${
                       selectedQuestion.answer === 'V' || selectedQuestion.answer === 'Verdadero'
@@ -226,8 +234,8 @@ export function StatusGrid({
                       }`}
                     >
                       {selectedQuestion.answer === 'V' || selectedQuestion.answer === 'Verdadero'
-                        ? 'Verdadero'
-                        : 'Falso'}
+                        ? t('status.trueLabel')
+                        : t('status.falseLabel')}
                     </span>
                   </div>
                 </div>
@@ -236,7 +244,7 @@ export function StatusGrid({
               {/* Your Answer for MCQ only */}
               {currentQuizType === 'Multiple Choice' && userAnswers[selectedQuestion.index] && (
                 <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Tu respuesta:</h3>
+                  <h3 className="font-semibold text-gray-700 mb-2">{t('quiz.yourAnswer')}</h3>
                   <div className="bg-red-50 p-3 rounded border-l-4 border-red-500">
                     <span data-testid="failed-answer-text" className="text-red-800 font-medium">
                       ❌{' '}
@@ -254,7 +262,7 @@ export function StatusGrid({
               {/* Explanation */}
               {selectedQuestion.explanation && (
                 <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Explicación:</h3>
+                  <h3 className="font-semibold text-gray-700 mb-2">{t('status.explanation')}</h3>
                   <div className="bg-blue-50 p-4 rounded border-l-4 border-blue-500">
                     <p className="text-blue-900 leading-relaxed">{selectedQuestion.explanation}</p>
                   </div>
@@ -264,7 +272,7 @@ export function StatusGrid({
               {/* Appears In */}
               {selectedQuestion.appearsIn && (
                 <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Aparece en:</h3>
+                  <h3 className="font-semibold text-gray-700 mb-2">{t('common.appearsIn')}</h3>
                   <div className="bg-yellow-50 p-3 rounded border border-yellow-200">
                     {Array.isArray(selectedQuestion.appearsIn) ? (
                       <ul className="list-disc list-inside space-y-1">
@@ -287,7 +295,7 @@ export function StatusGrid({
                 className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                 onClick={onCloseFailedQuestion}
               >
-                Cerrar
+                {t('common.close')}
               </button>
             </div>
           </div>
@@ -296,7 +304,9 @@ export function StatusGrid({
 
       {/* Show area name at top */}
       {selectedArea && (
-        <div className="text-lg font-bold text-blue-600 mb-2">🎓 Área: {selectedArea.area}</div>
+        <div className="text-lg font-bold text-blue-600 mb-2">
+          🎓 {t('common.areaLabel')}: {selectedArea.area}
+        </div>
       )}
       {actionButtons}
       <div className="mt-2 text-base flex items-center gap-2">
@@ -333,7 +343,7 @@ export function StatusGrid({
                       key={q.index}
                       className="flex flex-col items-center cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors"
                       onClick={() => onOpenFailedQuestion(q.number)}
-                      title={`Ver detalles de la pregunta ${q.number}`}
+                      title={t('status.questionTooltip', { number: q.number })}
                     >
                       <span className="text-2xl">
                         {q.number}
@@ -355,9 +365,15 @@ export function StatusGrid({
           </div>
         ))}
       <div className="mt-4">
-        <span>{EMOJI_SUCCESS} = Correcta </span>
-        <span>{EMOJI_FAIL} = Fallada </span>
-        <span>{EMOJI_ASK} = Pendiente</span>
+        <span>
+          {EMOJI_SUCCESS} = {t('quiz.legendCorrect')}{' '}
+        </span>
+        <span>
+          {EMOJI_FAIL} = {t('quiz.legendFailed')}{' '}
+        </span>
+        <span>
+          {EMOJI_ASK} = {t('quiz.legendPending')}
+        </span>
       </div>
       {actionButtons}
     </div>
