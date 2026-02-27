@@ -1,9 +1,11 @@
 cd /Users/toni.tassani/code/humblyproud-multiproject/learning-studio
 
 npm version patch --workspace=frontend --no-git-tag-version
+VERSION=$(node -p "require('./frontend/package.json').version")
+
 git add frontend/package.json package-lock.json
-git commit -m "chore(release): frontend v$(node -p \"require('./frontend/package.json').version\")"
-git tag v$(node -p "require('./frontend/package.json').version")
+git commit -m "v$VERSION"
+git tag -a "v$VERSION" -m "Release v$VERSION"
 git push origin HEAD --tags
 
 ## From project root (DOES NOT WORK)
