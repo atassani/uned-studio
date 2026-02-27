@@ -300,6 +300,7 @@ export default function QuizApp() {
 
   // New area-related state
   const [areas, setAreas] = useState<AreaType[]>([]);
+  const [areasLoaded, setAreasLoaded] = useState(false);
   const [visibleAreas, setVisibleAreas] = useState<AreaType[]>([]);
   const [visibleAreasReady, setVisibleAreasReady] = useState(false);
   const [areasError, setAreasError] = useState<string | null>(null);
@@ -370,6 +371,7 @@ export default function QuizApp() {
 
   const loadAreas = () => {
     setAreasError(null); // Clear any previous errors
+    setAreasLoaded(false);
 
     // Support custom areas file via env var or ?areas= query param
     let areasFile = process.env.NEXT_PUBLIC_AREAS_FILE || 'areas.json';
@@ -386,10 +388,12 @@ export default function QuizApp() {
         setAreas(normalized.areas);
         setGuestAllowedAreaShortNames(normalized.guestAllowedAreaShortNames);
         setAreasError(null);
+        setAreasLoaded(true);
       })
       .catch((err) => {
         console.error('Failed to load areas:', err);
         setAreasError(err.message || t('areas.errorFallback'));
+        setAreasLoaded(true);
       });
   };
 
@@ -476,9 +480,15 @@ export default function QuizApp() {
   ]);
 
   useEffect(() => {
-    if (!areas.length) {
+    if (!areasLoaded) {
       setVisibleAreas([]);
       setVisibleAreasReady(false);
+      return;
+    }
+
+    if (!areas.length) {
+      setVisibleAreas([]);
+      setVisibleAreasReady(true);
       return;
     }
 
@@ -508,7 +518,13 @@ export default function QuizApp() {
     }
     setVisibleAreas(orderAreasByConfiguredShortNames(areas, configuredShortNames));
     setVisibleAreasReady(true);
-  }, [areas, canConfigureAreas, guestAllowedAreaShortNames, userAllowedAreaShortNames]);
+  }, [
+    areasLoaded,
+    areas,
+    canConfigureAreas,
+    guestAllowedAreaShortNames,
+    userAllowedAreaShortNames,
+  ]);
 
   useLayoutEffect(() => {
     if (!isConfigureRoute) return;
@@ -547,7 +563,7 @@ export default function QuizApp() {
   ]);
 
   useEffect(() => {
-    if (isLoading || !areas.length) return;
+    if (isLoading || !areasLoaded) return;
     if (canConfigureAreas && !userAreaConfigLoaded) return;
     if (!visibleAreasReady) return;
     if (canConfigureAreas && isAuthenticated && !isGuestUser && !learningStateBootstrapCompleted) {
@@ -698,6 +714,7 @@ export default function QuizApp() {
     setInitialRouteResolved(true);
   }, [
     isLoading,
+    areasLoaded,
     areas,
     visibleAreas,
     isAuthenticated,
@@ -1594,8 +1611,8 @@ export default function QuizApp() {
       return <LoadingSpinner />;
     }
 
-    // Show spinner if areas are not loaded yet
-    if (!areas.length && !areasError) {
+    // Show spinner only while areas are loading, not when result is empty.
+    if (!areasLoaded && !areasError) {
       return <LoadingSpinner />;
     }
 
