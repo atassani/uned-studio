@@ -33,6 +33,7 @@ import {
   sanitizeConfiguredAreaShortNames,
   shouldForceAreaConfiguration,
 } from './areaConfig';
+import { normalizeAreasPayload, normalizeQuestionsPayload } from './contentPayload';
 import { useI18n } from './i18n/I18nProvider';
 import { AppLanguage, isLanguageSelectionEnabled } from './i18n/config';
 
@@ -297,36 +298,6 @@ export default function QuizApp() {
     [safeLocalStorage]
   );
 
-  const normalizeAreasPayload = (
-    data: unknown
-  ): { areas: AreaType[]; guestAllowedAreaShortNames: string[] | null } => {
-    if (Array.isArray(data)) {
-      return { areas: data as AreaType[], guestAllowedAreaShortNames: null };
-    }
-    if (data && typeof data === 'object' && 'areas' in data) {
-      const payload = data as { areas?: AreaType[]; guestAllowedAreaShortNames?: unknown };
-      const areas = payload.areas;
-      const guestAllowedAreaShortNames = Array.isArray(payload.guestAllowedAreaShortNames)
-        ? payload.guestAllowedAreaShortNames.filter(
-            (shortName): shortName is string => typeof shortName === 'string'
-          )
-        : null;
-      if (Array.isArray(areas)) return { areas, guestAllowedAreaShortNames };
-    }
-    throw new Error('Invalid areas payload');
-  };
-
-  const normalizeQuestionsPayload = (data: unknown) => {
-    if (Array.isArray(data)) {
-      return data as QuestionType[];
-    }
-    if (data && typeof data === 'object' && 'questions' in data) {
-      const questions = (data as { questions?: QuestionType[] }).questions;
-      if (Array.isArray(questions)) return questions;
-    }
-    throw new Error('Invalid questions payload');
-  };
-
   // New area-related state
   const [areas, setAreas] = useState<AreaType[]>([]);
   const [visibleAreas, setVisibleAreas] = useState<AreaType[]>([]);
@@ -411,7 +382,7 @@ export default function QuizApp() {
     const areasUrl = buildDataUrl(areasFile);
     fetchJsonWithCache(areasUrl)
       .then((areasData: unknown) => {
-        const normalized = normalizeAreasPayload(areasData);
+        const normalized = normalizeAreasPayload(areasData, activeLanguage);
         setAreas(normalized.areas);
         setGuestAllowedAreaShortNames(normalized.guestAllowedAreaShortNames);
         setAreasError(null);
@@ -425,7 +396,7 @@ export default function QuizApp() {
   // Load areas on component mount
   useEffect(() => {
     loadAreas();
-  }, []);
+  }, [activeLanguage]);
 
   useEffect(() => {
     if (preferredLanguageInitializedRef.current) return;
@@ -941,7 +912,15 @@ export default function QuizApp() {
       const questionsData = await fetchJsonWithCache(areaUrl);
       if (currentLoadingAreaRef.current !== loadingId) return;
       if (questionsData) {
-        const normalizedQuestions = normalizeQuestionsPayload(questionsData);
+        const { questions: normalizedQuestions, language } = normalizeQuestionsPayload(
+          questionsData,
+          activeLanguage
+        );
+        if (language !== activeLanguage) {
+          throw new Error(
+            `Questions file language mismatch: expected ${activeLanguage}, got ${language}`
+          );
+        }
         const questionsWithIndex = normalizedQuestions.map((q: QuestionType, idx: number) => ({
           ...q,
           index: idx,
@@ -1186,42 +1165,53 @@ export default function QuizApp() {
       .filter(([, q]) => status[q.index] === 'pending');
   }, [questions, status]);
 
-  const loadQuestionsForArea = useCallback(async (area: AreaType) => {
-    try {
-      const areaUrl = buildDataUrl(area.file);
-      const questionsData = await fetchJsonWithCache(areaUrl);
-      const normalizedQuestions = normalizeQuestionsPayload(questionsData);
-
-      // Add indices to questions for tracking
-      const questionsWithIndex = normalizedQuestions.map((q: QuestionType, idx: number) => ({
-        ...q,
-        index: idx,
-      }));
-      setAllQuestions(questionsWithIndex);
-
-      // Load saved status for this area
-      const areaKey = area.shortName;
-
-      const savedStatus = storage.getAreaQuizStatus(areaKey);
-      if (savedStatus) {
-        setStatus(savedStatus);
-      } else {
-        // Initialize all questions as pending
-        const pendingStatus = questionsWithIndex.reduce(
-          (acc: Record<number, 'correct' | 'fail' | 'pending'>, q: QuestionType) => {
-            acc[q.index] = 'pending';
-            return acc;
-          },
-          {}
+  const loadQuestionsForArea = useCallback(
+    async (area: AreaType) => {
+      try {
+        const areaUrl = buildDataUrl(area.file);
+        const questionsData = await fetchJsonWithCache(areaUrl);
+        const { questions: normalizedQuestions, language } = normalizeQuestionsPayload(
+          questionsData,
+          activeLanguage
         );
-        setStatus(pendingStatus);
+        if (language !== activeLanguage) {
+          throw new Error(
+            `Questions file language mismatch: expected ${activeLanguage}, got ${language}`
+          );
+        }
+
+        // Add indices to questions for tracking
+        const questionsWithIndex = normalizedQuestions.map((q: QuestionType, idx: number) => ({
+          ...q,
+          index: idx,
+        }));
+        setAllQuestions(questionsWithIndex);
+
+        // Load saved status for this area
+        const areaKey = area.shortName;
+
+        const savedStatus = storage.getAreaQuizStatus(areaKey);
+        if (savedStatus) {
+          setStatus(savedStatus);
+        } else {
+          // Initialize all questions as pending
+          const pendingStatus = questionsWithIndex.reduce(
+            (acc: Record<number, 'correct' | 'fail' | 'pending'>, q: QuestionType) => {
+              acc[q.index] = 'pending';
+              return acc;
+            },
+            {}
+          );
+          setStatus(pendingStatus);
+        }
+      } catch (error) {
+        console.error('Error loading questions:', error);
+        setAllQuestions([]);
+        setStatus({});
       }
-    } catch (error) {
-      console.error('Error loading questions:', error);
-      setAllQuestions([]);
-      setStatus({});
-    }
-  }, []);
+    },
+    [activeLanguage, buildDataUrl, fetchJsonWithCache]
+  );
   // Area selection UI
   function renderAreaSelection() {
     if (areasError) {

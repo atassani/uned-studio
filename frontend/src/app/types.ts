@@ -1,3 +1,5 @@
+import type { AppLanguage } from './i18n/config';
+
 export interface QuestionType {
   index: number;
   section: string;
@@ -14,4 +16,5 @@ export interface AreaType {
   file: string;
   type: 'True False' | 'Multiple Choice';
   shortName: string;
+  language?: AppLanguage;
 }
