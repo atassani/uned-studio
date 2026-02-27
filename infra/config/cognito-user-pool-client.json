@@ -9,13 +9,8 @@
     "ClientName": "studio-spa-client",
     "RefreshTokenValidity": 30,
     "TokenValidityUnits": {},
-    "ExplicitAuthFlows": [
-      "ALLOW_REFRESH_TOKEN_AUTH",
-      "ALLOW_USER_SRP_AUTH"
-    ],
-    "SupportedIdentityProviders": [
-      "Google"
-    ],
+    "ExplicitAuthFlows": ["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_SRP_AUTH"],
+    "SupportedIdentityProviders": ["Google"],
     "CallbackURLs": [
       "http://localhost:3000/studio",
       "http://localhost:3001/studio",
@@ -26,14 +21,8 @@
       "http://localhost:3001/studio",
       "https://humblyproud.com/studio"
     ],
-    "AllowedOAuthFlows": [
-      "code"
-    ],
-    "AllowedOAuthScopes": [
-      "email",
-      "openid",
-      "profile"
-    ],
+    "AllowedOAuthFlows": ["code"],
+    "AllowedOAuthScopes": ["email", "openid", "profile"],
     "AllowedOAuthFlowsUserPoolClient": true,
     "EnableTokenRevocation": true,
     "EnablePropagateAdditionalUserContextData": false,

@@ -33,6 +33,7 @@ import {
   sanitizeConfiguredAreaShortNames,
   shouldForceAreaConfiguration,
 } from './areaConfig';
+import { useI18n } from './i18n/I18nProvider';
 
 interface AreaConfigUser {
   username?: string;
@@ -50,6 +51,7 @@ function getAreaConfigUserKey(user: AreaConfigUser | null): string | null {
 }
 
 export default function QuizApp() {
+  const { t } = useI18n();
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
   const [clientPathname, setClientPathname] = useState<string>('/');
   const [clientSearch, setClientSearch] = useState<string>('');
@@ -358,9 +360,7 @@ export default function QuizApp() {
       })
       .catch((err) => {
         console.error('Failed to load areas:', err);
-        setAreasError(
-          err.message || 'Failed to load study areas. Please check your connection and try again.'
-        );
+        setAreasError(err.message || t('areas.errorFallback'));
       });
   };
 
@@ -1152,13 +1152,13 @@ export default function QuizApp() {
                   d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <h2 className="text-lg font-semibold mb-2">Error al cargar las áreas</h2>
+              <h2 className="text-lg font-semibold mb-2">{t('areas.errorTitle')}</h2>
               <p className="text-sm text-red-600 dark:text-red-300 mb-4">{areasError}</p>
               <button
                 onClick={loadAreas}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
               >
-                Reintentar
+                {t('common.retry')}
               </button>
             </div>
           </div>
@@ -1614,9 +1614,9 @@ export default function QuizApp() {
                 logout();
               }}
               className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md transition-colors"
-              title="Sign out"
+              title={t('common.signOutTitle')}
             >
-              Sign out
+              {t('common.signOut')}
             </button>
           </div>
         )}

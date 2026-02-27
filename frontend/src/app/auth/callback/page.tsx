@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { tDefault } from '../../i18n/translator';
 
 export default function CallbackPage({
   navigate,
@@ -25,7 +26,7 @@ export default function CallbackPage({
       // (Removed debug logging)
     }
     if (!domain || !clientId || !redirectUri) {
-      alert('Cognito config missing.');
+      alert(tDefault('auth.cognitoConfigMissing'));
       return;
     }
 
@@ -66,10 +67,10 @@ export default function CallbackPage({
               }
             });
         } else {
-          alert('Login failed');
+          alert(tDefault('auth.loginFailed'));
         }
       });
   }, [navigate, codeProp]);
 
-  return <div>Iniciando sesión...</div>;
+  return <div>{tDefault('auth.startingSession')}</div>;
 }

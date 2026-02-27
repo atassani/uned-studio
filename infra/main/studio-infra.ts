@@ -122,7 +122,7 @@ export class StudioInfra extends Construct {
     this.behaviors = {
       'studio/learning-state*': learningStateBehavior,
       'studio/_next/*': staticBehavior,
-      'studio': behaviorOptions,
+      studio: behaviorOptions,
       'studio/*': behaviorOptions,
       'studio-data/*': studioDataBehavior,
     };

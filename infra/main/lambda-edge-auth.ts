@@ -9,7 +9,10 @@ import * as path from 'path';
 type LearningStateValue = Record<string, unknown> | unknown[] | string | number | boolean | null;
 
 interface LearningStateStore {
-  get(userId: string, scope: string): Promise<{ state: LearningStateValue; updatedAt: string } | null>;
+  get(
+    userId: string,
+    scope: string
+  ): Promise<{ state: LearningStateValue; updatedAt: string } | null>;
   put(params: {
     userId: string;
     scope: string;
@@ -59,20 +62,18 @@ function getCognitoConfig() {
   };
 }
 
-function readEdgeAuthConfig():
-  | {
-      region?: string;
-      userPoolId?: string;
-      domain?: string;
-      clientId?: string;
-      redirectSignIn?: string;
-      redirectSignOut?: string;
-      learningStateTable?: string;
-      learningStateRegion?: string;
-      userIdentityAdminTable?: string;
-      userIdentityAdminRegion?: string;
-    }
-  | null {
+function readEdgeAuthConfig(): {
+  region?: string;
+  userPoolId?: string;
+  domain?: string;
+  clientId?: string;
+  redirectSignIn?: string;
+  redirectSignOut?: string;
+  learningStateTable?: string;
+  learningStateRegion?: string;
+  userIdentityAdminTable?: string;
+  userIdentityAdminRegion?: string;
+} | null {
   const configPath =
     process.env.EDGE_AUTH_CONFIG_PATH ?? path.join(__dirname, 'edge-auth-config.json');
   try {
@@ -108,9 +109,7 @@ export async function exchangeCodeForTokens(params: {
 
 let exchangeCodeForTokensImpl = exchangeCodeForTokens;
 
-export function setExchangeCodeForTokensImpl(
-  impl: typeof exchangeCodeForTokens | null
-): void {
+export function setExchangeCodeForTokensImpl(impl: typeof exchangeCodeForTokens | null): void {
   exchangeCodeForTokensImpl = impl ?? exchangeCodeForTokens;
 }
 
@@ -383,7 +382,9 @@ function parseRequestJsonBody(request: CloudFrontRequest): Record<string, unknow
 
   try {
     const raw =
-      reqBody.encoding === 'base64' ? Buffer.from(reqBody.data, 'base64').toString('utf8') : reqBody.data;
+      reqBody.encoding === 'base64'
+        ? Buffer.from(reqBody.data, 'base64').toString('utf8')
+        : reqBody.data;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
       return null;
