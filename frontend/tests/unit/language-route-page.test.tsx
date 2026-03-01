@@ -25,7 +25,8 @@ describe('language route page', () => {
   it('renders redirect component for supported language', () => {
     const rendered = LanguageRoutePage({ params: { language: 'en' } });
     expect(React.isValidElement(rendered)).toBe(true);
-    expect((rendered as React.ReactElement).props.language).toBe('en');
+    const element = rendered as React.ReactElement<{ language: string }>;
+    expect(element.props.language).toBe('en');
     expect(mockNotFound).not.toHaveBeenCalled();
   });
 
