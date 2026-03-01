@@ -64,4 +64,50 @@ test.describe('Cognito login flow (mocked)', () => {
       timeout: 10000,
     });
   });
+
+  test('preserves /studio/en forced language after mocked callback', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.process = {
+        env: {
+          NEXT_PUBLIC_COGNITO_DOMAIN: 'https://mock-cognito',
+          NEXT_PUBLIC_COGNITO_CLIENT_ID: 'mock-client-id',
+          NEXT_PUBLIC_REDIRECT_SIGN_IN: 'http://localhost:3000/studio',
+        },
+      };
+    });
+
+    await page.route('**/oauth2/token', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id_token: 'mock.jwt.token' }),
+      });
+    });
+
+    await page.goto('/en');
+    await expect(page.getByText('Continue as Guest')).toBeVisible({ timeout: 10000 });
+
+    await page.goto('/auth/callback?code=mock_code');
+    await page.waitForTimeout(800);
+
+    await page.evaluate(() => {
+      function base64url(str) {
+        return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      }
+      const header = base64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+      const payload = base64url(JSON.stringify({ email: 'e2e@example.com' }));
+      const jwt = `${header}.${payload}.signature`;
+      localStorage.setItem('jwt', jwt);
+    });
+
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '/';
+    await page.goto(basePath);
+    await expect(page.locator('[data-testid="auth-user"]')).toContainText('e2e@example.com', {
+      timeout: 10000,
+    });
+    const state = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('learningStudio') || '{}')
+    );
+    expect(state.language).toBe('en');
+  });
 });

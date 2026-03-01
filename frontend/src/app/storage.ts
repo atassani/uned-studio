@@ -1,6 +1,7 @@
 import { AppLanguage, normalizeLanguage } from './i18n/config';
 
 const LOCAL_STORAGE_KEY = 'learningStudio';
+const ROUTE_LANGUAGE_OVERRIDE_STORAGE_KEY = 'learningStudioRouteLanguageOverride';
 export const LEARNING_STUDIO_STATE_CHANGED_EVENT = 'learning-studio-state-changed';
 
 type QuizStatus = { [key: number]: 'correct' | 'fail' | 'pending' };
@@ -91,6 +92,41 @@ export const storage = {
       ...state,
       language: language ? normalizeLanguage(language) : undefined,
     });
+  },
+
+  getRouteLanguageOverride(): AppLanguage | undefined {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+    try {
+      const raw = window.localStorage.getItem(ROUTE_LANGUAGE_OVERRIDE_STORAGE_KEY);
+      if (!raw) return undefined;
+      return normalizeLanguage(raw);
+    } catch (e) {
+      console.error('Failed to read route language override from localStorage', e);
+      return undefined;
+    }
+  },
+
+  setRouteLanguageOverride(language: AppLanguage | undefined) {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    try {
+      if (!language) {
+        window.localStorage.removeItem(ROUTE_LANGUAGE_OVERRIDE_STORAGE_KEY);
+        return;
+      }
+      window.localStorage.setItem(ROUTE_LANGUAGE_OVERRIDE_STORAGE_KEY, normalizeLanguage(language));
+    } catch (e) {
+      console.error('Failed to write route language override to localStorage', e);
+    }
+  },
+
+  consumeRouteLanguageOverride(): AppLanguage | undefined {
+    const language = this.getRouteLanguageOverride();
+    this.setRouteLanguageOverride(undefined);
+    return language;
   },
 
   getCurrentArea(): string | undefined {
@@ -234,6 +270,7 @@ function clearState() {
     return;
   }
   localStorage.removeItem(LOCAL_STORAGE_KEY);
+  localStorage.removeItem(ROUTE_LANGUAGE_OVERRIDE_STORAGE_KEY);
   dispatchStateChanged({ areas: {} });
 }
 
