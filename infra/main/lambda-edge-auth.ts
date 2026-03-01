@@ -338,9 +338,67 @@ function createDynamoLearningStateStore(): LearningStateStore | null {
 }
 
 const LOGIN_URL = '/studio/login';
+const SUPPORTED_ROUTE_LANGUAGES = new Set(['es', 'en', 'ca']);
+const SUPPORTED_UI_LANGUAGES = new Set(['es', 'en', 'ca']);
 
 function isStaticAsset(uri: string): boolean {
   return /\.[a-zA-Z0-9]+$/.test(uri);
+}
+
+function getStudioFirstSegment(uri: string): string | null {
+  if (!uri.startsWith('/studio/')) return null;
+  const withoutPrefix = uri.slice('/studio/'.length);
+  if (!withoutPrefix) return null;
+  const firstSegment = withoutPrefix.split('/')[0];
+  return firstSegment || null;
+}
+
+function isUnsupportedLanguageEntrypoint(uri: string): boolean {
+  const firstSegment = getStudioFirstSegment(uri);
+  if (!firstSegment) return false;
+  if (!/^[a-z]{2}$/i.test(firstSegment)) return false;
+  return !SUPPORTED_ROUTE_LANGUAGES.has(firstSegment.toLowerCase());
+}
+
+function resolveUiLanguageFromRequest(request: CloudFrontRequest): 'es' | 'en' | 'ca' {
+  const acceptLanguage = request.headers['accept-language']?.[0]?.value?.toLowerCase() ?? '';
+  if (acceptLanguage.includes('ca')) return 'ca';
+  if (acceptLanguage.includes('en')) return 'en';
+  if (acceptLanguage.includes('es')) return 'es';
+
+  const firstSegment = getStudioFirstSegment(request.uri)?.toLowerCase();
+  if (firstSegment && SUPPORTED_UI_LANGUAGES.has(firstSegment)) {
+    return firstSegment as 'es' | 'en' | 'ca';
+  }
+  return 'es';
+}
+
+function studioNotFoundResponse(request: CloudFrontRequest): CloudFrontRequestResult {
+  const lang = resolveUiLanguageFromRequest(request);
+  const copyByLanguage: Record<'es' | 'en' | 'ca', { title: string; body: string }> = {
+    es: {
+      title: 'Esta página de Studio no existe.',
+      body: 'Revisa la URL o vuelve a /studio.',
+    },
+    en: {
+      title: 'This Studio page could not be found.',
+      body: 'Check the URL or go back to /studio.',
+    },
+    ca: {
+      title: "Aquesta pàgina d'Studio no existeix.",
+      body: "Revisa l'URL o torna a /studio.",
+    },
+  };
+  const copy = copyByLanguage[lang];
+  return {
+    status: '404',
+    statusDescription: 'Not Found',
+    headers: {
+      'content-type': [{ key: 'Content-Type', value: 'text/html; charset=utf-8' }],
+      'cache-control': [{ key: 'Cache-Control', value: 'no-store' }],
+    },
+    body: `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><title>Studio 404</title></head><body><h1>404</h1><p>${copy.title}</p><p>${copy.body}</p></body></html>`,
+  };
 }
 
 function maybeRewriteSpaPath(request: CloudFrontRequest): void {
@@ -603,6 +661,10 @@ export async function handler(event: CloudFrontRequestEvent): Promise<CloudFront
   if (uri.startsWith('/studio/guest')) {
     maybeRewriteSpaPath(request);
     return request;
+  }
+
+  if (isUnsupportedLanguageEntrypoint(uri)) {
+    return studioNotFoundResponse(request);
   }
 
   // Handle OAuth callback code exchange for Cognito Hosted UI

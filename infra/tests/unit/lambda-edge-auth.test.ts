@@ -51,14 +51,23 @@ describe('Lambda@Edge Auth Handler', () => {
     cookie,
     method = 'GET',
     querystring = '',
+    acceptLanguage,
     body,
   }: {
     uri: string;
     cookie?: string;
     method?: string;
     querystring?: string;
+    acceptLanguage?: string;
     body?: { data: string; encoding?: 'base64' | 'text' };
   }) {
+    const headers: Record<string, Array<{ key: string; value: string }>> = {};
+    if (cookie) {
+      headers.cookie = [{ key: 'Cookie', value: cookie }];
+    }
+    if (acceptLanguage) {
+      headers['accept-language'] = [{ key: 'Accept-Language', value: acceptLanguage }];
+    }
     return {
       Records: [
         {
@@ -67,7 +76,7 @@ describe('Lambda@Edge Auth Handler', () => {
               uri,
               method,
               querystring,
-              headers: cookie ? { cookie: [{ key: 'Cookie', value: cookie }] } : {},
+              headers,
               ...(body ? { body: { data: body.data, encoding: body.encoding ?? 'text' } } : {}),
             },
           },
@@ -114,6 +123,45 @@ describe('Lambda@Edge Auth Handler', () => {
     const result = await authModule.handler(event as any);
     if (result && 'uri' in result) {
       expect(result.uri).toBe('/login/index.html');
+    } else {
+      throw new Error('Expected request to be allowed');
+    }
+  });
+
+  it('should return studio 404 for unsupported language entrypoint', async () => {
+    const event = makeEvent({ uri: '/studio/fr', cookie: undefined });
+    const result = await authModule.handler(event as any);
+    if (result && 'status' in result) {
+      expect(result.status).toBe('404');
+      expect(result.headers?.['content-type']?.[0]?.value).toContain('text/html');
+      expect(result.body).toContain('<h1>404</h1>');
+      expect(result.body).toContain('lang="');
+    } else {
+      throw new Error('Expected a 404 response');
+    }
+  });
+
+  it('should localize studio 404 using Accept-Language', async () => {
+    const event = makeEvent({
+      uri: '/studio/fr',
+      cookie: undefined,
+      acceptLanguage: 'en-US,en;q=0.9',
+    });
+    const result = await authModule.handler(event as any);
+    if (result && 'status' in result) {
+      expect(result.status).toBe('404');
+      expect(result.body).toContain('This Studio page could not be found');
+      expect(result.body).toContain('lang="en"');
+    } else {
+      throw new Error('Expected a 404 response');
+    }
+  });
+
+  it('should allow supported language entrypoint rewrite', async () => {
+    const event = makeEvent({ uri: '/studio/en', cookie: undefined });
+    const result = await authModule.handler(event as any);
+    if (result && 'uri' in result) {
+      expect(result.uri).toBe('/en/index.html');
     } else {
       throw new Error('Expected request to be allowed');
     }
