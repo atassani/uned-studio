@@ -67,7 +67,9 @@ test.describe('Language route access', () => {
       .toBe('en');
   });
 
-  test('authenticated /studio/en with no EN progress falls back to safe route', async ({ page }) => {
+  test('authenticated /studio/en with no EN progress falls back to safe route', async ({
+    page,
+  }) => {
     await setupMultilangAreasRoute(page);
     await setupFreshTestAuthenticated(page, 'lang-route-fallback@example.com');
     await page.evaluate(() => {

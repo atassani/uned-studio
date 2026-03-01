@@ -105,7 +105,9 @@ test.describe('Cognito login flow (mocked)', () => {
     await expect(page.locator('[data-testid="auth-user"]')).toContainText('e2e@example.com', {
       timeout: 10000,
     });
-    const state = await page.evaluate(() => JSON.parse(localStorage.getItem('learningStudio') || '{}'));
+    const state = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('learningStudio') || '{}')
+    );
     expect(state.language).toBe('en');
   });
 });
