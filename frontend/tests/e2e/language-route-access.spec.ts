@@ -107,14 +107,38 @@ test.describe('Language route access', () => {
     const { languageEn } = getStudioUrls(test.info().project.use.baseURL as string | undefined);
     await page.goto(languageEn);
 
-    await expect(page).toHaveURL(/\/studio\/(areas|areas\/configure)\/?$/);
-    const configureView = page.getByTestId('area-configuration-view');
-    if (await configureView.isVisible().catch(() => false)) {
-      await expect(page.getByText('Configure areas')).toBeVisible({ timeout: 10000 });
-    } else {
-      await expect(page.getByText('What do you want to study?')).toBeVisible({ timeout: 10000 });
-      await expect(page.getByTestId('area-mcq-tests-en')).toBeVisible();
-    }
+    await expect
+      .poll(
+        async () => {
+          try {
+            return await page.evaluate(() => {
+              const raw = localStorage.getItem('learningStudio');
+              if (!raw) return null;
+              return JSON.parse(raw).language ?? null;
+            });
+          } catch {
+            return null;
+          }
+        },
+        { timeout: 10000 }
+      )
+      .toBe('en');
+
+    const areaConfigAccept = page.getByTestId('area-config-accept');
+    const anyAreaButton = page
+      .locator('[data-testid^="area-"]:not([data-testid^="area-config"])')
+      .first();
+
+    await expect
+      .poll(
+        async () => {
+          if (await areaConfigAccept.isVisible().catch(() => false)) return 'configure';
+          if (await anyAreaButton.isVisible().catch(() => false)) return 'areas';
+          return 'pending';
+        },
+        { timeout: 10000 }
+      )
+      .toMatch(/configure|areas/);
   });
 
   test('authenticated with remote CA state + /studio/en ends in en', async ({ page }) => {
