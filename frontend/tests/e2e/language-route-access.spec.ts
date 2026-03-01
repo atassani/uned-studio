@@ -86,6 +86,59 @@ test.describe('Language route access', () => {
       .toBe('en');
   });
 
+  test('session reset after login still honors /studio/en language override', async ({ page }) => {
+    await setupMultilangAreasRoute(page);
+    const { languageEn } = getStudioUrls(test.info().project.use.baseURL as string | undefined);
+
+    await page.goto(languageEn);
+    await expect(page.getByTestId('guest-login-btn')).toBeVisible({ timeout: 10000 });
+    await page.getByTestId('guest-login-btn').click();
+    await expect
+      .poll(
+        async () => {
+          try {
+            return await page.evaluate(() => {
+              const raw = localStorage.getItem('learningStudio');
+              if (!raw) return null;
+              return JSON.parse(raw).language ?? null;
+            });
+          } catch {
+            return null;
+          }
+        },
+        { timeout: 10000 }
+      )
+      .toBe('en');
+
+    // Simulate logout side effects in test runtime: clear auth + local learning state.
+    await page.evaluate(() => {
+      localStorage.removeItem('learningStudio');
+      localStorage.removeItem('jwt');
+    });
+    await page.context().clearCookies();
+
+    await page.goto(languageEn);
+    await expect(page.getByTestId('guest-login-btn')).toBeVisible({ timeout: 10000 });
+    await page.getByTestId('guest-login-btn').click();
+
+    await expect
+      .poll(
+        async () => {
+          try {
+            return await page.evaluate(() => {
+              const raw = localStorage.getItem('learningStudio');
+              if (!raw) return null;
+              return JSON.parse(raw).language ?? null;
+            });
+          } catch {
+            return null;
+          }
+        },
+        { timeout: 10000 }
+      )
+      .toBe('en');
+  });
+
   test('authenticated /studio/en with no EN progress falls back to safe route', async ({
     page,
   }) => {
