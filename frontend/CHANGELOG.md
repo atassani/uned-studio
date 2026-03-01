@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- feat(language-route): add `/studio/{lang}` entrypoint support for `es|en|ca` with 404 for unsupported languages
+- feat(language-route): apply one-time `routeLanguageOverride` precedence during bootstrap and persist forced language after auth/bootstrap
+- feat(auth): enforce route-language override for unauthenticated access in `AuthGuard` and keep Google/Guest parity
+- test(language-route): add unit coverage for route page/redirect + learning-state sync persistence contract
+- test(language-route): expand e2e coverage for guest, authenticated resume/fallback, remote `ca` override, unsupported route, and logout/login regression
+- test(language-route): stabilize fallback/session-reset assertions to avoid locale- and UI-timing-related flakiness
+
 ## [1.5.0] - 2026-02-27
 
 - Multilanguage / Internationalization (i18n) support
