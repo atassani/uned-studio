@@ -211,6 +211,8 @@ export default function QuizApp() {
   const manualConfigureNavigationRef = useRef(false);
   const directBootstrapAttemptedRef = useRef(false);
   const preferredLanguageInitializedRef = useRef(false);
+  const routeLanguageOverrideInitializedRef = useRef(false);
+  const routeLanguageOverrideRef = useRef<AppLanguage | undefined>(undefined);
 
   const dataBaseUrl =
     process.env.NEXT_PUBLIC_DATA_BASE_URL || process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -403,8 +405,21 @@ export default function QuizApp() {
   }, [activeLanguage]);
 
   useEffect(() => {
+    if (routeLanguageOverrideInitializedRef.current) return;
+    routeLanguageOverrideInitializedRef.current = true;
+    const routeOverrideLanguage = storage.consumeRouteLanguageOverride();
+    if (!routeOverrideLanguage) return;
+    routeLanguageOverrideRef.current = routeOverrideLanguage;
+    storage.setLanguage(routeOverrideLanguage);
+    if (routeOverrideLanguage !== activeLanguage) {
+      setActiveLanguage(routeOverrideLanguage);
+    }
+  }, [activeLanguage, setActiveLanguage]);
+
+  useEffect(() => {
     if (preferredLanguageInitializedRef.current) return;
     preferredLanguageInitializedRef.current = true;
+    if (routeLanguageOverrideRef.current) return;
     const persistedLanguage = storage.getLanguage();
     if (persistedLanguage && persistedLanguage !== activeLanguage) {
       setActiveLanguage(persistedLanguage);
@@ -843,9 +858,18 @@ export default function QuizApp() {
       .then((remote) => {
         if (remote?.state) {
           storage.replaceState(remote.state);
-          const restoredLanguage = storage.getLanguage();
-          if (restoredLanguage && restoredLanguage !== activeLanguage) {
-            setActiveLanguage(restoredLanguage);
+          const routeOverrideLanguage = routeLanguageOverrideRef.current;
+          if (routeOverrideLanguage) {
+            storage.setLanguage(routeOverrideLanguage);
+            if (routeOverrideLanguage !== activeLanguage) {
+              setActiveLanguage(routeOverrideLanguage);
+            }
+            routeLanguageOverrideRef.current = undefined;
+          } else {
+            const restoredLanguage = storage.getLanguage();
+            if (restoredLanguage && restoredLanguage !== activeLanguage) {
+              setActiveLanguage(restoredLanguage);
+            }
           }
         }
         syncUserAreaConfigFromStorage();

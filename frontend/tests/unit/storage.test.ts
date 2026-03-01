@@ -12,6 +12,13 @@ describe('localStorage abstraction', () => {
     expect(storage.getLanguage()).toBe('en');
   });
 
+  it('stores and consumes route language override', () => {
+    storage.setRouteLanguageOverride('en');
+    expect(storage.getRouteLanguageOverride()).toBe('en');
+    expect(storage.consumeRouteLanguageOverride()).toBe('en');
+    expect(storage.getRouteLanguageOverride()).toBeUndefined();
+  });
+
   it('write currentArea using storage module is read directly from localStorage', () => {
     const area = 'Area 42';
     storage.setCurrentArea(area);
