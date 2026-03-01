@@ -207,6 +207,7 @@ export default function QuizApp() {
   }>({ thumbTop: 0, thumbHeight: 0, show: false });
   const resumeQuestionRef = useRef<number | null>(null);
   const currentLoadingAreaRef = useRef<string | null>(null);
+  const areasRequestSeqRef = useRef(0);
   const autoConfigureRedirectRef = useRef(false);
   const manualConfigureNavigationRef = useRef(false);
   const directBootstrapAttemptedRef = useRef(false);
@@ -372,6 +373,8 @@ export default function QuizApp() {
   );
 
   const loadAreas = () => {
+    const requestSeq = ++areasRequestSeqRef.current;
+    const languageSnapshot = activeLanguage;
     setAreasError(null); // Clear any previous errors
     setAreasLoaded(false);
 
@@ -386,13 +389,19 @@ export default function QuizApp() {
     const areasUrl = buildDataUrl(areasFile);
     fetchJsonWithCache(areasUrl)
       .then((areasData: unknown) => {
-        const normalized = normalizeAreasPayload(areasData, activeLanguage);
+        if (requestSeq !== areasRequestSeqRef.current) {
+          return;
+        }
+        const normalized = normalizeAreasPayload(areasData, languageSnapshot);
         setAreas(normalized.areas);
         setGuestAllowedAreaShortNames(normalized.guestAllowedAreaShortNames);
         setAreasError(null);
         setAreasLoaded(true);
       })
       .catch((err) => {
+        if (requestSeq !== areasRequestSeqRef.current) {
+          return;
+        }
         console.error('Failed to load areas:', err);
         setAreasError(err.message || t('areas.errorFallback'));
         setAreasLoaded(true);
@@ -1086,6 +1095,14 @@ export default function QuizApp() {
     } catch (error) {
       console.error('Failed to load questions:', error);
     }
+    // Fail-safe fallback: avoid spinner lock when selected area/questions are inconsistent
+    // (e.g. stale/cross-language payload race in deployed caches).
+    storage.setCurrentArea(undefined);
+    setSelectedArea(null);
+    setCurrentQuizType(null);
+    setShowAreaSelection(true);
+    setShowStatus(false);
+    setShowResult(null);
     setShowSelectionMenu(true);
     setQuestions([]);
     setCurrent(null);
