@@ -14,13 +14,16 @@ function getStudioRootPath(): string {
   return normalizedBasePath ? `${normalizedBasePath}/` : '/';
 }
 
+export function replaceToStudioRoot() {
+  window.location.replace(getStudioRootPath());
+}
+
 export function LanguageRouteRedirect({ language }: LanguageRouteRedirectProps) {
   useEffect(() => {
     storage.setRouteLanguageOverride(language);
     storage.setLanguage(language);
-    window.location.replace(getStudioRootPath());
+    replaceToStudioRoot();
   }, [language]);
 
   return null;
 }
-
