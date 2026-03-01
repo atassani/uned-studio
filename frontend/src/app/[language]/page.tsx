@@ -7,7 +7,7 @@ type LanguageRouteParams = {
 };
 
 interface LanguageRoutePageProps {
-  params: LanguageRouteParams;
+  params: Promise<LanguageRouteParams>;
 }
 
 export const dynamicParams = false;
@@ -20,8 +20,8 @@ function isSupportedLanguage(value: string): value is AppLanguage {
   return SUPPORTED_LANGUAGES.includes(value as AppLanguage);
 }
 
-export default function LanguageRoutePage({ params }: LanguageRoutePageProps) {
-  const { language } = params;
+export default async function LanguageRoutePage({ params }: LanguageRoutePageProps) {
+  const { language } = await params;
   if (!isSupportedLanguage(language)) {
     notFound();
   }

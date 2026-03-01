@@ -22,16 +22,18 @@ describe('language route page', () => {
     ]);
   });
 
-  it('renders redirect component for supported language', () => {
-    const rendered = LanguageRoutePage({ params: { language: 'en' } });
+  it('renders redirect component for supported language', async () => {
+    const rendered = await LanguageRoutePage({ params: Promise.resolve({ language: 'en' }) });
     expect(React.isValidElement(rendered)).toBe(true);
     const element = rendered as React.ReactElement<{ language: string }>;
     expect(element.props.language).toBe('en');
     expect(mockNotFound).not.toHaveBeenCalled();
   });
 
-  it('calls notFound for unsupported language', () => {
-    expect(() => LanguageRoutePage({ params: { language: 'fr' } })).toThrow('notFound');
+  it('calls notFound for unsupported language', async () => {
+    await expect(
+      LanguageRoutePage({ params: Promise.resolve({ language: 'fr' }) })
+    ).rejects.toThrow('notFound');
     expect(mockNotFound).toHaveBeenCalledTimes(1);
   });
 });

@@ -8,6 +8,15 @@ jest.mock('../../src/app/hooks/useAuth', () => ({
   getCognitoLoginUrl: jest.fn(),
 }));
 
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn(() => '/'),
+  useRouter: jest.fn(() => ({
+    replace: jest.fn(),
+    push: jest.fn(),
+    prefetch: jest.fn(),
+  })),
+}));
+
 const { useAuth, getCognitoLoginUrl } = jest.requireMock('../../src/app/hooks/useAuth');
 
 describe('AuthGuard login link', () => {

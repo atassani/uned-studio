@@ -1,16 +1,35 @@
 'use client';
 import { useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { getCognitoLoginUrl, useAuth } from '../hooks/useAuth';
 import { trackAuth } from '../lib/analytics';
 import packageJson from '../../../package.json';
 import { useI18n } from '../i18n/I18nProvider';
 import { AppLanguage, isLanguageSelectionEnabled, SUPPORTED_LANGUAGES } from '../i18n/config';
+import { storage } from '../storage';
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading, loginWithGoogle, loginAsGuest } = useAuth();
   const { t, activeLanguage, setActiveLanguage } = useI18n();
   const languageSelectionEnabled = isLanguageSelectionEnabled();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const normalizedPath = (pathname || '/').replace(/\/+$/, '') || '/';
+    const candidate = normalizedPath.slice(1);
+    if (!SUPPORTED_LANGUAGES.includes(candidate as AppLanguage)) {
+      return;
+    }
+    const routeLanguage = candidate as AppLanguage;
+    storage.setRouteLanguageOverride(routeLanguage);
+    storage.setLanguage(routeLanguage);
+    if (routeLanguage !== activeLanguage) {
+      setActiveLanguage(routeLanguage);
+    }
+    router.replace('/');
+  }, [pathname, activeLanguage, setActiveLanguage, router]);
 
   useEffect(() => {
     // Only log in development
