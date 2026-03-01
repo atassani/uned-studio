@@ -17,6 +17,20 @@ const getStudioUrls = (baseURL?: string) => {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const testdataDir = path.resolve(__dirname, '../testdata');
 
+function base64UrlEncode(input: string) {
+  return Buffer.from(input)
+    .toString('base64')
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_');
+}
+
+function createMockJwt(email: string) {
+  const header = base64UrlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+  const payload = base64UrlEncode(JSON.stringify({ email }));
+  return `${header}.${payload}.signature`;
+}
+
 async function setupMultilangAreasRoute(page: Parameters<typeof test>[0]['page']) {
   await setupTestDataRoutes(page);
   await page.route('**/areas.json*', async (route) => {
@@ -56,12 +70,17 @@ test.describe('Language route access', () => {
     await expect(page.getByTestId('google-login-btn')).toHaveCount(0, { timeout: 10000 });
     await expect
       .poll(
-        async () =>
-          page.evaluate(() => {
-            const raw = localStorage.getItem('learningStudio');
-            if (!raw) return null;
-            return JSON.parse(raw).language ?? null;
-          }),
+        async () => {
+          try {
+            return await page.evaluate(() => {
+              const raw = localStorage.getItem('learningStudio');
+              if (!raw) return null;
+              return JSON.parse(raw).language ?? null;
+            });
+          } catch {
+            return null;
+          }
+        },
         { timeout: 10000 }
       )
       .toBe('en');
@@ -96,6 +115,72 @@ test.describe('Language route access', () => {
       await expect(page.getByText('What do you want to study?')).toBeVisible({ timeout: 10000 });
       await expect(page.getByTestId('area-mcq-tests-en')).toBeVisible();
     }
+  });
+
+  test('authenticated with remote CA state + /studio/en ends in en', async ({ page }) => {
+    const email = 'lang-route-remote-state@example.com';
+    await setupMultilangAreasRoute(page);
+    const jwt = createMockJwt(email);
+
+    await page.route('**/learning-state*', async (route) => {
+      const method = route.request().method();
+      if (method === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            scope: 'global',
+            updatedAt: new Date().toISOString(),
+            state: {
+              language: 'ca',
+              currentArea: 'mcq-tests-ca',
+              areas: {
+                'mcq-tests-ca': { currentQuestion: 1, quizStatus: { 1: 'pending' } },
+              },
+              areaConfigByUser: {
+                [`${email}::lang:ca`]: { allowedAreaShortNames: ['mcq-tests-ca'] },
+                [`${email}::lang:en`]: { allowedAreaShortNames: ['mcq-tests-en'] },
+              },
+            },
+          }),
+        });
+        return;
+      }
+
+      if (method === 'PUT') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ ok: true }),
+        });
+        return;
+      }
+
+      await route.fallback();
+    });
+
+    const { languageEn } = getStudioUrls(test.info().project.use.baseURL as string | undefined);
+    await page.addInitScript((token) => {
+      localStorage.setItem('jwt', token);
+    }, jwt);
+    await page.goto(languageEn);
+
+    await expect
+      .poll(
+        async () => {
+          try {
+            return await page.evaluate(() => {
+              const raw = localStorage.getItem('learningStudio');
+              if (!raw) return null;
+              return JSON.parse(raw).language ?? null;
+            });
+          } catch {
+            return null;
+          }
+        },
+        { timeout: 10000 }
+      )
+      .toBe('en');
   });
 
   test('authenticated /studio/en with EN progress resumes EN context', async ({ page }) => {
