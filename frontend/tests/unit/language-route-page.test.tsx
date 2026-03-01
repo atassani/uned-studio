@@ -15,7 +15,11 @@ describe('language route page', () => {
   });
 
   it('exports static params for supported languages', () => {
-    expect(generateStaticParams()).toEqual([{ language: 'es' }, { language: 'en' }, { language: 'ca' }]);
+    expect(generateStaticParams()).toEqual([
+      { language: 'es' },
+      { language: 'en' },
+      { language: 'ca' },
+    ]);
   });
 
   it('renders redirect component for supported language', () => {
@@ -30,4 +34,3 @@ describe('language route page', () => {
     expect(mockNotFound).toHaveBeenCalledTimes(1);
   });
 });
-
